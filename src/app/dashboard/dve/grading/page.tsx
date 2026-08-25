@@ -53,6 +53,7 @@ interface StudentGrade {
   studentCode?: string;   // รหัสนักศึกษาตัวเลขจริง (จาก users collection)
   sequence?: number;      // ลำดับที่ของนักเรียน
   studentName: string;
+  department?: string;
   classGroupId?: string;
   subjectId: string;
   scores: Record<string, number>;
@@ -713,28 +714,30 @@ export default function DVEGradingPage() {
       `}</style>
       <div className="max-w-[1600px] mx-auto w-full">
         {/* Header */}
-        <div className="mb-8 p-6 sm:p-8 rounded-[32px] bg-linear-to-br from-cyan-500 via-blue-600 to-blue-700 text-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/10 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-10 group-hover:scale-110 transition-transform duration-700">
+        <div className="mb-8 p-6 sm:p-8 rounded-[24px] bg-linear-to-br from-slate-900 via-blue-950 to-slate-900 text-white shadow-[0_8px_30px_rgb(0,0,0,0.4)] border border-white/10 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-5 group-hover:scale-110 transition-transform duration-700">
             <Calculator size={180} className="w-32 h-32 sm:w-48 sm:h-48 drop-shadow-2xl" />
           </div>
-          <div className="absolute -left-10 -bottom-10 w-40 h-40 rounded-full bg-cyan-300/30 blur-3xl pointer-events-none mix-blend-overlay" />
+          <div className="absolute -left-10 -bottom-10 w-40 h-40 rounded-full bg-cyan-500/20 blur-3xl pointer-events-none mix-blend-screen" />
+          <div className="absolute right-1/4 top-0 w-48 h-48 rounded-full bg-blue-500/20 blur-3xl pointer-events-none mix-blend-screen" />
+          
           <div className="relative z-10 max-w-2xl">
-            <span className="bg-white/20 backdrop-blur-xl text-[10px] sm:text-xs uppercase font-black tracking-widest px-4 py-1.5 rounded-full text-white/95 border border-white/20 shadow-sm flex items-center gap-1.5 w-fit mb-4">
+            <span className="bg-white/10 backdrop-blur-md text-[10px] sm:text-xs uppercase font-black tracking-widest px-4 py-1.5 rounded-full text-blue-200 border border-white/10 shadow-sm flex items-center gap-1.5 w-fit mb-4">
               <GraduationCap className="w-3.5 h-3.5" />
               ระบบตรวจงานและให้คะแนน
             </span>
 
-            <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight mb-2 drop-shadow-sm">
-              ระบบจัดการคะแนน <span className="text-cyan-200">(Grading)</span>
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight mb-2 drop-shadow-md">
+              ระบบจัดการคะแนน <span className="text-transparent bg-clip-text bg-linear-to-r from-cyan-400 to-blue-400">(Grading)</span>
             </h1>
-            <p className="text-white/90 font-medium text-xs sm:text-sm md:text-base leading-relaxed">
+            <p className="text-zinc-300 font-medium text-xs sm:text-sm md:text-base leading-relaxed">
               ตั้งค่าเกณฑ์การให้คะแนน บันทึกคะแนนนักเรียน และส่งออกข้อมูลผลการเรียน (ศธ.02)
             </p>
           </div>
         </div>
 
         {/* Subject Selection */}
-        <div className="bg-white/60 backdrop-blur-xl dark:bg-zinc-900/80 rounded-[32px] p-4 sm:p-6 shadow-sm border border-white/40 dark:border-zinc-800 mb-6">
+        <div className="bg-white/60 backdrop-blur-xl dark:bg-zinc-900/80 rounded-2xl p-4 sm:p-6 shadow-sm border border-white/40 dark:border-zinc-800 mb-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
             <h2 className="text-lg font-black text-zinc-800 dark:text-white flex items-center gap-2">
               <span className="p-2 bg-blue-100 text-blue-600 rounded-xl">
@@ -748,7 +751,7 @@ export default function DVEGradingPage() {
                   setEditingCategoryId(null);
                   setIsCategoryModalOpen(true);
                 }}
-                className="px-5 py-2.5 bg-cyan-50 text-cyan-700 dark:bg-cyan-500/10 dark:text-cyan-400 rounded-2xl hover:bg-cyan-100 dark:hover:bg-cyan-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2 font-black shadow-sm cursor-pointer border border-cyan-100 dark:border-cyan-800/50"
+                className="px-5 py-2.5 bg-cyan-50 text-cyan-700 dark:bg-cyan-500/10 dark:text-cyan-400 rounded-xl hover:bg-cyan-100 dark:hover:bg-cyan-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2 font-black shadow-sm cursor-pointer border border-cyan-100 dark:border-cyan-800/50"
               >
                 <Plus className="w-4 h-4" />
                 เพิ่มหมวดหมู่คะแนน
@@ -780,7 +783,7 @@ export default function DVEGradingPage() {
 
         {/* Grading Configuration */}
         {config && selectedSubjectId && (
-          <div className="bg-white/60 backdrop-blur-xl dark:bg-zinc-900/80 rounded-[32px] p-2 sm:p-4 shadow-sm border border-white/40 dark:border-zinc-800 mb-6">
+          <div className="bg-white/60 backdrop-blur-xl dark:bg-zinc-900/80 rounded-2xl p-2 sm:p-4 shadow-sm border border-white/40 dark:border-zinc-800 mb-6">
             <Collapse
               ghost
               className="w-full"
@@ -969,11 +972,18 @@ export default function DVEGradingPage() {
                         <p className="text-sm font-black text-zinc-900 dark:text-white">
                           {grade.studentName}
                         </p>
-                        {grade.classGroupId && grade.classGroupId !== "ไม่ระบุห้องเรียน" && (
-                          <span className="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 px-2 py-0.5 rounded-full font-bold">
-                            {grade.classGroupId}
-                          </span>
-                        )}
+                        <div className="flex gap-1 mt-1">
+                          {grade.department && grade.department !== "ไม่ระบุแผนก" && (
+                            <span className="text-[10px] bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 px-2 py-0.5 rounded-full font-bold">
+                              {grade.department}
+                            </span>
+                          )}
+                          {grade.classGroupId && grade.classGroupId !== "ไม่ระบุห้องเรียน" && (
+                            <span className="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 px-2 py-0.5 rounded-full font-bold">
+                              {grade.classGroupId}
+                            </span>
+                          )}
+                        </div>
                       </td>
                       {config.categories.map((cat) => {
                         const hasSubCategories = cat.subCategories && cat.subCategories.length > 0;

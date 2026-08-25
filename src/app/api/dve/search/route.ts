@@ -204,9 +204,8 @@ export async function GET(req: Request) {
         const teachers = await db
           .collection("users")
           .find({ 
-            role: "teacher", 
             $or: [
-              { department: { $regex: escapeRegex(studentDept), $options: "i" } },
+              { role: { $in: ["teacher", "super_admin", "admin", "director", "deputy_academic", "editor"] }, department: { $regex: escapeRegex(studentDept), $options: "i" } },
               { _id: { $in: teacherObjectIds } }
             ]
           })
@@ -267,9 +266,8 @@ export async function GET(req: Request) {
         const teachers = await db
           .collection("users")
           .find({ 
-            role: "teacher", 
             $or: [
-              { department: { $regex: escapeRegex(studentDept), $options: "i" } },
+              { role: { $in: ["teacher", "super_admin", "admin", "director", "deputy_academic", "editor"] }, department: { $regex: escapeRegex(studentDept), $options: "i" } },
               { _id: { $in: teacherObjectIds } }
             ]
           })
@@ -403,7 +401,7 @@ export async function GET(req: Request) {
 
         const teacher = await db.collection("users").findOne({
           _id: new ObjectId(teacherId),
-          role: "teacher"
+          role: { $in: ["teacher", "super_admin", "admin", "director", "deputy_academic", "editor"] },
         });
         if (!teacher) {
           return NextResponse.json({ success: true, subjects: [] });

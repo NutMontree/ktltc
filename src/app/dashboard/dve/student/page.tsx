@@ -38,6 +38,10 @@ import {
   Paperclip,
   Lock,
   Youtube,
+  Home,
+  LayoutGrid,
+  MessageSquare,
+  Flag,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { message, Popconfirm, Select } from "antd";
@@ -898,7 +902,8 @@ export function DVEStudentPortal() {
     });
     setActiveSubject(null);
     try {
-      const res = await fetch(`/api/dve/search?department=${encodeURIComponent(dept)}`);
+      const url = dept === "all" ? "/api/dve/search" : `/api/dve/search?department=${encodeURIComponent(dept)}`;
+      const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
         if (data.success) {
@@ -1052,26 +1057,22 @@ export function DVEStudentPortal() {
   return (
     <div className="max-w-[1600px] mx-auto space-y-6 px-4 py-4 sm:py-8 font-sans">
       {/* Student Portal Banner */}
-      <div className="relative overflow-hidden rounded-[32px] bg-linear-to-br from-cyan-500 via-blue-600 to-blue-700 text-white p-6 sm:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/10 group">
-        {/* Animated Background Mesh */}
-        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform duration-700">
-          <GraduationCap size={180} className="w-32 h-32 sm:w-48 sm:h-48 drop-shadow-2xl" />
+      <div className="relative overflow-hidden rounded-[32px] bg-linear-to-r from-blue-600 via-blue-500 to-indigo-600 text-white p-6 sm:p-10 shadow-xl shadow-blue-500/10 border border-white/20 group">
+        {/* Animated Background Mesh & Watermark */}
+        <div className="absolute -top-4 -right-4 p-4 opacity-10 group-hover:scale-110 group-hover:opacity-15 transition-transform duration-700 pointer-events-none">
+          <GraduationCap size={220} className="drop-shadow-2xl" />
         </div>
-        <div className="absolute -left-10 -bottom-10 w-40 h-40 rounded-full bg-cyan-300/30 blur-3xl pointer-events-none mix-blend-overlay" />
-        <div className="absolute right-1/4 top-0 w-32 h-32 rounded-full bg-blue-300/20 blur-2xl pointer-events-none mix-blend-overlay" />
+        <div className="absolute -left-10 -bottom-10 w-48 h-48 rounded-full bg-cyan-300/20 blur-3xl pointer-events-none mix-blend-overlay" />
+        <div className="absolute right-1/3 top-0 w-40 h-40 rounded-full bg-indigo-300/20 blur-2xl pointer-events-none mix-blend-overlay" />
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-4 max-w-2xl">
-            <span className="bg-white/20 backdrop-blur-xl text-[10px] sm:text-xs uppercase font-black tracking-widest px-4 py-1.5 rounded-full text-white/95 border border-white/20 shadow-sm flex items-center gap-1.5 w-fit">
-              <Sparkles className="w-3.5 h-3.5" />
-              Student Learning Hub
+          <div className="space-y-3 max-w-2xl">
+            <span className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-md text-[11px] sm:text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full text-white/95 border border-white/25 shadow-xs w-fit">
+              <Sparkles size={14} className="text-cyan-200" />
+              STUDENT LEARNING HUB
             </span>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight drop-shadow-sm">
-              ศูนย์การศึกษาระบบทวิภาคี{" "}
-              <span className="text-cyan-200 block sm:inline relative">
-                (DVE Portal)
-                <div className="absolute -bottom-2 left-0 w-1/3 h-1 bg-cyan-300/50 rounded-full"></div>
-              </span>
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight drop-shadow-sm text-white">
+              ศูนย์การศึกษาระบบทวิภาคี (DVE Portal)
             </h1>
             <p className="text-white/90 font-medium text-xs sm:text-sm md:text-base leading-relaxed max-w-xl">
               เข้าถึงเนื้อหาการเรียน ทำแบบทดสอบก่อน-หลังเรียน และส่งผลงานของคุณได้ทุกที่ทุกเวลาในรูปแบบห้องเรียนเสมือนจริง
@@ -1080,28 +1081,28 @@ export function DVEStudentPortal() {
 
           {/* User Profile Bento Box */}
           {session?.user && (
-            <div className="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-[24px] p-4 sm:p-5 flex items-center gap-4 shadow-xl min-w-[260px] sm:min-w-[300px] hover:-translate-y-1 transition-transform duration-300">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[18px] overflow-hidden bg-linear-to-tr from-cyan-300 to-blue-400 text-white flex items-center justify-center font-black text-2xl shadow-inner border-2 border-white/30 shrink-0">
+            <div className="bg-white/10 dark:bg-white/5 backdrop-blur-2xl border border-white/20 rounded-[28px] p-4 sm:p-5 flex items-center gap-4 shadow-xl min-w-[260px] sm:min-w-[300px] hover:-translate-y-0.5 transition-all duration-300">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden bg-white/10 text-white flex items-center justify-center font-black text-2xl shadow-inner border-2 border-white/30 shrink-0">
                 {session.user.image ? (
                   <img
                     src={session.user.image}
                     alt={session.user.name || "User"}
                     className="w-full h-full object-cover"
                   />
-                ) : session.user.name ? (
-                  session.user.name.charAt(0).toUpperCase()
                 ) : (
-                  "U"
+                  <div className="w-full h-full bg-linear-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-black text-xl">
+                    {session.user.name?.charAt(0).toUpperCase() || "S"}
+                  </div>
                 )}
               </div>
               <div className="space-y-1 overflow-hidden flex-1">
-                <span className="text-[9px] sm:text-[10px] font-black uppercase text-cyan-200 tracking-widest block drop-shadow-sm">
+                <span className="text-[10px] font-black uppercase text-cyan-200 tracking-wider block drop-shadow-sm">
                   ผู้ใช้งานระบบ
                 </span>
-                <h2 className="text-lg sm:text-xl font-black text-white truncate leading-tight drop-shadow-sm">
+                <h2 className="text-base sm:text-lg font-black text-white truncate leading-tight drop-shadow-sm">
                   {session.user.name}
                 </h2>
-                <p className="text-xs text-white/80 font-medium truncate bg-black/10 w-fit px-2 py-0.5 rounded-md mt-0.5">
+                <p className="text-[11px] text-white/90 font-bold truncate bg-black/20 backdrop-blur-xs w-fit px-2.5 py-0.5 rounded-lg mt-0.5">
                   {getRoleThaiLabel((session.user as any)?.role)}
                 </p>
               </div>
@@ -1111,44 +1112,46 @@ export function DVEStudentPortal() {
       </div>
 
       {/* Smart Search Filters (Glassmorphic Bento) */}
-      <div className="bg-white/60 backdrop-blur-xl dark:bg-zinc-900/80 border border-white/40 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-400/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="flex items-center gap-3 mb-2 relative z-10">
-          <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl">
-            <Search className="w-5 h-5" />
+      <div className="bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/60 dark:border-zinc-800/80 rounded-[32px] p-5 sm:p-7 shadow-xl shadow-zinc-950/5 space-y-5 relative overflow-hidden">
+        <div className="flex items-center gap-3 relative z-10">
+          <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/50 border border-blue-100 dark:border-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shadow-xs shrink-0">
+            <Search size={20} />
           </div>
           <div>
             <h3 className="text-base sm:text-lg font-black text-zinc-900 dark:text-white leading-tight">
               ค้นหารายวิชาเรียนทวิภาคี
             </h3>
-            <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mt-0.5">
+            <p className="text-xs font-bold text-zinc-400 dark:text-zinc-500 mt-0.5">
               เลือกข้อมูลตามลำดับ 1-3 เพื่อเริ่มต้นเข้าสู่บทเรียน
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 mt-5 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 relative z-10">
           <div className="flex flex-col gap-2">
-            <label className="text-[11px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+            <label className="text-xs font-black text-zinc-700 dark:text-zinc-300">
               1. เลือกแผนกวิชา
             </label>
             <Select
               placeholder="-- เลือกแผนกวิชา --"
-              className="w-full h-10 sm:h-12 shadow-xs"
+              className="w-full [&>.ant-select-selector]:h-12! [&>.ant-select-selector]:rounded-2xl! [&>.ant-select-selector]:border-zinc-200/80! dark:[&>.ant-select-selector]:border-zinc-800! [&>.ant-select-selector]:bg-white/60! dark:[&>.ant-select-selector]:bg-zinc-950/60! [&>.ant-select-selector]:flex [&>.ant-select-selector]:items-center [&>.ant-select-selector]:shadow-xs [&>.ant-select-selector]:text-sm! [&>.ant-select-selector]:font-bold!"
               value={searchState.department || undefined}
               onChange={(val) => handleDepartmentChange(val)}
               loading={loadingOptions}
-              options={options.departments.map((d) => ({ label: d, value: d }))}
+              options={[
+                { label: "🏢 แผนกทั้งหมด", value: "all" },
+                ...options.departments.map((d) => ({ label: d, value: d })),
+              ]}
             />
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-[11px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+            <label className="text-xs font-black text-zinc-700 dark:text-zinc-300">
               2. เลือกอาจารย์ผู้สอน
             </label>
             <Select
               placeholder="-- เลือกอาจารย์ --"
-              className="w-full h-10 sm:h-12 shadow-xs"
+              className="w-full [&>.ant-select-selector]:h-12! [&>.ant-select-selector]:rounded-2xl! [&>.ant-select-selector]:border-zinc-200/80! dark:[&>.ant-select-selector]:border-zinc-800! [&>.ant-select-selector]:bg-white/60! dark:[&>.ant-select-selector]:bg-zinc-950/60! [&>.ant-select-selector]:flex [&>.ant-select-selector]:items-center [&>.ant-select-selector]:shadow-xs [&>.ant-select-selector]:text-sm! [&>.ant-select-selector]:font-bold!"
               value={searchState.teacherId || undefined}
               onChange={(val) => handleTeacherChange(val)}
               options={options.teachers.map((t) => ({
@@ -1160,33 +1163,33 @@ export function DVEStudentPortal() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-[11px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+            <label className="text-xs font-black text-zinc-700 dark:text-zinc-300">
               3. เลือกวิชาเรียน
             </label>
             <Select
               placeholder="-- เลือกวิชาเรียน --"
-              className="w-full h-10 sm:h-12 shadow-xs"
+              className="w-full [&>.ant-select-selector]:h-12! [&>.ant-select-selector]:rounded-2xl! [&>.ant-select-selector]:border-zinc-200/80! dark:[&>.ant-select-selector]:border-zinc-800! [&>.ant-select-selector]:bg-white/60! dark:[&>.ant-select-selector]:bg-zinc-950/60! [&>.ant-select-selector]:flex [&>.ant-select-selector]:items-center [&>.ant-select-selector]:shadow-xs [&>.ant-select-selector]:text-sm! [&>.ant-select-selector]:font-bold!"
               value={searchState.subjectId || undefined}
               onChange={handleSubjectSelect}
               options={options.subjects.map((s) => ({
                 label: `[${s.code}] ${s.name} (${s.curriculum})`,
                 value: s.id,
               }))}
-              disabled={!searchState.teacherId || !searchState.department}
+              disabled={!searchState.teacherId && !searchState.department}
             />
           </div>
         </div>
 
         {/* Advanced Filters */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mt-4 pt-4 border-t border-slate-200 dark:border-zinc-800">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 pt-4 border-t border-zinc-100 dark:border-zinc-800/80">
           <div className="flex flex-col gap-2">
-            <label className="text-[11px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+            <label className="text-xs font-black text-zinc-700 dark:text-zinc-300">
               ค้นหาชื่องาน/แบบทดสอบ
             </label>
             <input
               type="text"
               placeholder="พิมพ์ชื่องาน..."
-              className="w-full h-10 sm:h-12 border border-slate-200/80 dark:border-zinc-700 bg-white/50 dark:bg-zinc-800/50 rounded-xl px-3 sm:px-4 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500/50 dark:text-white placeholder-zinc-400 font-bold shadow-xs transition-all"
+              className="w-full h-12 border border-zinc-200/80 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/60 rounded-2xl px-4 text-sm font-bold text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-hidden focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 transition-all shadow-xs"
               value={searchState.assignmentName}
               onChange={(e) =>
                 setSearchState((prev) => ({ ...prev, assignmentName: e.target.value }))
@@ -1195,11 +1198,11 @@ export function DVEStudentPortal() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-[11px] sm:text-xs font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+            <label className="text-xs font-black text-zinc-700 dark:text-zinc-300">
               ช่วงเวลา
             </label>
             <Select
-              className="w-full h-10 sm:h-12 shadow-xs"
+              className="w-full [&>.ant-select-selector]:h-12! [&>.ant-select-selector]:rounded-2xl! [&>.ant-select-selector]:border-zinc-200/80! dark:[&>.ant-select-selector]:border-zinc-800! [&>.ant-select-selector]:bg-white/60! dark:[&>.ant-select-selector]:bg-zinc-950/60! [&>.ant-select-selector]:flex [&>.ant-select-selector]:items-center [&>.ant-select-selector]:shadow-xs [&>.ant-select-selector]:text-sm! [&>.ant-select-selector]:font-bold!"
               value={searchState.timePeriod}
               onChange={(val) => setSearchState((prev) => ({ ...prev, timePeriod: val }))}
               options={[
@@ -1843,59 +1846,79 @@ export function DVEStudentPortal() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 15 }}
-              className="py-10 max-w-4xl mx-auto"
+              className="py-12 max-w-5xl mx-auto"
             >
-              <div className="text-center mb-10">
-                <div className="w-20 h-20 bg-linear-to-br from-blue-500 to-cyan-500 text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-blue-500/20 rotate-3">
-                  <BookOpen size={36} className="-rotate-3" />
+              <div className="text-center mb-12">
+                <div className="w-18 h-18 sm:w-20 sm:h-20 bg-linear-to-br from-blue-500 to-cyan-500 text-white rounded-[26px] flex items-center justify-center mx-auto mb-4 shadow-xl shadow-blue-500/25">
+                  <BookOpen size={36} />
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white mb-3 tracking-tight">ยินดีต้อนรับสู่ DVE Portal 🚀</h2>
-                <p className="text-zinc-500 dark:text-zinc-400 text-sm sm:text-base font-medium">เริ่มต้นการเรียนรู้ออนไลน์และส่งงานของคุณง่ายๆ ใน 3 ขั้นตอน</p>
+                <h2 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white mb-2 tracking-tight">
+                  ยินดีต้อนรับสู่ DVE Portal 🚀
+                </h2>
+                <p className="text-zinc-500 dark:text-zinc-400 text-sm sm:text-base font-medium">
+                  เริ่มต้นการเรียนรู้ออนไลน์และส่งงานของคุณง่ายๆ ใน 3 ขั้นตอน
+                </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Step 1 */}
-                <div className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl rounded-[28px] p-6 border border-zinc-100/80 dark:border-zinc-800 shadow-sm relative overflow-hidden group hover:-translate-y-1.5 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-200 dark:hover:border-blue-800/50">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-500" />
-                  <div className="w-14 h-14 bg-linear-to-br from-blue-100 to-blue-50 dark:from-blue-900/40 dark:to-blue-900/10 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center font-black text-2xl mb-5 shadow-inner border border-blue-200/50 dark:border-blue-800/50 group-hover:scale-110 transition-transform">
+                <div className="bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl rounded-[32px] p-6 sm:p-7 border border-white/60 dark:border-zinc-800/80 shadow-xl shadow-zinc-950/5 relative overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+                  <div className="absolute -top-10 -right-10 w-36 h-36 bg-blue-500/10 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center font-black text-xl mb-5 shadow-inner border border-blue-200/50 dark:border-blue-800/50 group-hover:scale-105 transition-transform">
                     1
                   </div>
-                  <h3 className="text-lg font-black text-zinc-900 dark:text-white mb-2.5">ค้นหาวิชาเรียน</h3>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+                  <h3 className="text-lg font-black text-zinc-900 dark:text-white mb-2.5">
+                    ค้นหาวิชาเรียน
+                  </h3>
+                  <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
                     เลือกแผนกวิชา, ชื่ออาจารย์ผู้สอน และวิชาเรียนที่คุณต้องการเรียนจากกล่องค้นหาด้านบนสุดของหน้าจอ
                   </p>
                 </div>
 
                 {/* Step 2 */}
-                <div className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl rounded-[28px] p-6 border border-zinc-100/80 dark:border-zinc-800 shadow-sm relative overflow-hidden group hover:-translate-y-1.5 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/10 hover:border-emerald-200 dark:hover:border-emerald-800/50">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-500" />
-                  <div className="w-14 h-14 bg-linear-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-900/10 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center font-black text-2xl mb-5 shadow-inner border border-emerald-200/50 dark:border-emerald-800/50 group-hover:scale-110 transition-transform">
-                    2
+                <div className="bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl rounded-[32px] p-6 sm:p-7 border border-white/60 dark:border-zinc-800/80 shadow-xl shadow-zinc-950/5 relative overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+                  <div className="absolute -top-10 -right-10 w-36 h-36 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+                  <div className="flex items-center justify-between gap-3 mb-5">
+                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center font-black text-xl shadow-inner border border-emerald-200/50 dark:border-emerald-800/50 group-hover:scale-105 transition-transform">
+                      2
+                    </div>
+                    {/* Mini illustrated UI bar as in screenshot */}
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-zinc-100/80 dark:bg-zinc-800/70 backdrop-blur-xs rounded-xl border border-zinc-200/60 dark:border-zinc-700/60 text-zinc-400 dark:text-zinc-500">
+                      <Home size={13} />
+                      <LayoutGrid size={13} />
+                      <MessageSquare size={13} />
+                      <Flag size={13} />
+                      <GraduationCap size={13} />
+                    </div>
                   </div>
-                  <h3 className="text-lg font-black text-zinc-900 dark:text-white mb-2.5">เข้าเรียน & จับเวลา</h3>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+                  <h3 className="text-lg font-black text-zinc-900 dark:text-white mb-2.5">
+                    เข้าเรียน & จับเวลา
+                  </h3>
+                  <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
                     เลือกหน่วยการเรียนรู้เพื่อเข้าสู่ห้องเรียนเสมือน ระบบจะเริ่มนับเวลาเรียนของคุณอัตโนมัติเพื่อใช้ในการเช็คชื่อ
                   </p>
                 </div>
 
                 {/* Step 3 */}
-                <div className="bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl rounded-[28px] p-6 border border-zinc-100/80 dark:border-zinc-800 shadow-sm relative overflow-hidden group hover:-translate-y-1.5 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/10 hover:border-amber-200 dark:hover:border-amber-800/50">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-bl-full pointer-events-none group-hover:scale-110 transition-transform duration-500" />
-                  <div className="w-14 h-14 bg-linear-to-br from-amber-100 to-amber-50 dark:from-amber-900/40 dark:to-amber-900/10 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center font-black text-2xl mb-5 shadow-inner border border-amber-200/50 dark:border-amber-800/50 group-hover:scale-110 transition-transform">
+                <div className="bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl rounded-[32px] p-6 sm:p-7 border border-white/60 dark:border-zinc-800/80 shadow-xl shadow-zinc-950/5 relative overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+                  <div className="absolute -top-10 -right-10 w-36 h-36 bg-amber-500/10 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+                  <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center font-black text-xl mb-5 shadow-inner border border-amber-200/50 dark:border-amber-800/50 group-hover:scale-105 transition-transform">
                     3
                   </div>
-                  <h3 className="text-lg font-black text-zinc-900 dark:text-white mb-2.5">ทำแบบทดสอบ</h3>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+                  <h3 className="text-lg font-black text-zinc-900 dark:text-white mb-2.5">
+                    ทำแบบทดสอบ & ส่งผลงาน
+                  </h3>
+                  <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
                     หลังจากเรียนครบเวลาที่กำหนดแล้ว สามารถทำแบบทดสอบหรือส่งไฟล์ผลงานแนบ เพื่อให้ได้คะแนนครบถ้วน
                   </p>
                 </div>
               </div>
 
-              <div className="mt-14 text-center animate-bounce">
-                <p className="text-sm font-bold text-blue-500 flex items-center justify-center gap-2 bg-blue-50 dark:bg-blue-900/20 w-fit mx-auto px-4 py-2 rounded-full border border-blue-100 dark:border-blue-800/50">
-                  <ArrowRight size={16} className="-rotate-90" />
-                  เลื่อนขึ้นไปด้านบนเพื่อเลือกแผนกและรายวิชา
-                  <ArrowRight size={16} className="-rotate-90" />
+              <div className="mt-12 text-center">
+                <p className="text-xs sm:text-sm font-bold text-blue-500 flex items-center justify-center gap-2 bg-blue-50 dark:bg-blue-950/40 w-fit mx-auto px-4 py-2 rounded-full border border-blue-200/60 dark:border-blue-900/40 shadow-xs">
+                  <ArrowRight size={15} className="-rotate-90 text-blue-600 dark:text-blue-400" />
+                  เลือกแผนกวิชาและอาจารย์ผู้สอนด้านบนเพื่อเริ่มต้นเข้าสู่บทเรียน
+                  <ArrowRight size={15} className="-rotate-90 text-blue-600 dark:text-blue-400" />
                 </p>
               </div>
             </motion.div>
@@ -2037,13 +2060,14 @@ export function DVEStudentPortal() {
                   )}
                 </div>
 
-                {/* 📂 DOWNLOAD FILES */}
+                {/* 📂 DOWNLOAD & MEDIA FILES */}
                 {(() => {
                   const directFiles = (activeStudyUnit.files || []).filter(
                     (f: any) =>
                       f.type === "file" ||
                       f.url?.startsWith("/uploads/") ||
-                      f.url?.startsWith("/api/media/"),
+                      f.url?.startsWith("/api/media/") ||
+                      f.url?.includes("res.cloudinary.com"),
                   );
                   const externalLinks = (activeStudyUnit.files || []).filter(
                     (f: any) => !directFiles.includes(f),
@@ -2067,10 +2091,45 @@ export function DVEStudentPortal() {
                             </span>
                             <div className="space-y-2">
                               {directFiles.map((file: any, fIdx: number) => {
-                                const isVideo = file.url?.match(/\.(mp4|webm|ogg)$/i);
-                                const isPdf = file.url?.match(/\.pdf$/i);
+                                const youtubeMatch = file.url?.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
+                                const youtubeId = (youtubeMatch && youtubeMatch[1]) ? youtubeMatch[1] : null;
+                                const isVideo = !youtubeId && (file.url?.match(/\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i) || file.type?.includes("video") || file.url?.includes("/video/upload/"));
+                                const isPdf = file.url?.match(/\.pdf(\?.*)?$/i);
                                 const isCloudinary = file.url?.includes("res.cloudinary.com");
-                                const thumbUrl = isCloudinary ? file.url.replace(/\.(pdf|mp4|webm|ogg)$/i, ".jpg") : null;
+                                const thumbUrl = isCloudinary ? file.url.replace(/\.(pdf|mp4|webm|ogg|mov|m4v)(\?.*)?$/i, ".jpg") : null;
+
+                                if (youtubeId) {
+                                  return (
+                                    <div
+                                      key={fIdx}
+                                      onClick={() => {
+                                        setMediaPreviewUrl(`https://www.youtube.com/embed/${youtubeId}?autoplay=1`);
+                                        setMediaPreviewType("youtube");
+                                        setMediaPreviewName(file.name || "ชมวิดีโอบน YouTube");
+                                      }}
+                                      className="group relative flex flex-col p-2 gap-2 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 hover:border-red-500 dark:hover:border-red-500 transition-all cursor-pointer overflow-hidden shadow-xs hover:shadow-md"
+                                    >
+                                      <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-950">
+                                        <img
+                                          src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`}
+                                          alt="YouTube Thumbnail"
+                                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                        />
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
+                                          <div className="w-12 h-12 bg-red-600/90 text-white rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-red-600 transition-transform">
+                                            <Youtube size={24} />
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="flex items-start gap-2 px-1 pb-1">
+                                        <Youtube size={15} className="shrink-0 mt-0.5 text-red-500" />
+                                        <span className="text-xs font-black text-zinc-800 dark:text-zinc-200 truncate">
+                                          {file.name || "ชมวิดีโอบน YouTube"}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  );
+                                }
 
                                 if (isVideo) {
                                   return (
@@ -2079,25 +2138,25 @@ export function DVEStudentPortal() {
                                       onClick={() => {
                                         setMediaPreviewUrl(file.url);
                                         setMediaPreviewType("video");
-                                        setMediaPreviewName(file.name);
+                                        setMediaPreviewName(file.name || "ชมวีดีโอประกอบการเรียน");
                                       }}
-                                      className="group relative flex flex-col p-2 gap-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-blue-500 dark:hover:border-blue-500 transition-colors cursor-pointer overflow-hidden shadow-sm hover:shadow-md"
+                                      className="group relative flex flex-col p-2 gap-2 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 hover:border-blue-500 dark:hover:border-blue-500 transition-all cursor-pointer overflow-hidden shadow-xs hover:shadow-md"
                                     >
-                                      <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-950 flex items-center justify-center">
+                                      <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-950 flex items-center justify-center">
                                         {thumbUrl ? (
                                           <img src={thumbUrl} alt="Video Thumbnail" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                                         ) : (
                                           <video src={file.url} preload="metadata" className="w-full h-full object-cover" />
                                         )}
-                                        <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
-                                          <div className="w-10 h-10 bg-black/60 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:bg-blue-600 transition-colors">
-                                            <Youtube size={20} className="text-white" />
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
+                                          <div className="w-12 h-12 bg-blue-600/90 text-white rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-blue-600 transition-transform">
+                                            <Youtube size={24} />
                                           </div>
                                         </div>
                                       </div>
                                       <div className="flex items-start gap-2 px-1 pb-1">
-                                        <Youtube size={14} className="shrink-0 mt-0.5 text-zinc-400 group-hover:text-blue-500" />
-                                        <span className="text-xs font-black text-zinc-700 dark:text-zinc-300 truncate">
+                                        <Youtube size={15} className="shrink-0 mt-0.5 text-blue-500" />
+                                        <span className="text-xs font-black text-zinc-800 dark:text-zinc-200 truncate">
                                           {file.name || "ชมวีดีโอประกอบการเรียน"}
                                         </span>
                                       </div>
@@ -2112,20 +2171,19 @@ export function DVEStudentPortal() {
                                       href={file.url}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="group relative flex flex-col p-2 gap-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-rose-500 dark:hover:border-rose-500 transition-colors cursor-pointer overflow-hidden shadow-sm hover:shadow-md"
+                                      className="group relative flex flex-col p-2 gap-2 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 hover:border-rose-500 dark:hover:border-rose-500 transition-all cursor-pointer overflow-hidden shadow-xs hover:shadow-md"
                                     >
-                                      <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center">
+                                      <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center">
                                         {thumbUrl ? (
                                           <img src={thumbUrl} alt="PDF Thumbnail" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                                         ) : (
                                           <FileText size={32} className="text-zinc-300 dark:text-zinc-700" />
                                         )}
-                                        <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/5 transition-colors">
-                                        </div>
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/5 transition-colors" />
                                       </div>
                                       <div className="flex items-start gap-2 px-1 pb-1">
-                                        <FileText size={14} className="shrink-0 mt-0.5 text-zinc-400 group-hover:text-rose-500" />
-                                        <span className="text-xs font-black text-zinc-700 dark:text-zinc-300 truncate">
+                                        <FileText size={15} className="shrink-0 mt-0.5 text-rose-500" />
+                                        <span className="text-xs font-black text-zinc-800 dark:text-zinc-200 truncate">
                                           {file.name || "เปิดอ่านเอกสาร PDF"}
                                         </span>
                                       </div>
@@ -2139,12 +2197,12 @@ export function DVEStudentPortal() {
                                     href={file.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors shadow-sm cursor-pointer group"
+                                    className="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all shadow-xs cursor-pointer group"
                                   >
-                                    <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700 transition-colors">
-                                      <Download size={14} className="text-zinc-500 dark:text-zinc-400" />
+                                    <div className="w-9 h-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700 transition-colors shrink-0">
+                                      <Download size={15} className="text-zinc-600 dark:text-zinc-300" />
                                     </div>
-                                    <span className="text-xs font-black text-zinc-700 dark:text-zinc-300 truncate flex-1">
+                                    <span className="text-xs font-black text-zinc-800 dark:text-zinc-200 truncate flex-1">
                                       {file.name || "เอกสารประกอบการเรียน"}
                                     </span>
                                   </a>
@@ -2162,8 +2220,8 @@ export function DVEStudentPortal() {
                             </span>
                             <div className="space-y-2">
                               {externalLinks.map((file: any, fIdx: number) => {
-                                const youtubeMatch = file.url?.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
-                                const youtubeId = (youtubeMatch && youtubeMatch[2].length === 11) ? youtubeMatch[2] : null;
+                                const youtubeMatch = file.url?.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
+                                const youtubeId = (youtubeMatch && youtubeMatch[1]) ? youtubeMatch[1] : null;
 
                                 if (youtubeId) {
                                   return (
@@ -2172,25 +2230,25 @@ export function DVEStudentPortal() {
                                       onClick={() => {
                                         setMediaPreviewUrl(`https://www.youtube.com/embed/${youtubeId}?autoplay=1`);
                                         setMediaPreviewType("youtube");
-                                        setMediaPreviewName(file.name);
+                                        setMediaPreviewName(file.name || "ชมวิดีโอบน YouTube");
                                       }}
-                                      className="group relative flex flex-col p-2 gap-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-500 dark:hover:border-red-500 transition-colors cursor-pointer overflow-hidden shadow-sm hover:shadow-md"
+                                      className="group relative flex flex-col p-2 gap-2 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 hover:border-red-500 dark:hover:border-red-500 transition-all cursor-pointer overflow-hidden shadow-xs hover:shadow-md"
                                     >
-                                      <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-zinc-100 dark:bg-zinc-950">
+                                      <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-950">
                                         <img
                                           src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`}
                                           alt="YouTube Thumbnail"
                                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                         />
-                                        <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
-                                          <div className="w-10 h-10 bg-black/60 rounded-full flex items-center justify-center backdrop-blur-sm group-hover:bg-red-600 transition-colors">
-                                            <Youtube size={20} className="text-white" />
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
+                                          <div className="w-12 h-12 bg-red-600/90 text-white rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:bg-red-600 transition-transform">
+                                            <Youtube size={24} />
                                           </div>
                                         </div>
                                       </div>
                                       <div className="flex items-start gap-2 px-1 pb-1">
-                                        <Youtube size={14} className="shrink-0 mt-0.5 text-zinc-400 group-hover:text-red-500" />
-                                        <span className="text-xs font-black text-zinc-700 dark:text-zinc-300 truncate">
+                                        <Youtube size={15} className="shrink-0 mt-0.5 text-red-500" />
+                                        <span className="text-xs font-black text-zinc-800 dark:text-zinc-200 truncate">
                                           {file.name || "ชมวิดีโอบน YouTube"}
                                         </span>
                                       </div>
@@ -2204,12 +2262,12 @@ export function DVEStudentPortal() {
                                     href={file.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors shadow-sm cursor-pointer group"
+                                    className="flex items-center gap-3 p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all shadow-xs cursor-pointer group"
                                   >
-                                    <div className="w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700 transition-colors">
-                                      <ExternalLink size={14} className="text-zinc-500 dark:text-zinc-400" />
+                                    <div className="w-9 h-9 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700 transition-colors shrink-0">
+                                      <ExternalLink size={15} className="text-zinc-600 dark:text-zinc-300" />
                                     </div>
-                                    <span className="text-xs font-black text-zinc-700 dark:text-zinc-300 truncate flex-1">
+                                    <span className="text-xs font-black text-zinc-800 dark:text-zinc-200 truncate flex-1">
                                       {file.name || "เปิดแหล่งข้อมูลภายนอก"}
                                     </span>
                                   </a>
@@ -3092,31 +3150,47 @@ export function DVEStudentPortal() {
 
       <AnimatePresence>
         {mediaPreviewUrl && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-md">
+          <div className="fixed inset-0 z-100000 flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-md">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-5xl rounded-2xl overflow-hidden bg-black shadow-2xl flex flex-col"
+              className="relative w-full max-w-5xl rounded-3xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl flex flex-col"
             >
-              <div className="absolute top-0 inset-x-0 p-4 bg-linear-to-b from-black/80 to-transparent z-10 flex items-center justify-between pointer-events-none">
-                <span className="text-white font-black drop-shadow-md truncate pr-8 pointer-events-auto">
-                  {mediaPreviewName || "วีดีโอประกอบการเรียน"}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMediaPreviewUrl(null);
-                    setMediaPreviewType(null);
-                    setMediaPreviewName(null);
-                  }}
-                  className="pointer-events-auto w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-all cursor-pointer border border-white/20"
-                >
-                  <X size={20} />
-                </button>
+              <div className="p-4 sm:p-5 bg-linear-to-b from-zinc-900 via-zinc-900/90 to-transparent z-10 flex items-center justify-between border-b border-zinc-800/80">
+                <div className="flex items-center gap-2.5 overflow-hidden pr-4">
+                  <div className="w-8 h-8 rounded-xl bg-red-500/20 text-red-500 flex items-center justify-center shrink-0">
+                    <Youtube size={18} />
+                  </div>
+                  <span className="text-white font-black text-sm sm:text-base drop-shadow-md truncate">
+                    {mediaPreviewName || "วีดีโอประกอบการเรียน"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <a
+                    href={mediaPreviewUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-9 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-all text-xs font-bold flex items-center gap-1.5 border border-white/20"
+                  >
+                    <ExternalLink size={13} />
+                    <span className="hidden sm:inline">เปิดแท็บใหม่</span>
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMediaPreviewUrl(null);
+                      setMediaPreviewType(null);
+                      setMediaPreviewName(null);
+                    }}
+                    className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-all cursor-pointer border border-white/20"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
               </div>
 
-              <div className="w-full aspect-video flex items-center justify-center bg-black">
+              <div className="w-full aspect-video flex items-center justify-center bg-black relative">
                 {mediaPreviewType === "youtube" ? (
                   <iframe
                     src={mediaPreviewUrl}
@@ -3130,6 +3204,7 @@ export function DVEStudentPortal() {
                     src={mediaPreviewUrl}
                     controls
                     autoPlay
+                    playsInline
                     className="w-full h-full object-contain"
                   />
                 )}

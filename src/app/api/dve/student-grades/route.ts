@@ -400,7 +400,7 @@ export async function GET(req: Request) {
     if (studentIdsToFetch.length > 0) {
       const users = await db.collection("users")
         .find({ _id: { $in: studentIdsToFetch } })
-        .project({ _id: 1, name: 1, classGroupId: 1, groupCode: 1, classroomName: 1, studentId: 1, studentIdNum: 1 })
+        .project({ _id: 1, name: 1, classGroupId: 1, groupCode: 1, classroomName: 1, studentId: 1, studentIdNum: 1, department: 1 })
         .toArray();
       userMap = new Map(users.map((u: any) => [u._id.toString(), u]));
     }
@@ -439,6 +439,7 @@ export async function GET(req: Request) {
 
       const user = userMap.get(grade.studentId);
       const classGroupId = resolveStudentClassGroup(user) || "ไม่ระบุห้องเรียน";
+      const department = user?.department || "ไม่ระบุแผนก";
 
       // รหัสนักศึกษาตัวเลขจริง (studentIdNum หรือ studentId ใน users collection)
       // ถ้าไม่ใช่ตัวเลขล้วน ให้ return เป็น string ว่าง
@@ -451,6 +452,7 @@ export async function GET(req: Request) {
         studentCode,
         sequence: grade.sequence,
         studentName: user?.name || grade.studentName,
+        department,
         classGroupId,
         subjectId: grade.subjectId,
         scores: grade.scores || {},
@@ -462,6 +464,26 @@ export async function GET(req: Request) {
         hasGradeRecord: grade.hasGradeRecord,
         updatedAt: grade.updatedAt || new Date().toISOString(),
       };
+    });
+
+    calculatedGrades.sort((a, b) => {
+      // 1. Sort by department
+      const deptA = a.department || "";
+      const deptB = b.department || "";
+      if (deptA !== deptB) return deptA.localeCompare(deptB, "th");
+
+      // 2. Sort by classGroupId
+      const classA = a.classGroupId || "";
+      const classB = b.classGroupId || "";
+      if (classA !== classB) return classA.localeCompare(classB, "th");
+
+      // 3. Sort by sequence
+      const seqA = typeof a.sequence === "number" ? a.sequence : 9999;
+      const seqB = typeof b.sequence === "number" ? b.sequence : 9999;
+      if (seqA !== seqB) return seqA - seqB;
+
+      // 4. Sort by name
+      return (a.studentName || "").localeCompare(b.studentName || "", "th");
     });
 
     return NextResponse.json({

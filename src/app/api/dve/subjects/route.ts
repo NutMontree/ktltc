@@ -313,7 +313,21 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { code, name, department, curriculum, semester, academicYear, totalWeeks, daysPerWeek, hoursPerDay, totalHours, allowedClassGroups } = body;
+    const {
+      code,
+      name,
+      department,
+      curriculum,
+      semester,
+      academicYear,
+      teacherId,
+      teacherName,
+      totalWeeks,
+      daysPerWeek,
+      hoursPerDay,
+      totalHours,
+      allowedClassGroups,
+    } = body;
 
     if (!code || !name || !department || !curriculum || !semester || !academicYear) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -322,6 +336,20 @@ export async function POST(req: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
+    let assignedTeacherId = session.user.id;
+    let assignedTeacherName = session.user.name || "คุณครู";
+
+    if (teacherId && ObjectId.isValid(teacherId)) {
+      const teacherDoc = await db.collection("users").findOne({ _id: new ObjectId(teacherId) });
+      if (teacherDoc) {
+        assignedTeacherId = teacherDoc._id.toString();
+        assignedTeacherName = teacherDoc.name || teacherName || "คุณครู";
+      }
+    } else if (teacherName && teacherId) {
+      assignedTeacherId = teacherId;
+      assignedTeacherName = teacherName;
+    }
+
     const newSubject = {
       code,
       name,
@@ -329,8 +357,9 @@ export async function POST(req: Request) {
       curriculum,
       semester,
       academicYear,
-      teacherId: session.user.id,
-      teacherName: session.user.name || "คุณครู",
+      teacherId: assignedTeacherId,
+      teacherName: assignedTeacherName,
+      createdBy: session.user.id,
       totalWeeks: totalWeeks || "",
       daysPerWeek: daysPerWeek || "",
       hoursPerDay: hoursPerDay || "",
@@ -362,7 +391,22 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    const { id, code, name, department, curriculum, semester, academicYear, totalWeeks, daysPerWeek, hoursPerDay, totalHours, allowedClassGroups } = body;
+    const {
+      id,
+      code,
+      name,
+      department,
+      curriculum,
+      semester,
+      academicYear,
+      teacherId,
+      teacherName,
+      totalWeeks,
+      daysPerWeek,
+      hoursPerDay,
+      totalHours,
+      allowedClassGroups,
+    } = body;
 
     if (!id || !ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid or missing ID" }, { status: 400 });
@@ -380,24 +424,35 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    const updateFields: any = {
+      code,
+      name,
+      department,
+      curriculum,
+      semester,
+      academicYear,
+      totalWeeks: totalWeeks || "",
+      daysPerWeek: daysPerWeek || "",
+      hoursPerDay: hoursPerDay || "",
+      totalHours: totalHours || "",
+      allowedClassGroups: parseAllowedClassGroups(allowedClassGroups),
+      updatedAt: new Date(),
+    };
+
+    if (teacherId && ObjectId.isValid(teacherId)) {
+      const teacherDoc = await db.collection("users").findOne({ _id: new ObjectId(teacherId) });
+      if (teacherDoc) {
+        updateFields.teacherId = teacherDoc._id.toString();
+        updateFields.teacherName = teacherDoc.name || teacherName || "คุณครู";
+      }
+    } else if (teacherId && teacherName) {
+      updateFields.teacherId = teacherId;
+      updateFields.teacherName = teacherName;
+    }
+
     await db.collection("dve_subjects").updateOne(
       { _id: new ObjectId(id) },
-      {
-        $set: {
-          code,
-          name,
-          department,
-          curriculum,
-          semester,
-          academicYear,
-          totalWeeks: totalWeeks || "",
-          daysPerWeek: daysPerWeek || "",
-          hoursPerDay: hoursPerDay || "",
-          totalHours: totalHours || "",
-          allowedClassGroups: parseAllowedClassGroups(allowedClassGroups),
-          updatedAt: new Date(),
-        },
-      },
+      { $set: updateFields },
     );
 
     return NextResponse.json({

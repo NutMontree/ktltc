@@ -251,11 +251,12 @@ function DVETeacherWorkspace() {
   const [internshipStudents, setInternshipStudents] = useState<any[]>([]);
   const [loadingInternship, setLoadingInternship] = useState(false);
   const [internshipFilter, setInternshipFilter] = useState({
-    department: "",
+    department: "all",
     classGroupId: "",
   });
   const [internshipClassGroups, setInternshipClassGroups] = useState<string[]>([]);
   const [internshipSearchQuery, setInternshipSearchQuery] = useState("");
+  const [internshipStatusFilter, setInternshipStatusFilter] = useState<"all" | "working" | "normal">("all");
 
   // Timeline Tab States
   const [timelineData, setTimelineData] = useState<any[]>([]);
@@ -268,6 +269,7 @@ function DVETeacherWorkspace() {
 
   // Subject Modal states
   const [isSubjectModalOpen, setIsSubjectModalOpen] = useState(false);
+  const [teachersList, setTeachersList] = useState<{ id: string; name: string; department?: string; role?: string }[]>([]);
   const [subjectForm, setSubjectForm] = useState({
     id: "",
     code: "",
@@ -276,6 +278,8 @@ function DVETeacherWorkspace() {
     curriculum: "ปวส.",
     semester: "1/2569",
     academicYear: "2569",
+    teacherId: "",
+    teacherName: "",
     totalWeeks: "",
     daysPerWeek: "",
     hoursPerDay: "",
@@ -321,6 +325,7 @@ function DVETeacherWorkspace() {
     })),
   );
   const [loadingUnits, setLoadingUnits] = useState(false);
+  const [expandedUnits, setExpandedUnits] = useState<Record<string, boolean>>({});
   const [isUnitModalOpen, setIsUnitModalOpen] = useState(false);
   const [unitForm, setUnitForm] = useState<{
     id: string;
@@ -449,19 +454,19 @@ function DVETeacherWorkspace() {
         const wsname = wb.SheetNames[0];
         const ws = wb.Sheets[wsname];
         const data = XLSX.utils.sheet_to_json(ws, { header: 1 }) as any[][];
-        
+
         const rows = data.slice(1).filter(row => row.length > 0 && row[0]);
-        
+
         const importedQuestions = rows.map((row, index) => {
           const text = String(row[0] || "");
           const op1 = String(row[1] || "");
           const op2 = String(row[2] || "");
           const op3 = String(row[3] || "");
           const op4 = String(row[4] || "");
-          
+
           let correctAnsIndex = null;
           let correctAnsStr = String(row[5] || "");
-          
+
           if (["1", "2", "3", "4"].includes(correctAnsStr)) {
             correctAnsIndex = parseInt(correctAnsStr) - 1;
           } else {
@@ -496,7 +501,7 @@ function DVETeacherWorkspace() {
         console.error(err);
         message.error("เกิดข้อผิดพลาดในการอ่านไฟล์ Excel");
       }
-      
+
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -721,6 +726,13 @@ function DVETeacherWorkspace() {
 
   const displayedInternshipStudents = useMemo(() => {
     let list = [...internshipStudents];
+
+    if (internshipStatusFilter === "working") {
+      list = list.filter((s) => s.isInternship);
+    } else if (internshipStatusFilter === "normal") {
+      list = list.filter((s) => !s.isInternship);
+    }
+
     if (internshipSearchQuery.trim()) {
       const q = internshipSearchQuery.toLowerCase().trim();
       list = list.filter(
@@ -729,7 +741,7 @@ function DVETeacherWorkspace() {
           (s.studentIdNum && s.studentIdNum.toLowerCase().includes(q)),
       );
     }
-    
+
     list.sort((a, b) => {
       const classA = standardizeClassGroupName(a.classGroupId || "");
       const classB = standardizeClassGroupName(b.classGroupId || "");
@@ -738,9 +750,9 @@ function DVETeacherWorkspace() {
       }
       return (a.studentIdNum || "").localeCompare(b.studentIdNum || "", "th");
     });
-    
+
     return list;
-  }, [internshipStudents, internshipSearchQuery]);
+  }, [internshipStudents, internshipSearchQuery, internshipStatusFilter]);
 
   let baseRoster = showOnlyAttended ? logs : studentRoster;
 
@@ -780,8 +792,24 @@ function DVETeacherWorkspace() {
     }
   };
 
+  // Fetch all teachers list
+  const fetchTeachersList = async () => {
+    try {
+      const res = await fetch("/api/dve/teachers");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.teachers)) {
+          setTeachersList(data.teachers);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch teachers:", err);
+    }
+  };
+
   useEffect(() => {
     fetchSubjects();
+    fetchTeachersList();
   }, []);
 
   // Load class groups for the selected subject. Prefer explicit subject settings,
@@ -913,6 +941,8 @@ function DVETeacherWorkspace() {
           curriculum: "ปวส.",
           semester: "1/2569",
           academicYear: "2569",
+          teacherId: "",
+          teacherName: "",
           totalWeeks: "",
           daysPerWeek: "",
           hoursPerDay: "",
@@ -1339,7 +1369,7 @@ function DVETeacherWorkspace() {
         const hasQuizSub = unitQuizResultsByStudent[student.id]?.length > 0;
         const isTimeCompleted = activeStudyUnit?.studyMinutes && (rec.studySeconds || 0) >= activeStudyUnit.studyMinutes * 60;
         const hasAssignment = studentSubmissionsById[student.id]?.length > 0;
-        
+
         let changed = false;
 
         // Auto-check Present
@@ -1404,12 +1434,11 @@ function DVETeacherWorkspace() {
     }
   };
 
-  const handleLoadInternshipStudents = React.useCallback(async (dept: string, classGroupId: string = "") => {
-    if (!dept) return;
+  const handleLoadInternshipStudents = React.useCallback(async (dept: string = "all", classGroupId: string = "") => {
     setLoadingInternship(true);
     try {
       const res = await fetch(
-        `/api/dve/students?department=${encodeURIComponent(dept)}&classGroupId=${classGroupId}`,
+        `/api/dve/students?department=${encodeURIComponent(dept || "all")}&classGroupId=${classGroupId}`,
       );
       if (res.ok) {
         const data = await res.json();
@@ -1436,14 +1465,8 @@ function DVETeacherWorkspace() {
   }, []);
 
   useEffect(() => {
-    if (departments.length > 0 && !internshipFilter.department) {
-      setInternshipFilter((prev) => ({ ...prev, department: departments[0] }));
-    }
-  }, [departments, internshipFilter.department]);
-
-  useEffect(() => {
-    if (activeTab === "internship" && internshipFilter.department) {
-      handleLoadInternshipStudents(internshipFilter.department, internshipFilter.classGroupId);
+    if (activeTab === "internship") {
+      handleLoadInternshipStudents(internshipFilter.department || "all", internshipFilter.classGroupId);
     }
   }, [activeTab, internshipFilter.department, internshipFilter.classGroupId, handleLoadInternshipStudents]);
 
@@ -1731,16 +1754,28 @@ function DVETeacherWorkspace() {
       </div>
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        {/* Tabs Switcher - Premium Glassmorphic Capsule Style */}
-        <div className="flex flex-wrap sm:flex-nowrap gap-1.5 sm:gap-2 p-1.5 bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/50 dark:border-zinc-800/80 rounded-[20px] w-full md:w-auto overflow-x-auto scrollbar-hide shadow-xs">
+        {/* Tabs Switcher - Ultra Premium Glassmorphic Segmented Control */}
+        <div className="flex flex-wrap sm:flex-nowrap gap-1 p-1.5 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/60 dark:border-zinc-800/80 rounded-2xl sm:rounded-[24px] w-full md:w-auto overflow-x-auto scrollbar-hide shadow-lg shadow-zinc-950/5">
           <button
             onClick={() => setActiveTab("subjects")}
-            className={`flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-2xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer ${activeTab === "subjects" ? "bg-white dark:bg-zinc-800 text-blue-600 dark:text-blue-400 shadow-sm border border-zinc-200/50 dark:border-zinc-700 ring-1 ring-black/5 dark:ring-white/5" : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5 border border-transparent"}`}
+            className={`relative flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl sm:rounded-[18px] text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer z-10 ${
+              activeTab === "subjects"
+                ? "text-white shadow-md shadow-emerald-500/25"
+                : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100/60 dark:hover:bg-zinc-800/60"
+            }`}
           >
-            <BookOpen size={14} className={activeTab === "subjects" ? "text-blue-500" : ""} />
+            {activeTab === "subjects" && (
+              <motion.div
+                layoutId="active-tab-glow"
+                className="absolute inset-0 bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 rounded-xl sm:rounded-[18px] -z-10 shadow-sm"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
+            <BookOpen size={15} className={activeTab === "subjects" ? "text-emerald-100" : "text-zinc-400"} />
             <span className="hidden sm:inline">วิชา & หน่วยเรียน</span>
             <span className="sm:hidden">วิชา</span>
           </button>
+
           <button
             onClick={() => {
               setActiveTab("quizzes");
@@ -1749,12 +1784,24 @@ function DVETeacherWorkspace() {
                 handleLoadQuizzes(subjects[0].id);
               }
             }}
-            className={`flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-2xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer ${activeTab === "quizzes" ? "bg-white dark:bg-zinc-800 text-cyan-600 dark:text-cyan-400 shadow-sm border border-zinc-200/50 dark:border-zinc-700 ring-1 ring-black/5 dark:ring-white/5" : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5 border border-transparent"}`}
+            className={`relative flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl sm:rounded-[18px] text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer z-10 ${
+              activeTab === "quizzes"
+                ? "text-white shadow-md shadow-emerald-500/25"
+                : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100/60 dark:hover:bg-zinc-800/60"
+            }`}
           >
-            <Award size={14} className={activeTab === "quizzes" ? "text-cyan-500" : ""} />
+            {activeTab === "quizzes" && (
+              <motion.div
+                layoutId="active-tab-glow"
+                className="absolute inset-0 bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 rounded-xl sm:rounded-[18px] -z-10 shadow-sm"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
+            <Award size={15} className={activeTab === "quizzes" ? "text-emerald-100" : "text-zinc-400"} />
             <span className="hidden sm:inline">แบบทดสอบ</span>
             <span className="sm:hidden">ทดสอบ</span>
           </button>
+
           <button
             onClick={() => {
               setActiveTab("checkin");
@@ -1762,51 +1809,79 @@ function DVETeacherWorkspace() {
                 setCheckinFilter((prev) => ({ ...prev, subjectId: subjects[0].id }));
               }
             }}
-            className={`flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-2xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer ${activeTab === "checkin" ? "bg-white dark:bg-zinc-800 text-teal-600 dark:text-teal-400 shadow-sm border border-zinc-200/50 dark:border-zinc-700 ring-1 ring-black/5 dark:ring-white/5" : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5 border border-transparent"}`}
+            className={`relative flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl sm:rounded-[18px] text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer z-10 ${
+              activeTab === "checkin"
+                ? "text-white shadow-md shadow-emerald-500/25"
+                : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100/60 dark:hover:bg-zinc-800/60"
+            }`}
           >
-            <CheckCircle size={14} className={activeTab === "checkin" ? "text-teal-500" : ""} />
+            {activeTab === "checkin" && (
+              <motion.div
+                layoutId="active-tab-glow"
+                className="absolute inset-0 bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 rounded-xl sm:rounded-[18px] -z-10 shadow-sm"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
+            <CheckCircle size={15} className={activeTab === "checkin" ? "text-emerald-100" : "text-zinc-400"} />
             <span className="hidden sm:inline">เช็คชื่อ & ตรวจงาน</span>
             <span className="sm:hidden">เช็คชื่อ</span>
           </button>
+
           <button
             onClick={() => {
               setActiveTab("internship");
             }}
-            className={`flex items-center justify-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-2xl text-[11px] sm:text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer ${activeTab === "internship" ? "bg-white dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-zinc-200/50 dark:border-zinc-700 ring-1 ring-black/5 dark:ring-white/5" : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5 border border-transparent"}`}
+            className={`relative flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl sm:rounded-[18px] text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer z-10 ${
+              activeTab === "internship"
+                ? "text-white shadow-md shadow-emerald-500/25"
+                : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100/60 dark:hover:bg-zinc-800/60"
+            }`}
           >
-            <Briefcase size={14} className={activeTab === "internship" ? "text-emerald-500" : ""} />
+            {activeTab === "internship" && (
+              <motion.div
+                layoutId="active-tab-glow"
+                className="absolute inset-0 bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 rounded-xl sm:rounded-[18px] -z-10 shadow-sm"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
+            <Briefcase size={15} className={activeTab === "internship" ? "text-emerald-100" : "text-zinc-400"} />
             <span className="hidden sm:inline">ออกฝึกงาน</span>
             <span className="sm:hidden">ฝึกงาน</span>
           </button>
         </div>
 
         {/* Global Filter UI */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 bg-white/70 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/50 dark:border-zinc-800/80 px-4 py-2 rounded-[18px] shadow-xs">
-            <Calendar size={14} className="text-zinc-400" />
-            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-wider hidden sm:inline">ปีการศึกษา</label>
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/60 dark:border-zinc-800/80 px-4 py-2.5 rounded-2xl shadow-lg shadow-zinc-950/5 hover:border-emerald-400/50 dark:hover:border-emerald-600/50 transition-all group">
+            <Calendar size={15} className="text-emerald-500 group-hover:scale-110 transition-transform" />
+            <label className="text-[10px] font-black text-zinc-400 uppercase tracking-wider hidden sm:inline">
+              ปีการศึกษา
+            </label>
             <select
               value={globalAcademicYear}
               onChange={(e) => setGlobalAcademicYear(e.target.value)}
-              className="bg-transparent text-xs font-bold text-zinc-900 dark:text-zinc-100 focus:outline-hidden cursor-pointer"
+              className="bg-transparent text-xs font-black text-zinc-800 dark:text-zinc-100 focus:outline-hidden cursor-pointer"
             >
-              <option value="all">ทุกปี</option>
+              <option value="all" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">ทุกปี</option>
               {availableAcademicYears.map((year) => (
-                <option key={year} value={year}>{year}</option>
+                <option key={year} value={year} className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">{year}</option>
               ))}
             </select>
           </div>
-          <div className="flex items-center gap-2 bg-white/70 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/50 dark:border-zinc-800/80 px-4 py-2 rounded-[18px] shadow-xs">
-            <Filter size={14} className="text-zinc-400" />
-            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-wider hidden sm:inline">เทอม</label>
+
+          <div className="flex items-center gap-2.5 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/60 dark:border-zinc-800/80 px-4 py-2.5 rounded-2xl shadow-lg shadow-zinc-950/5 hover:border-emerald-400/50 dark:hover:border-emerald-600/50 transition-all group">
+            <Filter size={15} className="text-teal-500 group-hover:scale-110 transition-transform" />
+            <label className="text-[10px] font-black text-zinc-400 uppercase tracking-wider hidden sm:inline">
+              เทอม
+            </label>
             <select
               value={globalSemester}
               onChange={(e) => setGlobalSemester(e.target.value)}
-              className="bg-transparent text-xs font-bold text-zinc-900 dark:text-zinc-100 focus:outline-hidden cursor-pointer"
+              className="bg-transparent text-xs font-black text-zinc-800 dark:text-zinc-100 focus:outline-hidden cursor-pointer"
             >
-              <option value="all">ทุกเทอม</option>
+              <option value="all" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">ทุกเทอม</option>
               {availableSemesters.map((term) => (
-                <option key={term} value={term}>เทอม {term}</option>
+                <option key={term} value={term} className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white">เทอม {term}</option>
               ))}
             </select>
           </div>
@@ -1860,14 +1935,26 @@ function DVETeacherWorkspace() {
             className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4"
           >
             {/* List of Subjects */}
-            <div className="lg:col-span-1 bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-4 sm:p-5 shadow-sm space-y-4">
-              <div className="flex justify-between items-center">
-                <h3 className="text-sm sm:text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
-                  <BookOpen size={16} className="text-emerald-500 w-4 h-4 sm:w-5 sm:h-5" />
-                  รายวิชาทวิภาคีทั้งหมด
-                </h3>
+            <div className="lg:col-span-1 bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/60 dark:border-zinc-800/80 rounded-[32px] p-4 sm:p-5 shadow-xl shadow-zinc-950/5 space-y-4">
+              <div className="flex justify-between items-center px-1">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/25">
+                    <BookOpen size={18} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm sm:text-base font-black text-zinc-900 dark:text-white leading-tight">
+                      รายวิชาทวิภาคีทั้งหมด
+                    </h3>
+                    <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500">
+                      {filteredSubjects.length} รายวิชาในระบบ
+                    </p>
+                  </div>
+                </div>
                 <button
                   onClick={() => {
+                    const currentUserId = (session?.user as any)?.id || "";
+                    const currentUserName = session?.user?.name || "";
+                    const defaultTeacher = teachersList.find((t) => t.id === currentUserId) || teachersList[0];
                     setSubjectForm({
                       id: "",
                       code: "",
@@ -1876,6 +1963,8 @@ function DVETeacherWorkspace() {
                       curriculum: "ปวส.",
                       semester: "1/2569",
                       academicYear: "2569",
+                      teacherId: defaultTeacher?.id || currentUserId,
+                      teacherName: defaultTeacher?.name || currentUserName,
                       totalWeeks: "",
                       daysPerWeek: "",
                       hoursPerDay: "",
@@ -1885,21 +1974,21 @@ function DVETeacherWorkspace() {
                     setSubjectAllowedClassGroupRows([""]);
                     setIsSubjectModalOpen(true);
                   }}
-                  className="p-1.5 sm:px-3 sm:py-2 bg-linear-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-[14px] transition-all flex items-center gap-1.5 text-[10px] sm:text-xs font-black shadow-md shadow-blue-500/20 hover:shadow-blue-500/40 active:scale-95 border border-white/10"
+                  className="px-3 py-2 bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 text-white rounded-xl transition-all flex items-center gap-1.5 text-xs font-black shadow-md shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:scale-95 border-0 cursor-pointer"
                 >
-                  <Plus size={14} className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <Plus size={14} className="stroke-3" />
                   เพิ่มวิชา
                 </button>
               </div>
 
               {loadingSubjects ? (
                 <div className="flex justify-center py-12">
-                  <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 text-blue-500 animate-spin opacity-80" />
+                  <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 text-emerald-500 animate-spin opacity-80" />
                 </div>
               ) : filteredSubjects.length === 0 ? (
-                <div className="text-center py-10 px-4 flex flex-col items-center gap-3">
-                  <div className="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                    <BookOpen size={24} className="text-zinc-400" />
+                <div className="text-center py-12 px-4 flex flex-col items-center gap-3">
+                  <div className="w-16 h-16 rounded-3xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-800/50 flex items-center justify-center text-emerald-500">
+                    <BookOpen size={24} />
                   </div>
                   <div>
                     <h4 className="text-sm font-black text-zinc-700 dark:text-zinc-300">ไม่มีรายวิชา</h4>
@@ -1914,50 +2003,58 @@ function DVETeacherWorkspace() {
                     <div
                       key={sub.id}
                       onClick={() => handleManageUnits(sub)}
-                      className={`p-4 sm:p-5 rounded-[20px] border transition-all duration-300 cursor-pointer text-left group relative overflow-hidden ${activeSubject?.id === sub.id
-                          ? "bg-linear-to-br from-blue-500/10 to-cyan-500/5 border-blue-500/30 shadow-md shadow-blue-500/10 dark:from-blue-900/20 dark:to-cyan-900/10"
-                          : "bg-white/50 dark:bg-zinc-900/50 border-white/40 dark:border-zinc-800/80 hover:bg-white hover:border-blue-200 dark:hover:bg-zinc-800/80 dark:hover:border-blue-500/30 hover:shadow-sm"
+                      className={`p-4 sm:p-5 rounded-[24px] border transition-all duration-300 cursor-pointer text-left group relative overflow-hidden ${activeSubject?.id === sub.id
+                          ? "bg-linear-to-br from-emerald-500/10 via-teal-500/5 to-cyan-500/10 border-emerald-500/40 dark:border-emerald-500/30 shadow-lg shadow-emerald-500/10 dark:from-emerald-950/40 dark:via-zinc-900/80 dark:to-teal-950/30 scale-[1.01]"
+                          : "bg-white/60 dark:bg-zinc-900/60 border-zinc-200/70 dark:border-zinc-800/80 hover:bg-white/90 hover:border-emerald-300 dark:hover:bg-zinc-800/80 dark:hover:border-emerald-500/30 hover:shadow-md"
                         }`}
                     >
-                      {/* Active indicator */}
+                      {/* Active indicator bar */}
                       {activeSubject?.id === sub.id && (
-                        <div className="absolute top-0 left-0 w-1.5 h-full bg-linear-to-b from-blue-400 to-cyan-500 rounded-l-[20px]" />
+                        <div className="absolute top-0 left-0 w-1.5 h-full bg-linear-to-b from-emerald-400 via-teal-500 to-cyan-500 shadow-[0_0_12px_rgba(16,185,129,0.5)]" />
                       )}
 
                       <div className="flex justify-between items-start gap-2">
                         <div className="min-w-0">
-                          <span className="text-[9px] sm:text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800/50 px-2.5 py-0.5 rounded-lg inline-block mb-1.5">
-                            {sub.curriculum} • ภาคเรียน {sub.semester}
-                          </span>
-                          <h4 className="font-black text-zinc-950 dark:text-zinc-50 text-sm sm:text-base truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <span className="text-[10px] font-black text-emerald-700 dark:text-emerald-300 uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/60 dark:border-emerald-800/60 px-2.5 py-0.5 rounded-lg inline-flex items-center gap-1.5 shadow-xs">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                              {sub.curriculum} • ภาคเรียน {sub.semester}
+                            </span>
+                          </div>
+                          <h4 className="font-black text-zinc-900 dark:text-zinc-50 text-sm sm:text-base truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-tight">
                             {sub.name}
                           </h4>
-                          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-1 truncate font-medium">
-                            รหัส: <span className="font-bold text-zinc-700 dark:text-zinc-300">{sub.code}</span> <span className="text-zinc-300 dark:text-zinc-700 mx-1">•</span> แผนก: <span className="font-bold text-zinc-700 dark:text-zinc-300">{sub.department}</span>
+                          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-1 truncate font-medium flex items-center gap-1.5">
+                            <span>รหัส:</span>
+                            <span className="font-bold text-zinc-800 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-[10px]">
+                              {sub.code}
+                            </span>
+                            <span className="text-zinc-300 dark:text-zinc-700">•</span>
+                            <span className="truncate">แผนก: <span className="font-bold text-zinc-700 dark:text-zinc-300">{sub.department}</span></span>
                           </p>
                         </div>
                       </div>
 
                       {sub.allowedClassGroups && (Array.isArray(sub.allowedClassGroups) ? sub.allowedClassGroups.length > 0 : String(sub.allowedClassGroups).trim()) && (
-                        <div className="mt-3.5 flex items-center gap-1.5 text-[10px] sm:text-[11px] bg-teal-50 dark:bg-teal-950/30 w-fit px-2 py-1 rounded-lg border border-teal-100 dark:border-teal-900/50">
-                          <Users size={12} className="text-teal-600 dark:text-teal-400" />
-                          <p className="text-teal-700 dark:text-teal-300 font-bold line-clamp-1">
+                        <div className="mt-3 flex items-center gap-1.5 text-[10px] sm:text-[11px] bg-teal-50/80 dark:bg-teal-950/40 w-fit px-2.5 py-1 rounded-xl border border-teal-200/60 dark:border-teal-800/40 shadow-xs">
+                          <Users size={12} className="text-teal-600 dark:text-teal-400 shrink-0" />
+                          <p className="text-teal-800 dark:text-teal-200 font-bold line-clamp-1">
                             {formatClassGroupsText(sub.allowedClassGroups)}
                           </p>
                         </div>
                       )}
 
-                      {((session?.user?.role || "").toLowerCase() === "super_admin" || (session?.user?.role || "").toLowerCase() === "admin") && sub.teacherName && (
-                        <div className="mt-2 flex items-center gap-1.5 text-[10px] sm:text-[11px] bg-indigo-50 dark:bg-indigo-950/30 w-fit px-2 py-1 rounded-lg border border-indigo-100 dark:border-indigo-900/50">
-                          <User size={12} className="text-indigo-600 dark:text-indigo-400" />
-                          <p className="text-indigo-700 dark:text-indigo-300 font-bold truncate">
-                            ผู้สอน: {sub.teacherName}
+                      {sub.teacherName && (
+                        <div className="mt-2 flex items-center gap-1.5 text-[10px] sm:text-[11px] bg-indigo-50/80 dark:bg-indigo-950/40 w-fit px-2.5 py-1 rounded-xl border border-indigo-200/60 dark:border-indigo-800/40 shadow-xs">
+                          <User size={12} className="text-indigo-600 dark:text-indigo-400 shrink-0" />
+                          <p className="text-indigo-800 dark:text-indigo-200 font-bold truncate">
+                            ครูผู้สอน: {sub.teacherName}
                           </p>
                         </div>
                       )}
 
                       <div
-                        className="flex justify-end gap-2 mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800/80 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        className="flex justify-end gap-2 mt-3.5 pt-2.5 border-t border-zinc-100 dark:border-zinc-800/80 md:opacity-0 group-hover:opacity-100 transition-all duration-200"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <button
@@ -1967,6 +2064,8 @@ function DVETeacherWorkspace() {
                             );
                             setSubjectForm({
                               ...sub,
+                              teacherId: sub.teacherId || (session?.user as any)?.id || "",
+                              teacherName: sub.teacherName || session?.user?.name || "",
                               allowedClassGroups: allowedClassGroups.join(", "),
                             });
                             setSubjectAllowedClassGroupRows(
@@ -1974,10 +2073,10 @@ function DVETeacherWorkspace() {
                             );
                             setIsSubjectModalOpen(true);
                           }}
-                          className="p-1.5 sm:px-3 sm:py-1.5 bg-zinc-100 dark:bg-zinc-800/80 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 text-zinc-600 dark:text-zinc-400 rounded-xl transition-colors flex items-center gap-1.5 text-[10px] font-black"
+                          className="px-2.5 py-1 bg-white dark:bg-zinc-800 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-400 text-zinc-600 dark:text-zinc-400 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold border border-zinc-200/60 dark:border-zinc-700/60 cursor-pointer shadow-xs"
                         >
-                          <Edit2 size={12} />
-                          <span className="hidden sm:inline">แก้ไขวิชา</span>
+                          <Edit2 size={11} />
+                          <span>แก้ไขวิชา</span>
                         </button>
                         <Popconfirm
                           title="ลบรายวิชาทวิภาคี?"
@@ -1987,9 +2086,9 @@ function DVETeacherWorkspace() {
                           cancelText="ยกเลิก"
                           okButtonProps={{ danger: true }}
                         >
-                          <button className="p-1.5 sm:px-3 sm:py-1.5 bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-500 text-rose-600 dark:text-rose-400 hover:text-white rounded-xl transition-colors flex items-center gap-1.5 text-[10px] font-black">
-                            <Trash2 size={12} />
-                            <span className="hidden sm:inline">ลบ</span>
+                          <button className="px-2.5 py-1 bg-white dark:bg-zinc-800 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 text-rose-500 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold border border-rose-200/60 dark:border-rose-900/60 cursor-pointer shadow-xs">
+                            <Trash2 size={11} />
+                            <span>ลบ</span>
                           </button>
                         </Popconfirm>
                       </div>
@@ -2000,16 +2099,24 @@ function DVETeacherWorkspace() {
             </div>
 
             {/* List of Units inside active Subject */}
-            <div className="lg:col-span-2 bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-700 rounded-2xl p-4 sm:p-6 shadow-sm space-y-4">
+            <div className="lg:col-span-2 bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/60 dark:border-zinc-800/80 rounded-[32px] p-5 sm:p-6 shadow-xl shadow-zinc-950/5 space-y-6">
               {activeSubject ? (
                 <>
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center gap-4 border-b border-zinc-100 dark:border-zinc-800/80 pb-4">
                     <div>
-                      <span className="text-[10px] font-black text-emerald-500 uppercase">
-                        หน่วยการเรียนและไฟล์แนบ
-                      </span>
-                      <h3 className="text-base font-black text-zinc-900 dark:text-white mt-0.5 leading-tight">
-                        {activeSubject.name} ({activeSubject.code})
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/50 dark:border-emerald-800/50 px-2.5 py-0.5 rounded-md inline-block">
+                          หน่วยการเรียนและไฟล์แนบ
+                        </span>
+                        <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500">
+                          {units.length} หน่วยเรียน
+                        </span>
+                      </div>
+                      <h3 className="text-base sm:text-lg font-black text-zinc-900 dark:text-white mt-1.5 leading-tight flex items-center gap-2 flex-wrap">
+                        <span>{activeSubject.name}</span>
+                        <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-100/60 dark:bg-emerald-950/60 px-2 py-0.5 rounded-lg border border-emerald-200/60 dark:border-emerald-800/60">
+                          {activeSubject.code}
+                        </span>
                       </h3>
                     </div>
                     <button
@@ -2026,21 +2133,21 @@ function DVETeacherWorkspace() {
                         });
                         setIsUnitModalOpen(true);
                       }}
-                      className="p-1.5 sm:px-3 sm:py-2 bg-linear-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white rounded-[14px] transition-all flex items-center gap-1.5 text-[10px] sm:text-xs font-black shadow-md shadow-blue-500/20 hover:shadow-blue-500/40 active:scale-95 border border-white/10"
+                      className="px-3.5 py-2 bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 text-white rounded-xl transition-all flex items-center gap-1.5 text-xs font-black shadow-md shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:scale-95 border-0 cursor-pointer shrink-0"
                     >
-                      <Plus size={14} className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <Plus size={14} className="stroke-3" />
                       เพิ่มหน่วยเรียน
                     </button>
                   </div>
 
                   {loadingUnits ? (
-                    <div className="flex justify-center py-12">
-                      <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 text-blue-500 animate-spin opacity-80" />
+                    <div className="flex justify-center py-16">
+                      <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 text-emerald-500 animate-spin opacity-80" />
                     </div>
                   ) : units.length === 0 ? (
                     <div className="text-center py-16 px-4 flex flex-col items-center gap-3">
-                      <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800/80 flex items-center justify-center">
-                        <FolderOpen size={32} className="text-zinc-400" />
+                      <div className="w-20 h-20 rounded-3xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-800/50 flex items-center justify-center text-emerald-500">
+                        <FolderOpen size={32} />
                       </div>
                       <div>
                         <h4 className="text-base font-black text-zinc-700 dark:text-zinc-300">ยังไม่มีหน่วยเรียน</h4>
@@ -2054,9 +2161,9 @@ function DVETeacherWorkspace() {
                       {units.map((unit, index) => (
                         <div
                           key={unit.id}
-                          className="p-4 sm:p-5 rounded-[24px] bg-white/40 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800/80 relative group hover:bg-white dark:hover:bg-zinc-900 transition-all duration-300 hover:shadow-sm"
+                          className="p-5 sm:p-6 rounded-[24px] bg-white/80 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800/80 relative group hover:border-emerald-300 dark:hover:border-emerald-700/50 hover:shadow-lg hover:shadow-emerald-500/5 transition-all duration-300"
                         >
-                          <div className="absolute top-4 right-4 flex gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="absolute top-5 right-5 flex gap-2 md:opacity-0 group-hover:opacity-100 transition-all duration-200">
                             <button
                               onClick={() => {
                                 setUnitForm({
@@ -2071,9 +2178,9 @@ function DVETeacherWorkspace() {
                                 });
                                 setIsUnitModalOpen(true);
                               }}
-                              className="p-1.5 sm:px-3 sm:py-1.5 bg-zinc-100 dark:bg-zinc-800/80 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 text-zinc-600 dark:text-zinc-400 rounded-xl transition-colors flex items-center gap-1.5 text-[10px] font-black"
+                              className="px-2.5 py-1 bg-white dark:bg-zinc-800 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-400 text-zinc-600 dark:text-zinc-400 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold border border-zinc-200/60 dark:border-zinc-700/60 cursor-pointer shadow-xs"
                             >
-                              <Edit2 size={12} />
+                              <Edit2 size={11} />
                               <span className="hidden sm:inline">แก้ไข</span>
                             </button>
                             <Popconfirm
@@ -2083,24 +2190,24 @@ function DVETeacherWorkspace() {
                               cancelText="ยกเลิก"
                               okButtonProps={{ danger: true }}
                             >
-                              <button className="p-1.5 sm:px-3 sm:py-1.5 bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-500 text-rose-600 dark:text-rose-400 hover:text-white rounded-xl transition-colors flex items-center gap-1.5 text-[10px] font-black">
-                                <Trash2 size={12} />
+                              <button className="px-2.5 py-1 bg-white dark:bg-zinc-800 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 text-rose-500 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold border border-rose-200/60 dark:border-rose-900/60 cursor-pointer shadow-xs">
+                                <Trash2 size={11} />
                                 <span className="hidden sm:inline">ลบ</span>
                               </button>
                             </Popconfirm>
                           </div>
 
-                          <div className="flex items-start sm:items-center gap-3 sm:gap-4">
-                            <div className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-2xl bg-linear-to-br from-blue-500/10 to-cyan-500/10 text-blue-600 dark:text-blue-400 font-black text-sm sm:text-base border border-blue-500/20 shadow-inner">
+                          <div className="flex items-start gap-4">
+                            <div className="shrink-0 w-12 h-12 flex items-center justify-center rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 text-white font-black text-base shadow-md shadow-emerald-500/25 ring-2 ring-emerald-500/20">
                               #{unit.sequence}
                             </div>
                             <div className="flex-1 min-w-0 pr-16 md:pr-0">
-                              <h4 className="font-black text-zinc-950 dark:text-zinc-50 text-sm sm:text-base leading-tight">
+                              <h4 className="font-black text-zinc-900 dark:text-zinc-50 text-base leading-snug">
                                 {unit.title}
                               </h4>
-                              <div className="flex items-center gap-2 mt-2 flex-wrap">
+                              <div className="flex items-center gap-2 mt-2.5 flex-wrap">
                                 {unit.createdAt && (
-                                  <span className="text-[10px] sm:text-[11px] text-zinc-500 font-bold flex items-center gap-1">
+                                  <span className="text-[11px] text-zinc-600 dark:text-zinc-400 font-bold bg-zinc-100/80 dark:bg-zinc-800/80 px-2.5 py-0.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50 flex items-center gap-1">
                                     <Calendar size={12} className="text-zinc-400" />
                                     {new Date(unit.createdAt).toLocaleDateString("th-TH", {
                                       day: "numeric",
@@ -2110,13 +2217,13 @@ function DVETeacherWorkspace() {
                                   </span>
                                 )}
                                 {unit.studyMinutes > 0 && (
-                                  <span className="text-[10px] sm:text-[11px] text-amber-600 dark:text-amber-400 font-bold bg-amber-50 dark:bg-amber-950/30 px-2 py-0.5 rounded-md border border-amber-200/50 dark:border-amber-900/50 flex items-center gap-1">
-                                    <Clock size={12} /> {unit.studyMinutes} นาที
+                                  <span className="text-[11px] text-amber-700 dark:text-amber-300 font-black bg-amber-50 dark:bg-amber-950/40 px-2.5 py-0.5 rounded-lg border border-amber-200/60 dark:border-amber-800/60 flex items-center gap-1 shadow-xs">
+                                    <Clock size={12} className="text-amber-500" /> {unit.studyMinutes} นาที
                                   </span>
                                 )}
                                 {unit.dueDate && (
-                                  <span className="text-[10px] sm:text-[11px] text-rose-600 dark:text-rose-400 font-bold bg-rose-50 dark:bg-rose-950/30 px-2 py-0.5 rounded-md border border-rose-200/50 dark:border-rose-900/50 flex items-center gap-1">
-                                    <AlertCircle size={12} /> ส่ง: {new Date(unit.dueDate).toLocaleDateString("th-TH", {
+                                  <span className="text-[11px] text-rose-700 dark:text-rose-300 font-black bg-rose-50 dark:bg-rose-950/40 px-2.5 py-0.5 rounded-lg border border-rose-200/60 dark:border-rose-800/60 flex items-center gap-1 shadow-xs">
+                                    <AlertCircle size={12} className="text-rose-500" /> ส่ง: {new Date(unit.dueDate).toLocaleDateString("th-TH", {
                                       day: "numeric",
                                       month: "short",
                                       year: "numeric",
@@ -2129,10 +2236,28 @@ function DVETeacherWorkspace() {
 
                           {unit.content && (
                             <div className="mt-4 pl-0 sm:pl-16">
-                              <div className="p-3 bg-zinc-50/80 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800/80">
-                                <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 whitespace-pre-line leading-relaxed">
+                              <div className="p-3.5 bg-zinc-50/90 dark:bg-zinc-950/40 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60 border-l-4 border-l-emerald-500 shadow-xs">
+                                <p
+                                  className={`text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-line leading-relaxed font-medium transition-all ${
+                                    !expandedUnits[unit.id] ? "line-clamp-3" : ""
+                                  }`}
+                                >
                                   {unit.content}
                                 </p>
+                                {unit.content.length > 100 && (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setExpandedUnits((prev) => ({
+                                        ...prev,
+                                        [unit.id]: !prev[unit.id],
+                                      }))
+                                    }
+                                    className="mt-2 text-[11px] font-black text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:underline cursor-pointer border-0 bg-transparent p-0 flex items-center gap-1 transition-colors"
+                                  >
+                                    {expandedUnits[unit.id] ? "ย่อลง ▲" : "ดูเพิ่มเติม ▼"}
+                                  </button>
+                                )}
                               </div>
                             </div>
                           )}
@@ -2163,9 +2288,9 @@ function DVETeacherWorkspace() {
                                             href={file.url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50/50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-[11px] font-bold rounded-lg transition-colors border border-blue-200/50 dark:border-blue-800/50"
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50/60 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-950/60 text-[11px] font-bold rounded-xl transition-colors border border-emerald-200/60 dark:border-emerald-800/60 shadow-xs"
                                           >
-                                            <Download size={12} className="text-blue-500" />
+                                            <Download size={12} className="text-emerald-500" />
                                             {file.name}
                                           </a>
                                         ))}
@@ -2184,9 +2309,9 @@ function DVETeacherWorkspace() {
                                             href={file.url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 text-[11px] font-bold rounded-lg transition-colors border border-indigo-200/50 dark:border-indigo-800/50"
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-50/60 dark:bg-teal-950/30 text-teal-700 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-950/60 text-[11px] font-bold rounded-xl transition-colors border border-teal-200/60 dark:border-teal-800/60 shadow-xs"
                                           >
-                                            <ExternalLink size={12} className="text-indigo-500" />
+                                            <ExternalLink size={12} className="text-teal-500" />
                                             {file.name}
                                           </a>
                                         ))}
@@ -2223,40 +2348,93 @@ function DVETeacherWorkspace() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 15 }}
-            className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+            className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6"
           >
             {/* Subject Selector for quiz management */}
-            <div className="lg:col-span-1 bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-4 sm:p-5 shadow-sm space-y-4">
-              <h3 className="text-sm sm:text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
-                <Award size={16} className="text-emerald-500 w-4 h-4 sm:w-5 sm:h-5" />
-                เลือกรายวิชาเพื่อทำแบบทดสอบ
-              </h3>
-              <div className="space-y-2">
-                {filteredSubjects.map((s) => (
-                  <button
-                    key={s.id}
-                    onClick={() => {
-                      setQuizForm((prev) => ({ ...prev, subjectId: s.id }));
-                      handleLoadQuizzes(s.id);
-                    }}
-                    className={`w-full p-4 rounded-2xl text-left border transition-all ${quizForm.subjectId === s.id ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400 shadow-[0_4px_12px_rgb(16,185,129,0.12)] scale-[1.02]" : "bg-white/60 dark:bg-zinc-800/40 border-white/60 dark:border-zinc-800 hover:bg-white dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:scale-[1.01]"}`}
-                  >
-                    <span className="text-[10px] font-black opacity-80 block tracking-wider uppercase">{s.code}</span>
-                    <span className="font-black text-sm truncate block mt-0.5">{s.name}</span>
-                  </button>
-                ))}
+            <div className="lg:col-span-1 bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/60 dark:border-zinc-800/80 rounded-[32px] p-4 sm:p-5 shadow-xl shadow-zinc-950/5 space-y-4">
+              <div className="flex justify-between items-center px-1">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/25">
+                    <Award size={18} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm sm:text-base font-black text-zinc-900 dark:text-white leading-tight">
+                      เลือกรายวิชา
+                    </h3>
+                    <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500">
+                      เพื่อจัดการแบบทดสอบ ({filteredSubjects.length} วิชา)
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2.5">
+                {filteredSubjects.length === 0 ? (
+                  <div className="text-center py-8 text-zinc-400 dark:text-zinc-500 text-xs font-bold">
+                    ไม่พบรายวิชาในภาคเรียนนี้
+                  </div>
+                ) : (
+                  filteredSubjects.map((s) => {
+                    const isSelected = quizForm.subjectId === s.id;
+                    return (
+                      <button
+                        key={s.id}
+                        onClick={() => {
+                          setQuizForm((prev) => ({ ...prev, subjectId: s.id }));
+                          handleLoadQuizzes(s.id);
+                        }}
+                        className={`w-full p-4 rounded-[22px] text-left border transition-all duration-300 relative overflow-hidden cursor-pointer group ${
+                          isSelected
+                            ? "bg-linear-to-br from-emerald-500/10 via-teal-500/5 to-cyan-500/10 border-emerald-500/40 dark:border-emerald-500/30 shadow-lg shadow-emerald-500/10 scale-[1.01]"
+                            : "bg-white/60 dark:bg-zinc-900/60 border-zinc-200/70 dark:border-zinc-800/80 hover:bg-white/90 hover:border-emerald-300 dark:hover:bg-zinc-800/80 dark:hover:border-emerald-500/30 hover:shadow-md"
+                        }`}
+                      >
+                        {isSelected && (
+                          <div className="absolute top-0 left-0 w-1.5 h-full bg-linear-to-b from-emerald-400 via-teal-500 to-cyan-500 shadow-[0_0_12px_rgba(16,185,129,0.5)]" />
+                        )}
+                        <div className="flex items-center gap-2 mb-1">
+                          <span
+                            className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border ${
+                              isSelected
+                                ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200/60 dark:border-emerald-800/60"
+                                : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200/50 dark:border-zinc-700/50"
+                            }`}
+                          >
+                            {s.code}
+                          </span>
+                        </div>
+                        <h4
+                          className={`font-black text-sm truncate leading-snug transition-colors ${
+                            isSelected
+                              ? "text-emerald-950 dark:text-emerald-100"
+                              : "text-zinc-800 dark:text-zinc-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400"
+                          }`}
+                        >
+                          {s.name}
+                        </h4>
+                      </button>
+                    );
+                  })
+                )}
               </div>
             </div>
 
             {/* Quizzes List and Add Quiz */}
-            <div className="lg:col-span-2 bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-4 sm:p-6 shadow-sm space-y-4">
+            <div className="lg:col-span-2 bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/60 dark:border-zinc-800/80 rounded-[32px] p-5 sm:p-6 shadow-xl shadow-zinc-950/5 space-y-6">
               {quizForm.subjectId ? (
                 <>
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
-                      <Award size={16} className="text-emerald-500" />
-                      แบบทดสอบทั้งหมด
-                    </h3>
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-100 dark:border-zinc-800/80 pb-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/50 dark:border-emerald-800/50 px-2.5 py-0.5 rounded-md inline-block">
+                          แบบทดสอบและแบบวัดผล
+                        </span>
+                      </div>
+                      <h3 className="text-base sm:text-lg font-black text-zinc-900 dark:text-white mt-1">
+                        แบบทดสอบทั้งหมด ({quizzes.length} ชุด)
+                      </h3>
+                    </div>
+
                     <button
                       onClick={() => {
                         setQuizForm({
@@ -2275,87 +2453,123 @@ function DVETeacherWorkspace() {
                         });
                         setIsQuizModalOpen(true);
                       }}
-                      className="p-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-all flex items-center gap-1 text-xs font-black"
+                      className="px-4 py-2.5 bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 text-white rounded-xl transition-all flex items-center gap-1.5 text-xs font-black shadow-md shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:scale-95 border-0 cursor-pointer shrink-0"
                     >
-                      <Plus size={14} />
+                      <Plus size={14} className="stroke-3" />
                       สร้างแบบทดสอบ
                     </button>
                   </div>
 
                   {loadingQuizzes ? (
-                    <div className="flex justify-center py-12">
-                      <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+                    <div className="flex justify-center py-16">
+                      <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 text-emerald-500 animate-spin opacity-80" />
                     </div>
                   ) : quizzes.length === 0 ? (
-                    <div className="text-center py-12 text-zinc-400 dark:text-zinc-500 text-sm font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-2">
-                      <Award size={32} className="text-zinc-300 dark:text-zinc-700" />
-                      ยังไม่มีการสร้างแบบทดสอบสำหรับวิชานี้
+                    <div className="text-center py-16 px-4 flex flex-col items-center gap-3">
+                      <div className="w-16 h-16 rounded-3xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-800/50 flex items-center justify-center text-emerald-500">
+                        <Award size={28} />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-black text-zinc-700 dark:text-zinc-300">
+                          ยังไม่มีการสร้างแบบทดสอบ
+                        </h4>
+                        <p className="text-zinc-400 dark:text-zinc-500 text-[10px] sm:text-xs font-bold mt-1 max-w-[280px] mx-auto">
+                          วิชานี้ยังไม่มีชุดแบบทดสอบ คลิก "สร้างแบบทดสอบ" เพื่อเริ่มต้นสร้าง
+                        </p>
+                      </div>
                     </div>
                   ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       {quizzes.map((quiz) => (
                         <div
                           key={quiz.id}
-                          className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-800/40 border dark:border-zinc-800/60 rounded-xl gap-4 animate-fade-in"
+                          className="p-5 sm:p-6 rounded-[24px] bg-white/80 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800/80 relative group hover:border-emerald-300 dark:hover:border-emerald-700/50 hover:shadow-lg hover:shadow-emerald-500/5 transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-4"
                         >
-                          <div className="space-y-1.5 grow">
+                          <div className="space-y-2.5 min-w-0 flex-1">
                             <div className="flex flex-wrap items-center gap-2">
-                              <h4 className="font-black text-sm text-zinc-900 dark:text-white">
+                              <h4 className="font-black text-sm sm:text-base text-zinc-900 dark:text-zinc-50 leading-snug">
                                 {quiz.title}
                               </h4>
                               {quiz.quizType === "pretest" && (
-                                <span className="px-2 py-0.5 rounded-full text-[9px] font-black leading-none border bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20">
+                                <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-black border bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200/60 dark:border-amber-800/60 shadow-xs">
                                   ก่อนเรียน (Pre-test)
                                 </span>
                               )}
                               {quiz.quizType === "posttest" && (
-                                <span className="px-2 py-0.5 rounded-full text-[9px] font-black leading-none border bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20">
+                                <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-black border bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border-purple-200/60 dark:border-purple-800/60 shadow-xs">
                                   หลังเรียน (Post-test)
                                 </span>
                               )}
+                              {quiz.quizType === "midterm" && (
+                                <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-black border bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border-blue-200/60 dark:border-blue-800/60 shadow-xs">
+                                  สอบกลางภาค (Midterm)
+                                </span>
+                              )}
+                              {quiz.quizType === "final" && (
+                                <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-black border bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200/60 dark:border-rose-800/60 shadow-xs">
+                                  สอบปลายภาค (Final)
+                                </span>
+                              )}
                               {(!quiz.quizType || quiz.quizType === "general") && (
-                                <span className="px-2 py-0.5 rounded-full text-[9px] font-black leading-none border bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20">
+                                <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-black border bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200/50 dark:border-zinc-700/50 shadow-xs">
                                   ทั่วไป
                                 </span>
                               )}
                               <span
-                                className={`px-2 py-0.5 rounded-full text-[9px] font-black leading-none border ${quiz.isBuiltIn ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-blue-500/10 text-blue-600 border-blue-500/20"}`}
+                                className={`px-2.5 py-0.5 rounded-lg text-[10px] font-black border shadow-xs ${
+                                  quiz.isBuiltIn
+                                    ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200/60 dark:border-emerald-800/60"
+                                    : "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border-blue-200/60 dark:border-blue-800/60"
+                                }`}
                               >
                                 {quiz.isBuiltIn ? "🧠 แบบทดสอบในแอป" : "🔗 Google Form"}
                               </span>
                             </div>
-                            <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold text-zinc-400">
+
+                            <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold">
                               {!quiz.isBuiltIn ? (
-                                <span className="flex items-center gap-1">
-                                  <ExternalLink size={10} />
+                                <span className="flex items-center gap-1 text-blue-600 dark:text-blue-400 bg-blue-50/60 dark:bg-blue-950/30 px-2.5 py-0.5 rounded-lg border border-blue-200/40 dark:border-blue-800/40">
+                                  <ExternalLink size={12} />
                                   {quiz.googleFormUrl
-                                    ? quiz.googleFormUrl.substring(0, 45) + "..."
+                                    ? quiz.googleFormUrl.substring(0, 40) + "..."
                                     : "ไม่มีลิงก์"}
                                 </span>
                               ) : (
-                                <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-                                  <ClipboardList size={10} />
+                                <span className="flex items-center gap-1 text-emerald-700 dark:text-emerald-300 bg-emerald-50/80 dark:bg-emerald-950/40 px-2.5 py-0.5 rounded-lg border border-emerald-200/60 dark:border-emerald-800/60 shadow-xs font-black">
+                                  <ClipboardList size={12} className="text-emerald-500" />
                                   จำนวนคำถาม: {quiz.questions?.length || 0} ข้อ
                                 </span>
                               )}
                               {quiz.deadline && (
-                                <span className="flex items-center gap-1 text-amber-500">
-                                  <Calendar size={10} />
-                                  เดดไลน์: {quiz.deadline}
+                                <span className="flex items-center gap-1 text-rose-700 dark:text-rose-300 bg-rose-50/80 dark:bg-rose-950/40 px-2.5 py-0.5 rounded-lg border border-rose-200/60 dark:border-rose-800/60 shadow-xs font-black">
+                                  <Calendar size={12} className="text-rose-500" />
+                                  เดดไลน์: {new Date(quiz.deadline).toLocaleDateString("th-TH", {
+                                    day: "numeric",
+                                    month: "short",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </span>
+                              )}
+                              {quiz.maxScaleScore !== null && quiz.maxScaleScore !== undefined && (
+                                <span className="flex items-center gap-1 text-indigo-700 dark:text-indigo-300 bg-indigo-50/80 dark:bg-indigo-950/40 px-2.5 py-0.5 rounded-lg border border-indigo-200/60 dark:border-indigo-800/60 shadow-xs font-black">
+                                  <Award size={12} className="text-indigo-500" />
+                                  คะแนนเต็ม: {quiz.maxScaleScore} คะแนน
                                 </span>
                               )}
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-2 shrink-0">
-                            {/* View submissions — available for ALL quiz types */}
+                          <div className="flex items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-zinc-100 dark:border-zinc-800/60 justify-end">
+                            {/* View submissions */}
                             <button
                               onClick={() =>
                                 handleLoadSubmissions(quiz.id, quiz.title, !!quiz.isBuiltIn)
                               }
-                              className="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500 text-blue-600 hover:text-white border border-blue-500/20 hover:border-blue-500 rounded-lg text-xs font-black transition-all shadow-sm flex items-center gap-1"
+                              className="px-3.5 py-2 bg-blue-50 hover:bg-blue-500 text-blue-600 hover:text-white dark:bg-blue-950/50 dark:text-blue-300 dark:hover:bg-blue-600 dark:hover:text-white border border-blue-200/60 dark:border-blue-800/60 rounded-xl text-xs font-black transition-all shadow-xs flex items-center gap-1.5 cursor-pointer hover:shadow-md hover:shadow-blue-500/20"
                             >
-                              <Eye size={12} />
+                              <Eye size={13} />
                               ดูงานที่ส่ง
                             </button>
                             <button
@@ -2376,15 +2590,21 @@ function DVETeacherWorkspace() {
                                 });
                                 setIsQuizModalOpen(true);
                               }}
-                              className="px-3 py-1.5 bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 text-zinc-700 dark:text-zinc-300 rounded-lg text-xs font-black transition-colors"
+                              className="px-3 py-2 bg-white dark:bg-zinc-800 hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-950/40 dark:hover:text-emerald-400 text-zinc-600 dark:text-zinc-400 rounded-xl text-xs font-bold border border-zinc-200/60 dark:border-zinc-700/60 cursor-pointer shadow-xs flex items-center gap-1 transition-colors"
                             >
+                              <Edit2 size={12} />
                               แก้ไข
                             </button>
                             <Popconfirm
-                              title="ลบแบบทดสอบแบบประเมินนี้?"
+                              title="ลบแบบทดสอบนี้?"
+                              description="การลบแบบทดสอบจะลบข้อมูลผลคะแนนที่เกี่ยวข้อง ยืนยันใช่หรือไม่?"
                               onConfirm={() => handleDeleteQuiz(quiz.id, quizForm.subjectId)}
+                              okText="ยืนยันลบ"
+                              cancelText="ยกเลิก"
+                              okButtonProps={{ danger: true }}
                             >
-                              <button className="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg text-xs font-black transition-all">
+                              <button className="px-3 py-2 bg-white dark:bg-zinc-800 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40 dark:hover:text-rose-400 text-rose-500 rounded-xl text-xs font-bold border border-rose-200/60 dark:border-rose-900/60 cursor-pointer shadow-xs flex items-center gap-1 transition-colors">
+                                <Trash2 size={12} />
                                 ลบ
                               </button>
                             </Popconfirm>
@@ -2395,9 +2615,16 @@ function DVETeacherWorkspace() {
                   )}
                 </>
               ) : (
-                <div className="text-center py-20 text-zinc-400 dark:text-zinc-500 text-sm font-bold flex flex-col items-center justify-center gap-2">
-                  <Award size={48} className="text-zinc-200 dark:text-zinc-800" />
-                  กรุณาเลือกรายวิชาในแผงด้านซ้ายเพื่อดูหรือสร้างแบบทดสอบ Google Form
+                <div className="text-center py-20 px-4 text-zinc-400 dark:text-zinc-500 text-sm font-bold flex flex-col items-center justify-center gap-3">
+                  <div className="w-16 h-16 rounded-3xl bg-zinc-100 dark:bg-zinc-800/60 flex items-center justify-center text-zinc-400">
+                    <Award size={32} />
+                  </div>
+                  <div>
+                    <h4 className="text-zinc-600 dark:text-zinc-400 text-base mb-1">ยังไม่ได้เลือกรายวิชา</h4>
+                    <p className="text-xs font-medium max-w-[280px] mx-auto">
+                      กรุณาเลือกรายวิชาในแผงด้านซ้ายเพื่อดูหรือสร้างแบบทดสอบ
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
@@ -2414,18 +2641,19 @@ function DVETeacherWorkspace() {
             className="space-y-6"
           >
             {/* Filter control box */}
-            <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl border border-white/60 dark:border-zinc-800/80 rounded-[28px] p-5 sm:p-8 shadow-sm relative overflow-hidden group">
-              <div className="absolute -right-20 -top-20 w-64 h-64 bg-teal-400/10 rounded-full blur-3xl pointer-events-none group-hover:bg-teal-400/20 transition-all duration-1000" />
-              <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-blue-400/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/60 dark:border-zinc-800/80 rounded-[32px] p-5 sm:p-7 shadow-xl shadow-zinc-950/5 relative overflow-hidden group">
+              <div className="absolute -right-20 -top-20 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/15 transition-all duration-1000" />
+              <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 sm:gap-5 items-end relative z-10">
                 <div className="flex flex-col gap-1.5 lg:col-span-1">
-                  <label className="text-[11px] sm:text-xs font-black text-zinc-600 dark:text-zinc-400 tracking-wide">
-                    <span className="text-teal-500 mr-1">1.</span>เลือกรายวิชาเรียน
+                  <label className="text-[11px] sm:text-xs font-black text-zinc-700 dark:text-zinc-300 tracking-wide flex items-center">
+                    <span className="w-4 h-4 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-black inline-flex items-center justify-center mr-1.5 border border-emerald-500/20">1</span>
+                    เลือกรายวิชาเรียน
                   </label>
                   <Select
                     placeholder="-- เลือกวิชาเรียน --"
-                    className="w-full [&>.ant-select-selector]:h-12! [&>.ant-select-selector]:rounded-xl! [&>.ant-select-selector]:border-zinc-200! dark:[&>.ant-select-selector]:border-zinc-800! [&>.ant-select-selector]:bg-white/50! dark:[&>.ant-select-selector]:bg-zinc-950/50! [&>.ant-select-selector]:flex [&>.ant-select-selector]:items-center"
+                    className="w-full [&>.ant-select-selector]:h-12! [&>.ant-select-selector]:rounded-2xl! [&>.ant-select-selector]:border-zinc-200/80! dark:[&>.ant-select-selector]:border-zinc-800! [&>.ant-select-selector]:bg-white/60! dark:[&>.ant-select-selector]:bg-zinc-950/60! [&>.ant-select-selector]:flex [&>.ant-select-selector]:items-center [&>.ant-select-selector]:shadow-xs"
                     value={checkinFilter.subjectId || undefined}
                     onChange={(val) => {
                       const selectedSubject = subjects.find((s) => s.id === val);
@@ -2442,12 +2670,13 @@ function DVETeacherWorkspace() {
                 </div>
 
                 <div className="flex flex-col gap-1.5 lg:col-span-1">
-                  <label className="text-[11px] sm:text-xs font-black text-zinc-600 dark:text-zinc-400 tracking-wide">
-                    <span className="text-teal-500 mr-1">2.</span>เลือกหน่วยเรียน
+                  <label className="text-[11px] sm:text-xs font-black text-zinc-700 dark:text-zinc-300 tracking-wide flex items-center">
+                    <span className="w-4 h-4 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-black inline-flex items-center justify-center mr-1.5 border border-emerald-500/20">2</span>
+                    เลือกหน่วยเรียน
                   </label>
                   <Select
                     placeholder="-- เลือกหน่วยเรียน --"
-                    className="w-full [&>.ant-select-selector]:h-12! [&>.ant-select-selector]:rounded-xl! [&>.ant-select-selector]:border-zinc-200! dark:[&>.ant-select-selector]:border-zinc-800! [&>.ant-select-selector]:bg-white/50! dark:[&>.ant-select-selector]:bg-zinc-950/50! [&>.ant-select-selector]:flex [&>.ant-select-selector]:items-center"
+                    className="w-full [&>.ant-select-selector]:h-12! [&>.ant-select-selector]:rounded-2xl! [&>.ant-select-selector]:border-zinc-200/80! dark:[&>.ant-select-selector]:border-zinc-800! [&>.ant-select-selector]:bg-white/60! dark:[&>.ant-select-selector]:bg-zinc-950/60! [&>.ant-select-selector]:flex [&>.ant-select-selector]:items-center [&>.ant-select-selector]:shadow-xs"
                     value={activeStudyUnitId || undefined}
                     onChange={(val) => {
                       const nextUnit = units.find((unit) => getDveEntityId(unit) === val) || null;
@@ -2465,12 +2694,13 @@ function DVETeacherWorkspace() {
                 </div>
 
                 <div className="flex flex-col gap-1.5 lg:col-span-1">
-                  <label className="text-[11px] sm:text-xs font-black text-zinc-600 dark:text-zinc-400 tracking-wide">
-                    <span className="text-teal-500 mr-1">3.</span>เลือกห้องเรียน
+                  <label className="text-[11px] sm:text-xs font-black text-zinc-700 dark:text-zinc-300 tracking-wide flex items-center">
+                    <span className="w-4 h-4 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-black inline-flex items-center justify-center mr-1.5 border border-emerald-500/20">3</span>
+                    เลือกห้องเรียน
                   </label>
                   <Select
                     placeholder="-- เลือกห้องเรียน --"
-                    className="w-full [&>.ant-select-selector]:h-12! [&>.ant-select-selector]:rounded-xl! [&>.ant-select-selector]:border-zinc-200! dark:[&>.ant-select-selector]:border-zinc-800! [&>.ant-select-selector]:bg-white/50! dark:[&>.ant-select-selector]:bg-zinc-950/50! [&>.ant-select-selector]:flex [&>.ant-select-selector]:items-center"
+                    className="w-full [&>.ant-select-selector]:h-12! [&>.ant-select-selector]:rounded-2xl! [&>.ant-select-selector]:border-zinc-200/80! dark:[&>.ant-select-selector]:border-zinc-800! [&>.ant-select-selector]:bg-white/60! dark:[&>.ant-select-selector]:bg-zinc-950/60! [&>.ant-select-selector]:flex [&>.ant-select-selector]:items-center [&>.ant-select-selector]:shadow-xs"
                     value={checkinFilter.classGroupId || undefined}
                     onChange={(val) => {
                       setCheckinFilter((prev) => ({ ...prev, classGroupId: val }));
@@ -2489,20 +2719,21 @@ function DVETeacherWorkspace() {
 
                 <div className="flex flex-col gap-1.5 lg:col-span-1">
                   <div className="flex items-center justify-between">
-                    <label className="text-[11px] sm:text-xs font-black text-zinc-600 dark:text-zinc-400 tracking-wide truncate pr-2">
-                      <span className="text-teal-500 mr-1">4.</span>วันที่เช็คชื่อ
+                    <label className="text-[11px] sm:text-xs font-black text-zinc-700 dark:text-zinc-300 tracking-wide truncate pr-2 flex items-center">
+                      <span className="w-4 h-4 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-black inline-flex items-center justify-center mr-1.5 border border-emerald-500/20">4</span>
+                      วันที่เช็คชื่อ
                     </label>
                     <button
                       onClick={handleFetchActiveDates}
-                      className="text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 px-2 py-0.5 rounded-lg transition-colors flex items-center gap-1 border border-blue-200/50 dark:border-blue-500/30"
+                      className="text-[10px] font-black text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 px-2 py-0.5 rounded-lg transition-colors flex items-center gap-1 border border-blue-200/50 dark:border-blue-500/30 cursor-pointer"
                     >
-                      <Calendar size={12} />
+                      <Calendar size={11} />
                       <span className="hidden xl:inline">ดูประวัติ</span>
                     </button>
                   </div>
                   <DatePicker
                     format="DD/MM/BBBB"
-                    className="w-full h-12 border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/50 rounded-xl px-4 text-sm focus:outline-hidden focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 dark:focus:border-teal-500 dark:focus:ring-teal-500/20 transition-all dark:text-white font-bold"
+                    className="w-full h-12 border border-zinc-200/80 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/60 rounded-2xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold shadow-xs"
                     value={checkinFilter.date ? dayjs(checkinFilter.date) : null}
                     onChange={(date) => {
                       setCheckinFilter((prev) => ({ ...prev, date: date ? date.format("YYYY-MM-DD") : "" }));
@@ -2514,13 +2745,14 @@ function DVETeacherWorkspace() {
                 </div>
 
                 <div className="flex flex-col gap-1.5 lg:col-span-1">
-                  <label className="text-[11px] sm:text-xs font-black text-zinc-600 dark:text-zinc-400 tracking-wide truncate">
-                    <span className="text-teal-500 mr-1">5.</span>ค้นหาชื่อ / รหัส
+                  <label className="text-[11px] sm:text-xs font-black text-zinc-700 dark:text-zinc-300 tracking-wide truncate flex items-center">
+                    <span className="w-4 h-4 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-black inline-flex items-center justify-center mr-1.5 border border-emerald-500/20">5</span>
+                    ค้นหาชื่อ / รหัส
                   </label>
                   <input
                     type="text"
                     placeholder="🔍 พิมพ์ค้นหา..."
-                    className="w-full h-12 border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/50 rounded-xl px-4 text-sm focus:outline-hidden focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 dark:focus:border-teal-500 dark:focus:ring-teal-500/20 transition-all dark:text-white placeholder-zinc-400 font-bold"
+                    className="w-full h-12 border border-zinc-200/80 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/60 rounded-2xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white placeholder-zinc-400 font-bold shadow-xs"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -2530,9 +2762,9 @@ function DVETeacherWorkspace() {
                   <button
                     onClick={handleLoadRoster}
                     disabled={!checkinFilter.subjectId}
-                    className="w-full h-full bg-linear-to-r from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 disabled:from-zinc-200 disabled:to-zinc-300 disabled:text-zinc-400 dark:disabled:from-zinc-800 dark:disabled:to-zinc-800 text-white font-black rounded-xl text-sm transition-all flex items-center justify-center gap-2 shadow-md shadow-teal-500/20 hover:shadow-teal-500/40 cursor-pointer border border-white/10 active:scale-95"
+                    className="w-full h-full bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 disabled:from-zinc-200 disabled:to-zinc-300 disabled:text-zinc-400 dark:disabled:from-zinc-800 dark:disabled:to-zinc-800 text-white font-black rounded-2xl text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 cursor-pointer border-0 active:scale-95"
                   >
-                    <Search size={16} />
+                    <Search size={16} className="stroke-3" />
                     ดึงรายชื่อ
                   </button>
                 </div>
@@ -2620,17 +2852,27 @@ function DVETeacherWorkspace() {
 
             {/* 🔍 Individual Student Progress Analyzer */}
             {studentRoster.length > 0 && (
-              <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-4 sm:p-6 shadow-sm space-y-4">
-                <h3 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
-                  <User className="text-emerald-500" size={18} />
-                  ตรวจสอบข้อมูลการส่งงานรายบุคคล (งานที่ส่งและยังไม่ส่ง)
-                </h3>
-                <div className="flex flex-col sm:flex-row gap-4 items-center">
+              <div className="bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/60 dark:border-zinc-800/80 rounded-[32px] p-5 sm:p-7 shadow-xl shadow-zinc-950/5 space-y-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/25">
+                    <User size={18} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm sm:text-base font-black text-zinc-900 dark:text-white leading-tight">
+                      ตรวจสอบข้อมูลการส่งงานรายบุคคล (งานที่ส่งและยังไม่ส่ง)
+                    </h3>
+                    <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500">
+                      ดูประวัติการเข้าเรียน การส่งแบบฝึกหัด และคะแนนทดสอบของนักเรียนแต่ละคน
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 items-center">
                   <div className="flex-1 w-full">
                     <Select
                       showSearch
                       placeholder="-- ค้นหาหรือเลือกชื่อนักเรียนเพื่อดูประวัติงานทั้งหมด --"
-                      className="w-full h-11"
+                      className="w-full [&>.ant-select-selector]:h-12! [&>.ant-select-selector]:rounded-2xl! [&>.ant-select-selector]:border-zinc-200/80! dark:[&>.ant-select-selector]:border-zinc-800! [&>.ant-select-selector]:bg-white/60! dark:[&>.ant-select-selector]:bg-zinc-950/60! [&>.ant-select-selector]:flex [&>.ant-select-selector]:items-center [&>.ant-select-selector]:shadow-xs"
                       optionFilterProp="children"
                       value={selectedStudentId || undefined}
                       onChange={(val) => handleSelectStudentProgress(val)}
@@ -2646,7 +2888,7 @@ function DVETeacherWorkspace() {
                   {selectedStudentId && (
                     <button
                       onClick={() => handleClearSelectedStudentProgress()}
-                      className="px-4 py-2 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-850/50 text-zinc-500 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                      className="px-5 py-3 border border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-800/60 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-2xl text-xs font-black transition-all cursor-pointer shadow-xs"
                     >
                       ล้างการเลือก
                     </button>
@@ -2654,21 +2896,21 @@ function DVETeacherWorkspace() {
                 </div>
 
                 {loadingStudentProgress ? (
-                  <div className="flex justify-center py-8">
+                  <div className="flex justify-center py-10">
                     <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
                   </div>
                 ) : selectedStudent ? (
-                  <div className="border dark:border-zinc-800 rounded-xl p-4 space-y-4 bg-zinc-50/50 dark:bg-zinc-950/20">
+                  <div className="border border-emerald-500/20 dark:border-emerald-500/20 rounded-[24px] p-5 sm:p-6 space-y-5 bg-linear-to-br from-emerald-500/5 via-white/80 to-teal-500/5 dark:from-emerald-950/20 dark:via-zinc-900/60 dark:to-teal-950/20 shadow-xs">
                     {/* Student Info Profile Header */}
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b dark:border-zinc-800">
-                      <div className="flex items-center gap-3">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-zinc-200/60 dark:border-zinc-800/80">
+                      <div className="flex items-center gap-3.5">
                         {selectedStudent.image ? (
                           <img
                             src={selectedStudent.image}
-                            className="w-12 h-12 rounded-full object-cover ring-2 ring-emerald-500/20 shadow-sm"
+                            className="w-14 h-14 rounded-2xl object-cover ring-2 ring-emerald-500/30 shadow-md"
                           />
                         ) : (
-                          <div className="w-12 h-12 rounded-full bg-linear-to-br from-emerald-400 to-teal-500 text-white flex items-center justify-center font-black text-lg shadow-sm">
+                          <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 text-white flex items-center justify-center font-black text-xl shadow-md shadow-emerald-500/25">
                             {selectedStudent.name?.charAt(0) || "U"}
                           </div>
                         )}
@@ -2676,37 +2918,37 @@ function DVETeacherWorkspace() {
                           <h4 className="font-black text-zinc-900 dark:text-white text-base leading-tight">
                             {selectedStudent.name}
                           </h4>
-                          <p className="text-xs text-zinc-500 dark:text-zinc-450 font-bold mt-1">
-                            รหัสนักศึกษา: {selectedStudent.studentIdNum} • กลุ่ม: {standardizeClassGroupName(selectedStudent.classGroupId)}
+                          <p className="text-xs text-zinc-500 dark:text-zinc-400 font-bold mt-1">
+                            รหัสนักศึกษา: <span className="font-black text-zinc-700 dark:text-zinc-200">{selectedStudent.studentIdNum}</span> • กลุ่ม: <span className="font-black text-emerald-600 dark:text-emerald-400">{standardizeClassGroupName(selectedStudent.classGroupId)}</span>
                           </p>
                         </div>
                       </div>
 
                       {/* Overall Task Completion Badge */}
-                      <div className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-4 py-2 rounded-xl text-center shrink-0">
-                        <span className="block text-[10px] font-black uppercase tracking-wider opacity-85">
+                      <div className="bg-white/80 dark:bg-zinc-900/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80 px-5 py-3 rounded-2xl text-center shrink-0 shadow-xs">
+                        <span className="block text-[10px] font-black uppercase tracking-wider text-zinc-400">
                           ส่งการบ้านสำเร็จ
                         </span>
-                        <span className="text-xl font-black tabular-nums">
+                        <span className="text-2xl font-black tabular-nums text-emerald-600 dark:text-emerald-400">
                           {selectedStudentLogs.filter((l) => l.assignmentStatus === "Submitted").length} / {units.length}
                         </span>
-                        <span className="text-xs font-bold block mt-0.5">
+                        <span className="text-[10px] font-bold block mt-0.5 text-zinc-400">
                           หน่วยการเรียน
                         </span>
                       </div>
                     </div>
 
                     {/* Unit Breakdown Checklist */}
-                    <div className="space-y-2">
-                      <h4 className="text-xs font-black text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">
+                    <div className="space-y-3">
+                      <h4 className="text-[11px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
                         รายงานการส่งงานรายหน่วยเรียน
                       </h4>
                       {units.length === 0 ? (
-                        <p className="text-xs text-zinc-400 text-center py-4 font-bold">
+                        <p className="text-xs text-zinc-400 text-center py-6 font-bold">
                           ยังไม่มีหน่วยเรียนในวิชานี้
                         </p>
                       ) : (
-                        <div className="grid gap-2">
+                        <div className="grid gap-2.5">
                           {units.map((unit) => {
                             const record = selectedStudentLogs.find((l) => l.unitId === unit.id);
                             const isSubmitted = record?.assignmentStatus === "Submitted";
@@ -2723,14 +2965,14 @@ function DVETeacherWorkspace() {
                             return (
                               <div
                                 key={unit.id}
-                                className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-xl gap-3 text-xs"
+                                className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3.5 bg-white/90 dark:bg-zinc-900/90 border border-zinc-200/70 dark:border-zinc-800 rounded-2xl gap-3 text-xs shadow-xs hover:border-emerald-300 dark:hover:border-emerald-800 transition-colors"
                               >
                                 <div className="space-y-1 min-w-0 flex-1">
                                   <div className="flex items-center gap-2">
-                                    <span className="px-1.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-[10px] font-black text-zinc-500">
+                                    <span className="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded-md text-[10px] font-black text-zinc-600 dark:text-zinc-300">
                                       หน่วยที่ {unit.sequence}
                                     </span>
-                                    <span className="font-bold text-zinc-800 dark:text-zinc-200 truncate">
+                                    <span className="font-black text-zinc-900 dark:text-zinc-100 truncate">
                                       {unit.title}
                                     </span>
                                   </div>
@@ -2759,15 +3001,15 @@ function DVETeacherWorkspace() {
                                   {/* Status Indicator */}
                                   <div>
                                     {isSubmitted ? (
-                                      <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                      <span className="px-3 py-1 rounded-xl text-[10px] font-black bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/60 shadow-xs">
                                         ส่งงานแล้ว {record.score ? `(${record.score} คะแนน)` : ""}
                                       </span>
                                     ) : isPending ? (
-                                      <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                      <span className="px-3 py-1 rounded-xl text-[10px] font-black bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60 shadow-xs">
                                         ค้างส่ง
                                       </span>
                                     ) : (
-                                      <span className="px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                                      <span className="px-3 py-1 rounded-xl text-[10px] font-black bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200/60 dark:border-rose-800/60 shadow-xs">
                                         ยังไม่ได้ส่ง
                                       </span>
                                     )}
@@ -2779,9 +3021,9 @@ function DVETeacherWorkspace() {
                                       href={record.imageUrl}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-500/10 text-emerald-605 dark:text-emerald-400 hover:bg-emerald-500/15 border border-emerald-500/20 text-[10px] font-black rounded-lg transition-colors cursor-pointer"
+                                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 border border-emerald-200/60 dark:border-emerald-800/60 text-[10px] font-black rounded-xl transition-colors cursor-pointer shadow-xs"
                                     >
-                                      <Eye size={10} />
+                                      <Eye size={12} />
                                       <span>เปิดดูงาน</span>
                                     </a>
                                   )}
@@ -2795,9 +3037,9 @@ function DVETeacherWorkspace() {
                                           handleDeleteAttendanceRecord(record.id || record._id?.toString());
                                         }
                                       }}
-                                      className="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white border border-rose-500/20 text-[10px] font-black rounded-lg transition-colors cursor-pointer"
+                                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-500 text-rose-600 hover:text-white border border-rose-200/60 dark:border-rose-900/60 text-[10px] font-black rounded-xl transition-colors cursor-pointer shadow-xs"
                                     >
-                                      <Trash2 size={10} />
+                                      <Trash2 size={12} />
                                       <span>ลบ</span>
                                     </button>
                                   )}
@@ -2814,26 +3056,35 @@ function DVETeacherWorkspace() {
             )}
 
             {/* Student Roster attendance checkboxes sheet */}
-            <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-4 sm:p-6 shadow-sm">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 border-b-2 border-zinc-100 dark:border-zinc-800 pb-4">
+            <div className="bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/60 dark:border-zinc-800/80 rounded-[32px] p-5 sm:p-7 shadow-xl shadow-zinc-950/5 space-y-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-100 dark:border-zinc-800/80 pb-5">
                 <div className="space-y-2">
-                  <h3 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
-                    <ClipboardList size={18} className="text-emerald-500" />
-                    บัญชีลงเวลาการเข้าเรียนและส่งงานนักศึกษา
-                  </h3>
-                  <div className="flex flex-wrap items-center gap-4 text-xs font-bold mt-1">
-                    <span className="text-zinc-500">
-                      วันที่เช็ค: {formatThaiDateDisplay(checkinFilter.date)}
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/25">
+                      <ClipboardList size={18} />
+                    </div>
+                    <div>
+                      <h3 className="text-base sm:text-lg font-black text-zinc-900 dark:text-white leading-tight">
+                        บัญชีลงเวลาการเข้าเรียนและส่งงานนักศึกษา
+                      </h3>
+                      <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 mt-0.5">
+                        ระบบ Auto Check-in และบันทึกผลการเข้าเรียนตามหน่วยการสอน
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-3 text-xs font-bold pt-2">
+                    <span className="text-zinc-600 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 px-3 py-1 rounded-xl border border-zinc-200/60 dark:border-zinc-700/60">
+                      📅 วันที่เช็ค: {formatThaiDateDisplay(checkinFilter.date)}
                     </span>
                     {activeStudyUnit && (
-                      <span className="text-zinc-500">
-                        หน่วยการสอน: หน่วยที่ {activeStudyUnit.sequence || "-"}:{" "}
-                        {activeStudyUnit.title}
+                      <span className="text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 px-3 py-1 rounded-xl border border-emerald-200/60 dark:border-emerald-800/60">
+                        📖 หน่วยการสอน: หน่วยที่ {activeStudyUnit.sequence || "-"}: {activeStudyUnit.title}
                       </span>
                     )}
                     {activeStudyUnit && (
-                      <span className="text-blue-500 dark:text-blue-400">
-                        แบบทดสอบในหน่วยนี้:{" "}
+                      <span className="text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/50 px-3 py-1 rounded-xl border border-blue-200/60 dark:border-blue-800/60">
+                        📝 แบบทดสอบในหน่วยนี้:{" "}
                         {activeUnitQuizzes.length > 0
                           ? activeUnitQuizzes.map((quiz) => quiz.title).join(", ")
                           : "ยังไม่มีแบบทดสอบที่ผูกกับหน่วยนี้"}
@@ -2841,20 +3092,20 @@ function DVETeacherWorkspace() {
                     )}
 
                     {studentRoster.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
-                        <label className="flex items-center gap-2 text-blue-600 dark:text-blue-400 cursor-pointer select-none border border-blue-500/20 bg-blue-500/5 px-2.5 py-1 rounded-lg">
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        <label className="flex items-center gap-2 text-blue-700 dark:text-blue-300 cursor-pointer select-none border border-blue-200/60 dark:border-blue-800/60 bg-blue-50/80 dark:bg-blue-950/40 px-3 py-1.5 rounded-xl text-xs font-black shadow-xs transition-colors hover:bg-blue-100">
                           <input
                             type="checkbox"
-                            className="accent-blue-500 w-3.5 h-3.5"
+                            className="accent-blue-500 w-4 h-4 rounded cursor-pointer"
                             checked={showOnlyInternship}
                             onChange={(e) => setShowOnlyInternship(e.target.checked)}
                           />
                           แสดงเฉพาะนักศึกษาทวิภาคี (DVE)
                         </label>
-                        <label className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 cursor-pointer select-none border border-emerald-500/20 bg-emerald-500/5 px-2.5 py-1 rounded-lg">
+                        <label className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300 cursor-pointer select-none border border-emerald-200/60 dark:border-emerald-800/60 bg-emerald-50/80 dark:bg-emerald-950/40 px-3 py-1.5 rounded-xl text-xs font-black shadow-xs transition-colors hover:bg-emerald-100">
                           <input
                             type="checkbox"
-                            className="accent-emerald-500 w-3.5 h-3.5"
+                            className="accent-emerald-500 w-4 h-4 rounded cursor-pointer"
                             checked={showOnlyAttended}
                             onChange={(e) => setShowOnlyAttended(e.target.checked)}
                           />
@@ -2863,65 +3114,14 @@ function DVETeacherWorkspace() {
                       </div>
                     )}
                   </div>
-                  {/* {units.length > 0 && (
-                    <div className="mt-3 text-xs text-zinc-500 dark:text-zinc-400 space-y-2">
-                      <span className="font-black uppercase tracking-wider">หน่วยการสอน:</span>
-                      <div className="flex flex-wrap gap-2">
-                        {units.map((unit: any, idx: number) => (
-                          <span
-                            key={unit.id || unit._id || idx}
-                            className="inline-flex items-center gap-1 rounded-full border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 px-3 py-1 text-[10px] font-black text-zinc-700 dark:text-zinc-300"
-                          >
-                            หน่วยที่ {unit.sequence || idx + 1}: {unit.title}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )} */}
-                  {/* {allUnitFiles.length > 0 && (
-                    <div className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
-                      <div className="font-black uppercase tracking-wider mb-2">สื่อดาวน์โหลด:</div>
-                      <div className="flex flex-wrap gap-2">
-                        {allUnitFiles.map((file: any, idx: number) => (
-                          <a
-                            key={`${file.unitId || file.unitSequence}-${idx}`}
-                            href={file.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 rounded-full border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 px-3 py-1 text-[10px] font-black text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                          >
-                            <Download size={12} />
-                            หน่วยที่ {file.unitSequence || "-"}: {file.unitTitle}{" "}
-                            {file.name ? `- ${file.name}` : "ดาวน์โหลดสื่อ"}
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  )} */}
                 </div>
 
                 {studentRoster.length > 0 && (
-                  <div className="flex gap-2 flex-wrap w-full sm:w-auto">
-                    {/* <Popconfirm
-                      title="คุณแน่ใจหรือไม่ว่าต้องการล้างข้อมูลการเช็คชื่อทั้งหมดในวันนี้สำหรับห้องเรียนนี้?"
-                      onConfirm={handleClearAttendance}
-                      okText="ใช่, ลบเลย"
-                      cancelText="ยกเลิก"
-                      okButtonProps={{ danger: true }}
-                    >
-                      <button
-                        type="button"
-                        disabled={clearingAttendance}
-                        className="px-6 py-2.5 bg-rose-600 hover:bg-rose-700 disabled:bg-zinc-200 text-white text-xs font-black rounded-xl transition-all shadow-md active:scale-95 cursor-pointer flex items-center gap-1.5"
-                      >
-                        {clearingAttendance ? "กำลังลบ..." : "🗑️ ล้างข้อมูลการเข้าเรียนวันนี้"}
-                      </button>
-                    </Popconfirm> */}
-
+                  <div className="flex gap-2 flex-wrap w-full sm:w-auto shrink-0 pt-2 sm:pt-0">
                     <button
                       onClick={handleBulkSaveAttendance}
                       disabled={savingAttendance}
-                      className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl transition-all shadow-md hover:scale-[1.01] active:scale-95 cursor-pointer"
+                      className="px-6 py-3 bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 disabled:from-zinc-300 disabled:to-zinc-400 text-white text-xs font-black rounded-xl transition-all shadow-md shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:scale-95 cursor-pointer border-0 flex items-center gap-1.5"
                     >
                       {savingAttendance ? "กำลังบันทึก..." : "✓ บันทึกเวลาเรียน & ผลงานนักศึกษา"}
                     </button>
@@ -2929,135 +3129,57 @@ function DVETeacherWorkspace() {
                 )}
               </div>
 
-              {/* {attendanceLogs.length > 0 && (
-                <div className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-sm">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                    <div>
-                      <h4 className="text-sm font-black text-zinc-900 dark:text-white">
-                        รายการงานที่นักเรียนส่งแล้ว
-                      </h4>
-                      <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                        แสดงข้อมูลการส่งงานทั้งหมดตามวันนี้และวิชาที่เลือก
-                        รวมทั้งหน่วยการสอนและสื่อดาวน์โหลด
-                      </p>
-                    </div>
-                    <span className="text-xs font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                      {attendanceLogs.length} รายการ
-                    </span>
-                  </div>
-                  <div className="grid gap-3">
-                    {attendanceLogs.map((att: any) => (
-                      <div
-                        key={att.id || `${att.studentId}-${att.unitId}-${att.score}`}
-                        className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 p-4"
-                      >
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                          <div className="space-y-1">
-                            <div className="text-[11px] font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                              หน่วยการสอน
-                            </div>
-                            <div className="text-sm font-black text-zinc-900 dark:text-white">
-                              หน่วยที่ {att.unitSequence || "-"}:{" "}
-                              {att.unitTitle || "ไม่ระบุชื่อหน่วย"}
-                            </div>
-                          </div>
-                          <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                            วันที่: {formatThaiDateDisplay(att.date || checkinFilter.date)} • กลุ่ม:{" "}
-                            {standardizeClassGroupName(att.classGroupId) || "-"}
-                          </div>
-                        </div>
-
-                        <div className="mt-4 grid gap-3 sm:grid-cols-[1.5fr_1fr]">
-                          <div className="space-y-2">
-                            <div className="text-[11px] uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                              นักศึกษา
-                            </div>
-                            <div className="text-sm font-black text-zinc-900 dark:text-white">
-                              {att.studentName} ({att.studentIdNum})
-                            </div>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="text-[11px] uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                              สถานะงาน / คะแนน
-                            </div>
-                            <div className="text-sm font-black text-zinc-900 dark:text-white">
-                              {att.assignmentStatus || "ไม่มีข้อมูล"} • {att.status || "-"}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                          <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                            คะแนน / หมายเหตุ: {att.score || "-"}
-                          </div>
-                          {att.imageUrl ? (
-                            <a
-                              href={att.imageUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 px-3 py-1.5 text-[11px] font-black hover:bg-emerald-500/15 transition-all"
-                            >
-                              ดูสื่อที่ส่ง
-                            </a>
-                          ) : (
-                            <span className="text-xs text-zinc-400">ยังไม่มีสื่อประกอบ</span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )} */}
-
               {loadingRoster ? (
                 <div className="flex justify-center py-20">
                   <Loader2 className="w-12 h-12 text-emerald-500 animate-spin" />
                 </div>
               ) : studentRoster.length === 0 ? (
-                <div className="text-center py-20 text-zinc-400 dark:text-zinc-500 text-sm font-bold border border-dashed dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-3 max-w-lg mx-auto">
-                  <Users size={36} className="text-zinc-200 dark:text-zinc-800" />
+                <div className="text-center py-16 px-4 flex flex-col items-center justify-center gap-3 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-[28px] bg-zinc-50/50 dark:bg-zinc-900/20 max-w-lg mx-auto">
+                  <div className="w-16 h-16 rounded-3xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                    <Users size={32} />
+                  </div>
                   <div className="space-y-1">
                     <p className="text-zinc-800 dark:text-zinc-200 text-sm font-black">
                       ไม่พบข้อมูลนักเรียน
                     </p>
-                    <p className="text-zinc-400 font-medium text-xs leading-relaxed">
-                      กรุณาเลือกวิชาเรียนและกดยืนยันเพื่อดึงบัญชีรายชื่อนักศึกษาในแผนกหรือห้องเรียนนี้ครับ
+                    <p className="text-zinc-400 font-medium text-xs leading-relaxed max-w-[280px] mx-auto">
+                      กรุณาเลือกวิชาเรียนและกดยืนยันเพื่อดึงบัญชีรายชื่อนักศึกษาในแผนกหรือห้องเรียนนี้
                     </p>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-6">
                   {displayedRoster.length === 0 ? (
-                    <div className="text-center py-12 text-zinc-400 dark:text-zinc-500 font-bold text-xs border border-dashed dark:border-zinc-800 rounded-2xl">
+                    <div className="text-center py-14 px-4 text-zinc-400 dark:text-zinc-500 font-bold text-xs border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-[24px] bg-zinc-50/50 dark:bg-zinc-900/20">
                       ยังไม่มีนักเรียนที่ผ่านการนับเวลาเรียน (Auto Check-in) ในวันนี้
                     </div>
                   ) : (
                     <>
                       {/* Desktop Table View (hidden on mobile, visible on sm and up) */}
-                      <div className="hidden sm:block overflow-x-auto">
+                      <div className="hidden sm:block overflow-x-auto rounded-[24px] border border-zinc-200/70 dark:border-zinc-800/80 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md">
                         <table className="w-full text-left text-xs border-collapse">
                           <thead>
-                            <tr className="border-b border-zinc-100 dark:border-zinc-800 text-zinc-400 font-bold uppercase tracking-wider">
-                              <th className="py-4 px-2">รหัสประจำตัว</th>
-                              <th className="py-4 px-2">ข้อมูลนักศึกษา / ประวัติงาน</th>
-                              <th className="py-4 px-2 text-center">ห้องเรียน</th>
-                              <th className="py-4 px-2 text-center">สถานะเวลาเรียน</th>
-                              <th className="py-4 px-2 text-center">การส่งการบ้าน / งาน</th>
+                            <tr className="border-b border-zinc-200/70 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-950/60 text-zinc-500 dark:text-zinc-400 font-black text-[11px] uppercase tracking-wider">
+                              <th className="py-4 px-3">รหัสประจำตัว</th>
+                              <th className="py-4 px-3">ข้อมูลนักศึกษา / ประวัติงาน</th>
+                              <th className="py-4 px-3 text-center">ห้องเรียน</th>
+                              <th className="py-4 px-3 text-center">สถานะเวลาเรียน</th>
+                              <th className="py-4 px-3 text-center">การส่งการบ้าน / งาน</th>
                               {activeUnitQuizzes.length > 0 ? (
                                 activeUnitQuizzes.map((quiz) => (
-                                  <th key={quiz.id} className="py-4 px-2 text-center" title={quiz.title}>
+                                  <th key={quiz.id} className="py-4 px-3 text-center" title={quiz.title}>
                                     <div className="truncate max-w-[150px] mx-auto">
                                       {quiz.quizType === "pretest" ? "ก่อนเรียน" : quiz.quizType === "posttest" ? "หลังเรียน" : quiz.title}
                                     </div>
                                   </th>
                                 ))
                               ) : (
-                                <th className="py-4 px-2 text-center text-zinc-400 font-normal">ไม่มีแบบทดสอบ</th>
+                                <th className="py-4 px-3 text-center text-zinc-400 font-normal">ไม่มีแบบทดสอบ</th>
                               )}
-                              <th className="py-4 px-2 text-right">คะแนน / หมายเหตุ</th>
+                              <th className="py-4 px-3 text-right">คะแนน / จัดการ</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
+                          <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
                             {displayedRoster.map((student) => {
                               const rec = attendanceRecords[student.id] || {
                                 status: "Absent" as const,
@@ -3072,28 +3194,30 @@ function DVETeacherWorkspace() {
                               return (
                                 <tr
                                   key={student.id}
-                                  className="text-zinc-700 dark:text-zinc-300 font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850/50"
+                                  className="text-zinc-700 dark:text-zinc-300 font-bold hover:bg-emerald-50/30 dark:hover:bg-emerald-950/10 transition-colors"
                                 >
-                                  <td className="py-4 px-2 font-medium text-xs tracking-wider">
-                                    {maskSensitiveData(student.studentIdNum)}
+                                  <td className="py-4 px-3 font-bold text-xs tracking-wider">
+                                    <span className="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-md text-zinc-600 dark:text-zinc-400">
+                                      {maskSensitiveData(student.studentIdNum)}
+                                    </span>
                                   </td>
-                                  <td className="py-4 px-2">
+                                  <td className="py-4 px-3">
                                     <div className="flex flex-col gap-2.5">
                                       <div className="flex items-center gap-3">
                                         <Link href={`/dashboard/profile/${student.id}`} className="shrink-0" onClick={(e) => e.stopPropagation()}>
                                           {student.image ? (
                                             <img
                                               src={student.image}
-                                              className="w-9 h-9 rounded-full object-cover ring-2 ring-zinc-100 dark:ring-zinc-800 shadow-sm"
+                                              className="w-10 h-10 rounded-2xl object-cover ring-2 ring-emerald-500/20 shadow-sm"
                                             />
                                           ) : (
-                                            <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-400">
-                                              <User size={14} />
+                                            <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 text-white flex items-center justify-center font-black shadow-sm">
+                                              {student.name?.charAt(0) || "U"}
                                             </div>
                                           )}
                                         </Link>
-                                        <div className="flex flex-col gap-1">
-                                          <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100 truncate">
+                                        <div className="flex flex-col gap-0.5">
+                                          <span className="font-black text-sm text-zinc-900 dark:text-zinc-100 truncate">
                                             {student.name}
                                           </span>
                                         </div>
@@ -3101,18 +3225,18 @@ function DVETeacherWorkspace() {
 
                                       {/* ประวัติการส่งงานที่ผ่านมา */}
                                       {studentSubmissionsById[student.id]?.length > 0 && (
-                                        <div className="flex flex-wrap gap-1.5 mt-1 bg-zinc-50 dark:bg-zinc-850/50 p-2 rounded-lg border border-zinc-100 dark:border-zinc-800">
+                                        <div className="flex flex-wrap gap-1.5 mt-1 bg-white/80 dark:bg-zinc-900/60 p-2 rounded-xl border border-zinc-200/60 dark:border-zinc-800/80 shadow-2xs">
                                           {studentSubmissionsById[student.id].map((att, idx) => {
                                             const isDone = att.assignmentStatus === "Submitted";
                                             const isPending = att.assignmentStatus === "Pending";
                                             return (
                                               <div
                                                 key={`${att.unitId || idx}-${att.studentId}-${att.date}`}
-                                                className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[9px] font-black shadow-xs ${isDone
-                                                  ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-400"
+                                                className={`inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 text-[9px] font-black shadow-2xs ${isDone
+                                                  ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200/60 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-300"
                                                   : isPending
-                                                    ? "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800/50 text-amber-700 dark:text-amber-400"
-                                                    : "bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800/50 text-rose-700 dark:text-rose-400"
+                                                    ? "bg-amber-50 dark:bg-amber-950/40 border-amber-200/60 dark:border-amber-800/60 text-amber-700 dark:text-amber-300"
+                                                    : "bg-rose-50 dark:bg-rose-950/40 border-rose-200/60 dark:border-rose-800/60 text-rose-700 dark:text-rose-300"
                                                   }`}
                                               >
                                                 <span className="opacity-80">
@@ -3132,14 +3256,16 @@ function DVETeacherWorkspace() {
                                       )}
                                     </div>
                                   </td>
-                                  <td className="py-4 px-2 text-center text-xs font-bold text-zinc-500">
-                                    {standardizeClassGroupName(student.classGroupId)}
+                                  <td className="py-4 px-3 text-center text-xs font-bold text-zinc-500 dark:text-zinc-400">
+                                    <span className="bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 rounded-lg">
+                                      {standardizeClassGroupName(student.classGroupId)}
+                                    </span>
                                   </td>
 
                                   {/* Column 4: Attendance Status Badge */}
-                                  <td className="py-4 px-2 text-center">
+                                  <td className="py-4 px-3 text-center">
                                     {rec.status === "Studying" ? (
-                                      <span className="inline-flex flex-col items-center px-2 py-1.5 rounded-full text-[10px] font-black border bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/60 animate-pulse">
+                                      <span className="inline-flex flex-col items-center px-3 py-1.5 rounded-xl text-[10px] font-black border bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800/60 animate-pulse shadow-xs">
                                         <span>กำลังเรียนอยู่ ⏱️</span>
                                         <span className="text-[9px] opacity-85 mt-0.5 font-bold">
                                           {Math.round((rec.studySeconds || 0) / 60)} / {activeStudyUnit?.studyMinutes || 0} นาที
@@ -3147,11 +3273,11 @@ function DVETeacherWorkspace() {
                                       </span>
                                     ) : (
                                       <span
-                                        className={`inline-flex flex-col items-center px-3 py-1 rounded-full text-[10px] font-black border ${rec.status === "Present"
-                                          ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/60"
+                                        className={`inline-flex flex-col items-center px-3 py-1.5 rounded-xl text-[10px] font-black border shadow-xs ${rec.status === "Present"
+                                          ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border-emerald-200/60 dark:border-emerald-800/60"
                                           : rec.status === "Late"
-                                            ? "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/60"
-                                            : "bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800/60"
+                                            ? "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border-amber-200/60 dark:border-amber-800/60"
+                                            : "bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 border-rose-200/60 dark:border-rose-800/60"
                                           }`}
                                       >
                                         <span>
@@ -3177,13 +3303,13 @@ function DVETeacherWorkspace() {
                                   </td>
 
                                   {/* Column 5: Assignment Status Badge */}
-                                  <td className="py-4 px-2 text-center">
+                                  <td className="py-4 px-3 text-center">
                                     <span
-                                      className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black border ${rec.assignmentStatus === "Submitted"
-                                        ? "bg-teal-50 dark:bg-teal-950/30 text-teal-600 dark:text-teal-400 border-teal-200 dark:border-teal-800/60"
+                                      className={`inline-flex items-center px-3 py-1.5 rounded-xl text-[10px] font-black border shadow-xs ${rec.assignmentStatus === "Submitted"
+                                        ? "bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-300 border-teal-200/60 dark:border-teal-800/60"
                                         : rec.assignmentStatus === "Pending"
-                                          ? "bg-orange-50 dark:bg-orange-950/30 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800/60"
-                                          : "bg-zinc-100 dark:bg-zinc-800/50 text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700/60"
+                                          ? "bg-orange-50 dark:bg-orange-950/30 text-orange-700 dark:text-orange-300 border-orange-200/60 dark:border-orange-800/60"
+                                          : "bg-zinc-100 dark:bg-zinc-800/50 text-zinc-500 dark:text-zinc-400 border-zinc-200/60 dark:border-zinc-700/60"
                                         }`}
                                     >
                                       {rec.assignmentStatus === "Submitted"
@@ -3198,13 +3324,13 @@ function DVETeacherWorkspace() {
                                     activeUnitQuizzes.map((quiz) => {
                                       const quizSub = unitQuizResultsByStudent[student.id]?.find(s => s.quizId === quiz.id || s.quizType === quiz.quizType);
                                       return (
-                                        <td key={quiz.id} className="py-4 px-2 text-center">
+                                        <td key={quiz.id} className="py-4 px-3 text-center">
                                           {quizSub ? (
                                             <span className="inline-flex flex-col items-center">
-                                              <span className="px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950/30 text-blue-650 dark:text-blue-400 border border-blue-200/50 dark:border-blue-800/50 font-black text-[10px]">
+                                              <span className="px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 font-black text-[10px] shadow-xs">
                                                 {quizSub.score} / {quizSub.maxScore}
                                               </span>
-                                              <span className="text-[8px] text-zinc-400 mt-0.5">
+                                              <span className="text-[9px] text-zinc-400 mt-0.5">
                                                 {new Date(quizSub.submittedAt).toLocaleDateString("th-TH", {
                                                   day: "2-digit",
                                                   month: "short",
@@ -3218,16 +3344,16 @@ function DVETeacherWorkspace() {
                                       );
                                     })
                                   ) : (
-                                    <td className="py-4 px-2 text-center">
+                                    <td className="py-4 px-3 text-center">
                                       <span className="text-zinc-300 dark:text-zinc-600 text-[10px] italic">ไม่มีแบบทดสอบ</span>
                                     </td>
                                   )}
 
                                   {/* Column 6: Score / Edit Action */}
-                                  <td className="py-4 px-2 text-right">
-                                    <div className="flex items-center justify-end gap-3">
-                                      <div className="text-right">
-                                        <span className="text-xs font-bold text-zinc-400 block uppercase">
+                                  <td className="py-4 px-3 text-right">
+                                    <div className="flex items-center justify-end gap-2">
+                                      <div className="text-right pr-1">
+                                        <span className="text-[10px] font-bold text-zinc-400 block uppercase">
                                           คะแนน
                                         </span>
                                         <span className="text-xs font-black text-blue-600 dark:text-blue-400">
@@ -3240,7 +3366,7 @@ function DVETeacherWorkspace() {
                                           href={rec.imageUrl}
                                           target="_blank"
                                           rel="noopener noreferrer"
-                                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-xs font-black rounded-lg transition-all active:scale-95 cursor-pointer border border-emerald-500/10 shadow-sm"
+                                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 text-xs font-black rounded-xl transition-all active:scale-95 cursor-pointer border border-emerald-200/60 dark:border-emerald-800/60 shadow-xs"
                                         >
                                           <Eye size={12} />
                                           <span>ดูงาน</span>
@@ -3268,7 +3394,7 @@ function DVETeacherWorkspace() {
                                             studySeconds: rec.studySeconds || 0,
                                           });
                                         }}
-                                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-xs font-black rounded-lg transition-all active:scale-95 cursor-pointer shadow-sm"
+                                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-xs font-black rounded-xl transition-all active:scale-95 cursor-pointer border border-blue-200/60 dark:border-blue-800/60 shadow-xs"
                                       >
                                         <Edit2 size={12} />
                                         <span>แก้ไข</span>
@@ -3285,7 +3411,7 @@ function DVETeacherWorkspace() {
                                       >
                                         <button
                                           type="button"
-                                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-950/40 text-xs font-black rounded-lg transition-all active:scale-95 cursor-pointer shadow-sm"
+                                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-950/60 text-xs font-black rounded-xl transition-all active:scale-95 cursor-pointer border border-rose-200/60 dark:border-rose-900/60 shadow-xs"
                                         >
                                           <Trash2 size={12} />
                                           <span>ลบ</span>
@@ -3585,74 +3711,122 @@ function DVETeacherWorkspace() {
             exit={{ opacity: 0, y: 15 }}
             className="space-y-6"
           >
-            {/* 1. Statistics Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-5 shadow-sm flex items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all duration-300">
-                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-transform duration-500 text-blue-600">
-                  <Users size={72} strokeWidth={1.5} />
+            {/* 1. Statistics Cards (Clickable Filters) */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+              {/* Total Department Students */}
+              <button
+                type="button"
+                onClick={() => setInternshipStatusFilter("all")}
+                className={`text-left bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border rounded-[32px] p-6 shadow-xl shadow-zinc-950/5 flex items-center gap-4 relative overflow-hidden group transition-all duration-300 bg-linear-to-br from-blue-500/5 via-white/80 to-indigo-500/5 dark:from-blue-950/20 dark:via-zinc-900/80 dark:to-indigo-950/20 cursor-pointer ${
+                  internshipStatusFilter === "all"
+                    ? "ring-2 ring-blue-500 border-blue-500/50 shadow-blue-500/15 scale-[1.02]"
+                    : "border-white/60 dark:border-zinc-800/80 hover:border-blue-300 dark:hover:border-blue-800 hover:shadow-2xl hover:scale-[1.01]"
+                }`}
+              >
+                <div className="absolute -top-2 -right-2 p-6 opacity-5 group-hover:scale-110 group-hover:opacity-10 transition-all duration-500 text-blue-600 pointer-events-none">
+                  <Users size={96} strokeWidth={1.5} />
                 </div>
-                <div className="p-3.5 rounded-2xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
+                <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/25 shrink-0 group-hover:scale-105 transition-transform">
                   <Users size={24} />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-zinc-400 dark:text-zinc-500 block uppercase tracking-wider">
-                    นักศึกษาในแผนกทั้งหมด
-                  </span>
-                  <span className="text-2xl font-black text-zinc-900 dark:text-white leading-none mt-1 inline-block">
-                    {internshipStats.total}{" "}
-                    <span className="text-xs font-bold text-zinc-400">คน</span>
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-black text-zinc-400 dark:text-zinc-500 block uppercase tracking-wider">
+                      นักศึกษาในแผนกทั้งหมด
+                    </span>
+                    {internshipStatusFilter === "all" && (
+                      <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shrink-0" />
+                    )}
+                  </div>
+                  <div className="flex items-baseline gap-1.5 mt-1">
+                    <span className="text-3xl font-black text-zinc-900 dark:text-white leading-none">
+                      {internshipStats.total}
+                    </span>
+                    <span className="text-xs font-black text-zinc-400">คน</span>
+                  </div>
                 </div>
-              </div>
+              </button>
 
-              <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-5 shadow-sm flex items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all duration-300">
-                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-transform duration-500 text-emerald-600">
-                  <Briefcase size={72} strokeWidth={1.5} />
+              {/* In-Internship Students */}
+              <button
+                type="button"
+                onClick={() => setInternshipStatusFilter((prev) => (prev === "working" ? "all" : "working"))}
+                className={`text-left bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border rounded-[32px] p-6 shadow-xl shadow-zinc-950/5 flex items-center gap-4 relative overflow-hidden group transition-all duration-300 bg-linear-to-br from-emerald-500/10 via-white/80 to-teal-500/10 dark:from-emerald-950/30 dark:via-zinc-900/80 dark:to-teal-950/30 cursor-pointer ${
+                  internshipStatusFilter === "working"
+                    ? "ring-2 ring-emerald-500 border-emerald-500/50 shadow-emerald-500/20 scale-[1.02]"
+                    : "border-emerald-500/20 dark:border-emerald-500/20 hover:border-emerald-400 dark:hover:border-emerald-700 hover:shadow-2xl hover:scale-[1.01]"
+                }`}
+              >
+                <div className="absolute -top-2 -right-2 p-6 opacity-5 group-hover:scale-110 group-hover:opacity-10 transition-all duration-500 text-emerald-600 pointer-events-none">
+                  <Briefcase size={96} strokeWidth={1.5} />
                 </div>
-                <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400">
+                <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/25 shrink-0 group-hover:scale-105 transition-transform">
                   <Briefcase size={24} />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-zinc-400 dark:text-zinc-500 block uppercase tracking-wider">
-                    💼 กำลังออกฝึกงาน
-                  </span>
-                  <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 leading-none mt-1 inline-block">
-                    {internshipStats.working}{" "}
-                    <span className="text-xs font-bold text-zinc-400">คน</span>
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-black text-emerald-700 dark:text-emerald-400 block uppercase tracking-wider">
+                      💼 กำลังออกฝึกงาน
+                    </span>
+                    {internshipStatusFilter === "working" && (
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                    )}
+                  </div>
+                  <div className="flex items-baseline gap-1.5 mt-1">
+                    <span className="text-3xl font-black text-emerald-600 dark:text-emerald-400 leading-none">
+                      {internshipStats.working}
+                    </span>
+                    <span className="text-xs font-black text-emerald-600/70 dark:text-emerald-400/70">คน</span>
+                  </div>
                 </div>
-              </div>
+              </button>
 
-              <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-5 shadow-sm flex items-center gap-4 relative overflow-hidden group hover:shadow-md transition-all duration-300">
-                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-transform duration-500 text-zinc-500">
-                  <BookOpen size={72} strokeWidth={1.5} />
+              {/* Regular College Students */}
+              <button
+                type="button"
+                onClick={() => setInternshipStatusFilter((prev) => (prev === "normal" ? "all" : "normal"))}
+                className={`text-left bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border rounded-[32px] p-6 shadow-xl shadow-zinc-950/5 flex items-center gap-4 relative overflow-hidden group transition-all duration-300 bg-linear-to-br from-zinc-500/5 via-white/80 to-slate-500/5 dark:from-zinc-950/20 dark:via-zinc-900/80 dark:to-slate-950/20 cursor-pointer ${
+                  internshipStatusFilter === "normal"
+                    ? "ring-2 ring-zinc-700 dark:ring-zinc-400 border-zinc-600 shadow-zinc-950/15 scale-[1.02]"
+                    : "border-white/60 dark:border-zinc-800/80 hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-2xl hover:scale-[1.01]"
+                }`}
+              >
+                <div className="absolute -top-2 -right-2 p-6 opacity-5 group-hover:scale-110 group-hover:opacity-10 transition-all duration-500 text-zinc-500 pointer-events-none">
+                  <BookOpen size={96} strokeWidth={1.5} />
                 </div>
-                <div className="p-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-800/40 text-zinc-650 dark:text-zinc-400">
+                <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-zinc-700 to-slate-800 text-white flex items-center justify-center shadow-lg shadow-zinc-700/25 shrink-0 group-hover:scale-105 transition-transform">
                   <BookOpen size={24} />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-zinc-400 dark:text-zinc-500 block uppercase tracking-wider">
-                    🏫 เรียนปกติที่วิทยาลัย
-                  </span>
-                  <span className="text-2xl font-black text-zinc-700 dark:text-zinc-300 leading-none mt-1 inline-block">
-                    {internshipStats.normal}{" "}
-                    <span className="text-xs font-bold text-zinc-400">คน</span>
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-black text-zinc-500 dark:text-zinc-400 block uppercase tracking-wider">
+                      🏫 เรียนปกติที่วิทยาลัย
+                    </span>
+                    {internshipStatusFilter === "normal" && (
+                      <span className="w-2 h-2 rounded-full bg-zinc-600 dark:bg-zinc-300 animate-pulse shrink-0" />
+                    )}
+                  </div>
+                  <div className="flex items-baseline gap-1.5 mt-1">
+                    <span className="text-3xl font-black text-zinc-800 dark:text-zinc-100 leading-none">
+                      {internshipStats.normal}
+                    </span>
+                    <span className="text-xs font-black text-zinc-400">คน</span>
+                  </div>
                 </div>
-              </div>
+              </button>
             </div>
 
             {/* 2. Filter controls */}
-            <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-4 sm:p-6 shadow-sm">
+            <div className="bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/60 dark:border-zinc-800/80 rounded-[32px] p-5 sm:p-7 shadow-xl shadow-zinc-950/5 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-black text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
                     เลือกแผนกวิชา
                   </label>
                   <Select
                     placeholder="-- เลือกแผนกวิชา --"
-                    className="w-full h-11"
-                    value={internshipFilter.department || undefined}
+                    className="w-full [&>.ant-select-selector]:h-12! [&>.ant-select-selector]:rounded-2xl! [&>.ant-select-selector]:border-zinc-200/80! dark:[&>.ant-select-selector]:border-zinc-800! [&>.ant-select-selector]:bg-white/60! dark:[&>.ant-select-selector]:bg-zinc-950/60! [&>.ant-select-selector]:flex [&>.ant-select-selector]:items-center [&>.ant-select-selector]:shadow-xs"
+                    value={internshipFilter.department || "all"}
                     onChange={(val) => {
                       setInternshipFilter((prev) => ({
                         ...prev,
@@ -3661,17 +3835,20 @@ function DVETeacherWorkspace() {
                       }));
                       setInternshipStudents([]);
                     }}
-                    options={departments.map((d) => ({ label: d, value: d }))}
+                    options={[
+                      { label: "🏢 แผนกทั้งหมด", value: "all" },
+                      ...departments.map((d) => ({ label: d, value: d })),
+                    ]}
                   />
                 </div>
 
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-black text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
                     เลือกห้องเรียน
                   </label>
                   <Select
                     placeholder="-- แสดงทั้งหมด --"
-                    className="w-full h-11"
+                    className="w-full [&>.ant-select-selector]:h-12! [&>.ant-select-selector]:rounded-2xl! [&>.ant-select-selector]:border-zinc-200/80! dark:[&>.ant-select-selector]:border-zinc-800! [&>.ant-select-selector]:bg-white/60! dark:[&>.ant-select-selector]:bg-zinc-950/60! [&>.ant-select-selector]:flex [&>.ant-select-selector]:items-center [&>.ant-select-selector]:shadow-xs"
                     value={internshipFilter.classGroupId || ""}
                     onChange={(val) => {
                       setInternshipFilter((prev) => ({ ...prev, classGroupId: val }));
@@ -3680,35 +3857,59 @@ function DVETeacherWorkspace() {
                       { label: "แสดงทั้งหมด", value: "" },
                       ...internshipClassGroups.map((c) => ({ label: c, value: c })),
                     ]}
-                    disabled={!internshipFilter.department}
                   />
                 </div>
 
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-black text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
                     ค้นหาชื่อ หรือ รหัสนักศึกษา
                   </label>
-                  <input
-                    type="text"
-                    placeholder="🔍 พิมพ์เพื่อค้นหา..."
-                    className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white placeholder-zinc-400 font-bold"
-                    value={internshipSearchQuery}
-                    onChange={(e) => setInternshipSearchQuery(e.target.value)}
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="🔍 พิมพ์เพื่อค้นหา..."
+                      className="w-full h-12 border border-zinc-200/80 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/60 rounded-2xl px-4 text-sm font-bold text-zinc-900 dark:text-white placeholder-zinc-400 focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15 transition-all shadow-xs"
+                      value={internshipSearchQuery}
+                      onChange={(e) => setInternshipSearchQuery(e.target.value)}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* 3. Students Table / Card view */}
-            <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-4 sm:p-6 shadow-sm">
-              <div className="flex items-center justify-between gap-4 mb-6 border-b dark:border-zinc-800 pb-4">
-                <h3 className="text-base font-black text-zinc-900 dark:text-white flex items-center gap-2">
-                  <Briefcase size={18} className="text-emerald-500" />
-                  รายชื่อนักศึกษากับสถานะการออกฝึกงาน
-                </h3>
-                <span className="text-xs font-black bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-3 py-1 rounded-full">
-                  แสดงผล {displayedInternshipStudents.length} คน
-                </span>
+            <div className="bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/60 dark:border-zinc-800/80 rounded-[32px] p-5 sm:p-7 shadow-xl shadow-zinc-950/5 space-y-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-100 dark:border-zinc-800/80 pb-5">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/25">
+                    <Briefcase size={18} />
+                  </div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-black text-zinc-900 dark:text-white leading-tight">
+                      รายชื่อนักศึกษากับสถานะการออกฝึกงาน
+                    </h3>
+                    <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 mt-0.5">
+                      จัดการกำหนดสถานะการออกฝึกงานหรือเรียนตามปกติของนักศึกษา
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {internshipStatusFilter !== "all" && (
+                    <button
+                      onClick={() => setInternshipStatusFilter("all")}
+                      className="text-xs font-black text-zinc-500 hover:text-zinc-900 dark:hover:text-white underline cursor-pointer"
+                    >
+                      ล้างตัวกรองสถานะ
+                    </button>
+                  )}
+                  <span className="text-xs font-black bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-3.5 py-1.5 rounded-xl border border-zinc-200/60 dark:border-zinc-700/60">
+                    {internshipStatusFilter === "working"
+                      ? `แสดงเฉพาะ: กำลังออกฝึกงาน (${displayedInternshipStudents.length} คน)`
+                      : internshipStatusFilter === "normal"
+                      ? `แสดงเฉพาะ: เรียนปกติ (${displayedInternshipStudents.length} คน)`
+                      : `แสดงผล ${displayedInternshipStudents.length} คน`}
+                  </span>
+                </div>
               </div>
 
               {loadingInternship ? (
@@ -3716,86 +3917,98 @@ function DVETeacherWorkspace() {
                   <Loader2 className="w-12 h-12 text-emerald-500 animate-spin" />
                 </div>
               ) : internshipStudents.length === 0 ? (
-                <div className="text-center py-20 text-zinc-400 dark:text-zinc-500 text-sm font-bold border border-dashed dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-3 max-w-lg mx-auto">
-                  <Users size={36} className="text-zinc-200 dark:text-zinc-800" />
+                <div className="text-center py-16 px-4 flex flex-col items-center justify-center gap-3 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-[28px] bg-zinc-50/50 dark:bg-zinc-900/20 max-w-lg mx-auto">
+                  <div className="w-16 h-16 rounded-3xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400">
+                    <Users size={32} />
+                  </div>
                   <div className="space-y-1">
                     <p className="text-zinc-800 dark:text-zinc-200 text-sm font-black">
                       ไม่พบข้อมูลนักศึกษาในแผนกที่เลือก
                     </p>
-                    <p className="text-zinc-400 font-medium text-xs leading-relaxed">
-                      กรุณาเลือกแผนกวิชาด้านบน
-                      เพื่อทำการดึงข้อมูลรายชื่อนักศึกษารับการตั้งค่าฝึกงานครับ
+                    <p className="text-zinc-400 font-medium text-xs leading-relaxed max-w-[280px] mx-auto">
+                      กรุณาเลือกแผนกวิชาด้านบน เพื่อทำการดึงข้อมูลรายชื่อนักศึกษารับการตั้งค่าฝึกงาน
                     </p>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-6">
                   {displayedInternshipStudents.length === 0 ? (
-                    <div className="text-center py-12 text-zinc-400 dark:text-zinc-500 font-bold text-xs border border-dashed dark:border-zinc-800 rounded-2xl">
+                    <div className="text-center py-14 px-4 text-zinc-400 dark:text-zinc-500 font-bold text-xs border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-[24px] bg-zinc-50/50 dark:bg-zinc-900/20">
                       ไม่พบรายชื่อนักเรียนที่ตรงกับคำค้นหา
                     </div>
                   ) : (
                     <>
                       {/* Desktop Table View */}
-                      <div className="hidden sm:block overflow-x-auto">
+                      <div className="hidden sm:block overflow-x-auto rounded-[24px] border border-zinc-200/70 dark:border-zinc-800/80 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md">
                         <table className="w-full text-left text-xs border-collapse">
                           <thead>
-                            <tr className="border-b border-zinc-100 dark:border-zinc-800 text-zinc-400 font-bold uppercase tracking-wider">
-                              <th className="py-4 px-2">รูปโปรไฟล์</th>
-                              <th className="py-4 px-2">รหัสนักศึกษา</th>
-                              <th className="py-4 px-2">ชื่อ - นามสกุล</th>
-                              <th className="py-4 px-2 text-center">ห้องเรียน</th>
-                              <th className="py-4 px-2 text-center">แผนกวิชา</th>
-                              <th className="py-4 px-2 text-right">การจัดการสถานะ (ออกฝึกงาน)</th>
+                            <tr className="border-b border-zinc-200/70 dark:border-zinc-800/80 bg-zinc-50/80 dark:bg-zinc-950/60 text-zinc-500 dark:text-zinc-400 font-black text-[11px] uppercase tracking-wider">
+                              <th className="py-4 px-3 text-center w-20">รูปโปรไฟล์</th>
+                              <th className="py-4 px-3">รหัสนักศึกษา</th>
+                              <th className="py-4 px-3">ชื่อ - นามสกุล</th>
+                              <th className="py-4 px-3 text-center">ห้องเรียน</th>
+                              <th className="py-4 px-3 text-center">แผนกวิชา</th>
+                              <th className="py-4 px-3 text-right">การจัดการสถานะ (ออกฝึกงาน)</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
+                          <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
                             {displayedInternshipStudents.map((student) => (
                               <tr
                                 key={student.id}
-                                className="text-zinc-700 dark:text-zinc-300 font-bold hover:bg-zinc-50 dark:hover:bg-zinc-850/50 transition-colors"
+                                className="text-zinc-700 dark:text-zinc-300 font-bold hover:bg-emerald-50/30 dark:hover:bg-emerald-950/10 transition-colors"
                               >
-                                <td className="py-4 px-2">
-                                  {student.image ? (
-                                    <img
-                                      src={student.image}
-                                      className="w-10 h-10 rounded-full object-cover ring-2 ring-zinc-100 dark:ring-zinc-800 shadow-sm shrink-0"
-                                    />
-                                  ) : (
-                                    <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-zinc-400 shrink-0">
-                                      <User size={16} />
-                                    </div>
-                                  )}
+                                <td className="py-4 px-3 text-center">
+                                  <div className="flex justify-center">
+                                    {student.image ? (
+                                      <img
+                                        src={student.image}
+                                        className="w-11 h-11 rounded-2xl object-cover ring-2 ring-emerald-500/20 shadow-sm shrink-0"
+                                      />
+                                    ) : (
+                                      <div className="w-11 h-11 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 text-white flex items-center justify-center font-black text-sm shadow-sm shrink-0">
+                                        {student.name?.charAt(0) || "U"}
+                                      </div>
+                                    )}
+                                  </div>
                                 </td>
-                                <td className="py-4 px-2 font-medium text-xs tracking-wider">
-                                  {maskSensitiveData(student.studentIdNum)}
+                                <td className="py-4 px-3 font-bold text-xs tracking-wider">
+                                  <span className="bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 rounded-lg text-zinc-600 dark:text-zinc-400">
+                                    {maskSensitiveData(student.studentIdNum)}
+                                  </span>
                                 </td>
-                                <td className="py-4 px-2 text-sm text-zinc-900 dark:text-zinc-100">
-                                  {student.name}
+                                <td className="py-4 px-3">
+                                  <span className="font-black text-sm text-zinc-900 dark:text-zinc-100">
+                                    {student.name}
+                                  </span>
                                 </td>
-                                <td className="py-4 px-2 text-center text-xs font-bold text-zinc-500">
-                                  {standardizeClassGroupName(student.classGroupId)}
+                                <td className="py-4 px-3 text-center text-xs font-bold">
+                                  <span className="bg-emerald-50/80 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-800/50 px-2.5 py-1 rounded-lg">
+                                    {standardizeClassGroupName(student.classGroupId)}
+                                  </span>
                                 </td>
-                                <td className="py-4 px-2 text-center text-xs font-bold text-zinc-500">
-                                  {student.department}
+                                <td className="py-4 px-3 text-center text-xs font-bold text-zinc-600 dark:text-zinc-400">
+                                  <span className="bg-zinc-100 dark:bg-zinc-800 px-2.5 py-1 rounded-lg">
+                                    {student.department}
+                                  </span>
                                 </td>
-                                <td className="py-4 px-2 text-right">
+                                <td className="py-4 px-3 text-right">
                                   <button
                                     type="button"
                                     onClick={() => handleToggleInternship(student)}
-                                    className={`inline-flex items-center justify-center px-4 py-2 rounded-xl text-xs font-black border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer shadow-sm ${student.isInternship
-                                      ? "bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/30 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800"
-                                      : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700"
-                                      }`}
+                                    className={`inline-flex items-center justify-center px-4 py-2.5 rounded-2xl text-xs font-black border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer shadow-xs ${
+                                      student.isInternship
+                                        ? "bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white border-transparent shadow-md shadow-emerald-500/25"
+                                        : "bg-white/90 dark:bg-zinc-800/90 hover:bg-zinc-100 dark:hover:bg-zinc-750 text-zinc-700 dark:text-zinc-300 border-zinc-200/80 dark:border-zinc-700/80"
+                                    }`}
                                   >
                                     {student.isInternship ? (
                                       <>
-                                        <Briefcase size={12} className="mr-1.5" />
+                                        <Briefcase size={14} className="mr-1.5 text-white stroke-2.5" />
                                         💼 ออกฝึกงานอยู่
                                       </>
                                     ) : (
                                       <>
-                                        <BookOpen size={12} className="mr-1.5" />
+                                        <BookOpen size={14} className="mr-1.5 text-zinc-500 dark:text-zinc-400 stroke-2.5" />
                                         🏫 เรียนปกติที่นี่
                                       </>
                                     )}
@@ -3808,21 +4021,21 @@ function DVETeacherWorkspace() {
                       </div>
 
                       {/* Mobile Card List View */}
-                      <div className="block sm:hidden space-y-4">
+                      <div className="block sm:hidden space-y-3.5">
                         {displayedInternshipStudents.map((student) => (
                           <div
                             key={student.id}
-                            className="p-4 bg-zinc-50 dark:bg-zinc-800/40 border dark:border-zinc-800/60 rounded-2xl space-y-4 shadow-xs"
+                            className="p-4 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/80 rounded-[24px] space-y-4 shadow-xs"
                           >
                             <div className="flex items-center gap-3">
                               {student.image ? (
                                 <img
                                   src={student.image}
-                                  className="w-10 h-10 rounded-full object-cover shrink-0"
+                                  className="w-12 h-12 rounded-2xl object-cover ring-2 ring-emerald-500/20 shadow-sm shrink-0"
                                 />
                               ) : (
-                                <div className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
-                                  <User size={16} />
+                                <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 text-white flex items-center justify-center font-black text-sm shadow-sm shrink-0">
+                                  {student.name?.charAt(0) || "U"}
                                 </div>
                               )}
                               <div className="min-w-0 flex-1">
@@ -3839,17 +4052,18 @@ function DVETeacherWorkspace() {
                               </div>
                             </div>
 
-                            <div className="flex items-center justify-between border-t dark:border-zinc-800/80 pt-3">
-                              <span className="text-[10px] font-bold text-zinc-400">
+                            <div className="flex items-center justify-between border-t border-zinc-100 dark:border-zinc-800/80 pt-3">
+                              <span className="text-[10px] font-black text-zinc-400 uppercase tracking-wider">
                                 สถานะฝึกงาน:
                               </span>
                               <button
                                 type="button"
                                 onClick={() => handleToggleInternship(student)}
-                                className={`inline-flex items-center justify-center px-4 py-2 rounded-xl text-xs font-black border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer shadow-sm ${student.isInternship
-                                  ? "bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/30 dark:hover:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800"
-                                  : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700"
-                                  }`}
+                                className={`inline-flex items-center justify-center px-4 py-2 rounded-xl text-xs font-black border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer shadow-xs ${
+                                  student.isInternship
+                                    ? "bg-linear-to-r from-emerald-500 to-teal-500 text-white border-transparent shadow-md shadow-emerald-500/25"
+                                    : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700"
+                                }`}
                               >
                                 {student.isInternship ? (
                                   <>
@@ -3969,6 +4183,43 @@ function DVETeacherWorkspace() {
                         setSubjectForm((prev) => ({ ...prev, name: e.target.value }))
                       }
                     />
+                  </div>
+
+                  {/* ครูผู้สอน / อาจารย์ประจำวิชา */}
+                  <div className="flex flex-col gap-2 p-4 rounded-2xl bg-linear-to-r from-emerald-50/50 via-teal-50/30 to-blue-50/40 dark:from-emerald-950/20 dark:via-zinc-900/40 dark:to-blue-950/20 border border-emerald-200/70 dark:border-emerald-800/40 shadow-xs">
+                    <div className="flex justify-between items-center">
+                      <label className="text-xs font-black text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
+                        <User size={14} className="text-emerald-500" />
+                        ครูผู้สอน / อาจารย์ประจำวิชา *
+                      </label>
+                      <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-black bg-emerald-100/70 dark:bg-emerald-900/50 px-2 py-0.5 rounded-full border border-emerald-200/60 dark:border-emerald-800/50">
+                        มอบหมายครูผู้สอน
+                      </span>
+                    </div>
+                    <select
+                      required
+                      className="w-full h-12 border-2 border-emerald-200/80 dark:border-emerald-800/80 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold cursor-pointer shadow-xs"
+                      value={subjectForm.teacherId || (session?.user as any)?.id || ""}
+                      onChange={(e) => {
+                        const selectedId = e.target.value;
+                        const selectedTeacher = teachersList.find((t) => t.id === selectedId);
+                        setSubjectForm((prev) => ({
+                          ...prev,
+                          teacherId: selectedId,
+                          teacherName: selectedTeacher?.name || prev.teacherName,
+                        }));
+                      }}
+                    >
+                      <option value="">-- เลือกอาจารย์ผู้สอน --</option>
+                      {teachersList.map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.name} {t.department ? `(${t.department})` : ""} {t.id === (session?.user as any)?.id ? "★ [ฉัน]" : ""}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium">
+                      วิชานี้จะถูกจัดสรรให้นักศึกษาค้นหาและส่งงานภายใต้ชื่ออาจารย์ผู้สอนที่เลือก
+                    </p>
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -4150,85 +4401,110 @@ function DVETeacherWorkspace() {
                       />
                     </div>
                   </div>
-                </div>
 
-                <div className="col-span-12 p-5 bg-emerald-50/50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800/30 rounded-2xl space-y-4">
-                  <h4 className="text-sm font-black text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
-                    <Clock size={16} className="text-emerald-500" />
-                    ตั้งค่าเวลาเรียน (สำหรับคำนวณ % การเข้าเรียน)
-                  </h4>
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-black text-emerald-700/80 dark:text-emerald-500">
-                        จำนวนสัปดาห์
-                      </label>
-                      <input
-                        type="number"
-                        placeholder="เช่น 18"
-                        className="w-full h-12 border-2 border-emerald-200 dark:border-emerald-800/50 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
-                        value={(subjectForm as any).totalWeeks || ""}
-                        onChange={(e) => {
-                          const w = e.target.value;
-                          const d = (subjectForm as any).daysPerWeek;
-                          const h = (subjectForm as any).hoursPerDay;
-                          let th = (subjectForm as any).totalHours;
-                          if (w && d && h) th = String(Number(w) * Number(d) * Number(h));
-                          setSubjectForm((prev) => ({ ...prev, totalWeeks: w, totalHours: th }));
-                        }}
-                      />
+                  <div className="col-span-12 relative overflow-hidden p-6 rounded-[24px] border border-white/60 dark:border-emerald-800/30 bg-linear-to-br from-emerald-50/80 via-white/50 to-teal-50/80 dark:from-emerald-950/40 dark:via-zinc-900/60 dark:to-teal-950/40 backdrop-blur-xl shadow-[0_8px_30px_rgb(16,185,129,0.1)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.5)] space-y-6">
+                    {/* Decorative Elements */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-400/20 dark:bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-teal-400/20 dark:bg-teal-500/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+
+                    <div className="flex items-center gap-3 relative z-10">
+                      <div className="w-10 h-10 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm border border-emerald-100 dark:border-emerald-800/50 flex items-center justify-center text-emerald-500 relative group">
+                        <div className="absolute inset-0 bg-emerald-400/20 rounded-2xl blur-md group-hover:blur-lg transition-all opacity-0 group-hover:opacity-100"></div>
+                        <Clock size={18} className="relative z-10 group-hover:scale-110 transition-transform duration-300" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-black text-emerald-900 dark:text-emerald-100">
+                          ตั้งค่าเวลาเรียน
+                        </h4>
+                        <p className="text-[10px] font-bold text-emerald-600/70 dark:text-emerald-500/70">
+                          สำหรับคำนวณ % การเข้าเรียน
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-black text-emerald-700/80 dark:text-emerald-500">
-                        วัน / สัปดาห์
-                      </label>
-                      <input
-                        type="number"
-                        placeholder="เช่น 1"
-                        className="w-full h-12 border-2 border-emerald-200 dark:border-emerald-800/50 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
-                        value={(subjectForm as any).daysPerWeek || ""}
-                        onChange={(e) => {
-                          const d = e.target.value;
-                          const w = (subjectForm as any).totalWeeks;
-                          const h = (subjectForm as any).hoursPerDay;
-                          let th = (subjectForm as any).totalHours;
-                          if (w && d && h) th = String(Number(w) * Number(d) * Number(h));
-                          setSubjectForm((prev) => ({ ...prev, daysPerWeek: d, totalHours: th }));
-                        }}
-                      />
-                    </div>
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-black text-emerald-700/80 dark:text-emerald-500">
-                        ชั่วโมง / วัน
-                      </label>
-                      <input
-                        type="number"
-                        placeholder="เช่น 2"
-                        className="w-full h-12 border-2 border-emerald-200 dark:border-emerald-800/50 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
-                        value={(subjectForm as any).hoursPerDay || ""}
-                        onChange={(e) => {
-                          const h = e.target.value;
-                          const w = (subjectForm as any).totalWeeks;
-                          const d = (subjectForm as any).daysPerWeek;
-                          let th = (subjectForm as any).totalHours;
-                          if (w && d && h) th = String(Number(w) * Number(d) * Number(h));
-                          setSubjectForm((prev) => ({ ...prev, hoursPerDay: h, totalHours: th }));
-                        }}
-                      />
-                    </div>
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-black text-amber-600 dark:text-amber-500">
-                        เวลารวม (ชั่วโมง) *
-                      </label>
-                      <input
-                        type="number"
-                        required
-                        placeholder="เช่น 36"
-                        className="w-full h-12 border-2 border-amber-300 dark:border-amber-700/50 bg-amber-50 dark:bg-amber-950/20 rounded-xl px-4 text-sm font-black focus:outline-hidden focus:border-amber-500 focus:ring-4 focus:ring-amber-500/20 transition-all dark:text-amber-400"
-                        value={(subjectForm as any).totalHours || ""}
-                        onChange={(e) =>
-                          setSubjectForm((prev) => ({ ...prev, totalHours: e.target.value }))
-                        }
-                      />
+
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 relative z-10">
+                      {/* จำนวนสัปดาห์ */}
+                      <div className="flex flex-col gap-2 group">
+                        <label className="text-xs font-black text-emerald-800/80 dark:text-emerald-300/80 group-focus-within:text-emerald-600 dark:group-focus-within:text-emerald-400 transition-colors">
+                          จำนวนสัปดาห์
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="number"
+                            placeholder="เช่น 18"
+                            className="w-full h-12 border-2 border-white dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:bg-white dark:focus:bg-zinc-900 focus:ring-4 focus:ring-emerald-500/20 transition-all dark:text-white font-bold shadow-sm"
+                            value={(subjectForm as any).totalWeeks || ""}
+                            onChange={(e) => {
+                              const w = e.target.value;
+                              const d = (subjectForm as any).daysPerWeek;
+                              const h = (subjectForm as any).hoursPerDay;
+                              let th = (subjectForm as any).totalHours;
+                              if (w && d && h) th = String(Number(w) * Number(d) * Number(h));
+                              setSubjectForm((prev) => ({ ...prev, totalWeeks: w, totalHours: th }));
+                            }}
+                          />
+                        </div>
+                      </div>
+                      {/* วัน / สัปดาห์ */}
+                      <div className="flex flex-col gap-2 group">
+                        <label className="text-xs font-black text-emerald-800/80 dark:text-emerald-300/80 group-focus-within:text-emerald-600 dark:group-focus-within:text-emerald-400 transition-colors">
+                          วัน / สัปดาห์
+                        </label>
+                        <input
+                          type="number"
+                          placeholder="เช่น 1"
+                          className="w-full h-12 border-2 border-white dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:bg-white dark:focus:bg-zinc-900 focus:ring-4 focus:ring-emerald-500/20 transition-all dark:text-white font-bold shadow-sm"
+                          value={(subjectForm as any).daysPerWeek || ""}
+                          onChange={(e) => {
+                            const d = e.target.value;
+                            const w = (subjectForm as any).totalWeeks;
+                            const h = (subjectForm as any).hoursPerDay;
+                            let th = (subjectForm as any).totalHours;
+                            if (w && d && h) th = String(Number(w) * Number(d) * Number(h));
+                            setSubjectForm((prev) => ({ ...prev, daysPerWeek: d, totalHours: th }));
+                          }}
+                        />
+                      </div>
+                      {/* ชั่วโมง / วัน */}
+                      <div className="flex flex-col gap-2 group">
+                        <label className="text-xs font-black text-emerald-800/80 dark:text-emerald-300/80 group-focus-within:text-emerald-600 dark:group-focus-within:text-emerald-400 transition-colors">
+                          ชั่วโมง / วัน
+                        </label>
+                        <input
+                          type="number"
+                          placeholder="เช่น 2"
+                          className="w-full h-12 border-2 border-white dark:border-zinc-800 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:bg-white dark:focus:bg-zinc-900 focus:ring-4 focus:ring-emerald-500/20 transition-all dark:text-white font-bold shadow-sm"
+                          value={(subjectForm as any).hoursPerDay || ""}
+                          onChange={(e) => {
+                            const h = e.target.value;
+                            const w = (subjectForm as any).totalWeeks;
+                            const d = (subjectForm as any).daysPerWeek;
+                            let th = (subjectForm as any).totalHours;
+                            if (w && d && h) th = String(Number(w) * Number(d) * Number(h));
+                            setSubjectForm((prev) => ({ ...prev, hoursPerDay: h, totalHours: th }));
+                          }}
+                        />
+                      </div>
+                      {/* เวลารวม (ชั่วโมง) * */}
+                      <div className="flex flex-col gap-2 group">
+                        <label className="text-xs font-black text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                          <Sparkles size={12} className="text-amber-500 animate-pulse" />
+                          เวลารวม (ชั่วโมง) *
+                        </label>
+                        <div className="relative rounded-xl shadow-lg shadow-amber-500/10 group-focus-within:shadow-amber-500/20 transition-shadow">
+                          <div className="absolute inset-0 bg-linear-to-r from-amber-400 to-orange-400 rounded-xl blur-[3px] opacity-20 group-focus-within:opacity-40 transition-opacity"></div>
+                          <input
+                            type="number"
+                            required
+                            placeholder="เช่น 36"
+                            className="relative w-full h-12 border-2 border-amber-300/80 dark:border-amber-600/80 bg-linear-to-r from-amber-50 to-orange-50 dark:from-amber-950/60 dark:to-orange-950/60 backdrop-blur-md rounded-xl px-4 text-sm font-black focus:outline-hidden focus:border-amber-500 focus:bg-white dark:focus:bg-zinc-900 focus:ring-4 focus:ring-amber-500/30 transition-all text-amber-900 dark:text-amber-100"
+                            value={(subjectForm as any).totalHours || ""}
+                            onChange={(e) =>
+                              setSubjectForm((prev) => ({ ...prev, totalHours: e.target.value }))
+                            }
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -4265,27 +4541,28 @@ function DVETeacherWorkspace() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-zinc-950/65 dark:bg-zinc-950/80 backdrop-blur-md"
+              className="absolute inset-0 bg-zinc-950/60 dark:bg-zinc-950/80 backdrop-blur-md"
               onClick={() => setIsUnitModalOpen(false)}
             />
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full h-full sm:h-auto sm:max-h-[90vh] bg-white dark:bg-zinc-900 sm:rounded-[32px] sm:border border-white/20 dark:border-zinc-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-left flex flex-col overflow-hidden sm:max-w-4xl"
+              className="relative w-full h-full sm:h-auto sm:max-h-[90vh] bg-white/95 dark:bg-zinc-900/95 sm:rounded-[36px] sm:border border-white/60 dark:border-zinc-800/80 shadow-[0_20px_60px_rgba(0,0,0,0.2)] text-left flex flex-col overflow-hidden sm:max-w-4xl backdrop-blur-3xl"
             >
               <form onSubmit={handleSaveUnit} className="flex flex-col flex-1 min-h-0 w-full">
                 {/* Header */}
-                <div className="px-4 py-4 sm:px-6 sm:py-5 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl shrink-0">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-linear-to-tr from-teal-500 to-blue-650 text-white rounded-2xl shadow-md shadow-blue-500/20">
-                      <BookOpen size={20} />
+                <div className="px-6 py-5 sm:px-8 sm:py-6 border-b border-zinc-100 dark:border-zinc-800/80 flex justify-between items-center bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl relative overflow-hidden shrink-0">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+                  <div className="flex items-center gap-4 relative z-10">
+                    <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-emerald-400 via-teal-500 to-emerald-600 shadow-lg shadow-emerald-500/30 flex items-center justify-center text-white ring-2 ring-emerald-500/20">
+                      <BookOpen size={22} />
                     </div>
                     <div>
-                      <h3 className="text-base sm:text-lg font-black text-zinc-900 dark:text-white leading-tight">
+                      <h3 className="text-lg sm:text-xl font-black text-emerald-950 dark:text-emerald-50 leading-tight">
                         {unitForm.id ? "แก้ไขหน่วยการเรียนรู้" : "เพิ่มหน่วยการเรียนรู้ในรายวิชา"}
                       </h3>
-                      <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold mt-0.5">
+                      <p className="text-xs text-emerald-700/80 dark:text-emerald-400/80 font-bold mt-0.5">
                         {unitForm.id ? "แก้ไขและอัปเดตข้อมูลหน่วยเรียน" : "กรอกข้อมูลเพื่อสร้างหน่วยเรียนใหม่"}
                       </p>
                     </div>
@@ -4293,35 +4570,35 @@ function DVETeacherWorkspace() {
                   <button
                     type="button"
                     onClick={() => setIsUnitModalOpen(false)}
-                    className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-850 hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center text-zinc-400 hover:text-zinc-650 dark:text-zinc-500 dark:hover:text-zinc-350 transition-all border-0 cursor-pointer"
+                    className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors border-0 cursor-pointer relative z-10"
                   >
-                    <X size={16} />
+                    <X size={18} />
                   </button>
                 </div>
 
                 {/* Body Content */}
-                <div className="p-3 sm:p-6 space-y-6 flex-1 overflow-y-auto min-h-0 px-2">
+                <div className="p-5 sm:p-8 space-y-6 flex-1 overflow-y-auto min-h-0 custom-scrollbar">
                   {/* Card 1: ข้อมูลหลัก */}
-                  <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 space-y-4 shadow-sm">
-                    <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-3">
-                      <span className="text-xs font-black text-teal-600 dark:text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
-                        <BookOpen size={14} className="text-teal-500" />
+                  <div className="relative overflow-hidden bg-linear-to-br from-emerald-500/5 via-white/80 to-teal-500/5 dark:from-emerald-950/20 dark:via-zinc-900/80 dark:to-teal-950/20 border border-emerald-500/20 dark:border-emerald-800/40 rounded-[28px] p-5 sm:p-6 space-y-5 shadow-sm">
+                    <div className="flex items-center justify-between border-b border-emerald-100/60 dark:border-emerald-800/40 pb-3.5">
+                      <span className="text-xs font-black text-emerald-800 dark:text-emerald-300 uppercase tracking-wider flex items-center gap-2">
+                        <BookOpen size={16} className="text-emerald-500" />
                         ข้อมูลหลักของหน่วยเรียน
                       </span>
-                      <span className="px-2 py-0.5 bg-teal-500/10 text-teal-600 dark:text-teal-400 rounded-md text-[9px] font-black">
+                      <span className="px-2.5 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-800/50 rounded-full text-[10px] font-black">
                         จำเป็น *
                       </span>
                     </div>
 
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-black text-zinc-650 dark:text-zinc-400 pl-0.5">
+                    <div className="flex flex-col gap-2 group">
+                      <label className="text-xs font-black text-zinc-700 dark:text-zinc-300 group-focus-within:text-emerald-600 dark:group-focus-within:text-emerald-400 transition-colors">
                         หัวข้อหน่วยการเรียน *
                       </label>
                       <input
                         type="text"
                         placeholder="เช่น หน่วยที่ 1: แนะนำวิชา"
                         required
-                        className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
+                        className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold shadow-xs"
                         value={unitForm.title}
                         onChange={(e) =>
                           setUnitForm((prev) => ({ ...prev, title: e.target.value }))
@@ -4330,16 +4607,16 @@ function DVETeacherWorkspace() {
                     </div>
 
                     {/* Sequence & Duration fields with Color Separations */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       {/* Sequence: Slate/Gray Card */}
-                      <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/60 dark:border-zinc-800 rounded-xl p-3 flex flex-col gap-1.5">
-                        <label className="text-[10px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider pl-0.5">
+                      <div className="bg-white/80 dark:bg-zinc-900/80 border-2 border-zinc-200/80 dark:border-zinc-800 rounded-2xl p-4 flex flex-col gap-2 shadow-xs group focus-within:border-zinc-400 dark:focus-within:border-zinc-600 transition-all">
+                        <label className="text-[11px] font-black text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
                           ลำดับที่ของหน่วย
                         </label>
                         <input
                           type="number"
                           required
-                          className="w-full h-9 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-955 rounded-lg px-3 text-xs focus:outline-hidden dark:text-white font-bold"
+                          className="w-full h-10 border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950 rounded-xl px-3 text-sm focus:outline-hidden dark:text-white font-black"
                           value={unitForm.sequence}
                           onChange={(e) =>
                             setUnitForm((prev) => ({ ...prev, sequence: Number(e.target.value) }))
@@ -4348,8 +4625,9 @@ function DVETeacherWorkspace() {
                       </div>
 
                       {/* Total Minutes: Emerald/Teal Card */}
-                      <div className="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-950/40 rounded-xl p-3 flex flex-col gap-1.5">
-                        <label className="text-[10px] font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-wider pl-0.5">
+                      <div className="bg-emerald-50/70 dark:bg-emerald-950/30 border-2 border-emerald-200/80 dark:border-emerald-800/60 rounded-2xl p-4 flex flex-col gap-2 shadow-xs group focus-within:border-emerald-500 transition-all">
+                        <label className="text-[11px] font-black text-emerald-800 dark:text-emerald-300 uppercase tracking-wider flex items-center gap-1">
+                          <Clock size={13} className="text-emerald-600 dark:text-emerald-400" />
                           เวลารวมของหน่วย (นาที) *
                         </label>
                         <input
@@ -4358,7 +4636,7 @@ function DVETeacherWorkspace() {
                           step="any"
                           required
                           placeholder="เช่น 60"
-                          className="w-full h-9 border border-emerald-200 dark:border-emerald-900 bg-white dark:bg-zinc-955 rounded-lg px-3 text-xs font-bold text-emerald-600 dark:text-emerald-400 focus:outline-hidden"
+                          className="w-full h-10 border-2 border-emerald-300/80 dark:border-emerald-700/80 bg-white dark:bg-zinc-950 rounded-xl px-3 text-sm font-black text-emerald-700 dark:text-emerald-300 focus:outline-hidden focus:ring-4 focus:ring-emerald-500/20 transition-all"
                           value={unitForm.totalMinutes}
                           onChange={(e) =>
                             setUnitForm((prev) => ({
@@ -4370,8 +4648,9 @@ function DVETeacherWorkspace() {
                       </div>
 
                       {/* Minimum Study Minutes: Amber/Orange Card */}
-                      <div className="bg-amber-500/5 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-950/40 rounded-xl p-3 flex flex-col gap-1.5">
-                        <label className="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase tracking-wider pl-0.5">
+                      <div className="bg-amber-50/70 dark:bg-amber-950/30 border-2 border-amber-200/80 dark:border-amber-800/60 rounded-2xl p-4 flex flex-col gap-2 shadow-xs group focus-within:border-amber-500 transition-all">
+                        <label className="text-[11px] font-black text-amber-800 dark:text-amber-300 uppercase tracking-wider flex items-center gap-1">
+                          <Sparkles size={13} className="text-amber-600 dark:text-amber-400" />
                           เวลาขั้นต่ำที่เรียน (นาที)
                         </label>
                         <input
@@ -4379,7 +4658,7 @@ function DVETeacherWorkspace() {
                           min={0}
                           step="any"
                           placeholder="เช่น 15"
-                          className="w-full h-9 border border-amber-200 dark:border-amber-900 bg-white dark:bg-zinc-955 rounded-lg px-3 text-xs font-bold text-amber-600 dark:text-amber-400 focus:outline-hidden"
+                          className="w-full h-10 border-2 border-amber-300/80 dark:border-amber-700/80 bg-white dark:bg-zinc-950 rounded-xl px-3 text-sm font-black text-amber-700 dark:text-amber-300 focus:outline-hidden focus:ring-4 focus:ring-amber-500/20 transition-all"
                           value={unitForm.studyMinutes}
                           onChange={(e) =>
                             setUnitForm((prev) => ({
@@ -4391,13 +4670,14 @@ function DVETeacherWorkspace() {
                       </div>
                     </div>
 
-                    <div className="bg-rose-500/5 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-950/40 rounded-xl p-3 flex flex-col gap-1.5">
-                      <label className="text-[10px] font-black text-rose-700 dark:text-rose-400 uppercase tracking-wider pl-0.5">
+                    <div className="bg-rose-50/70 dark:bg-rose-950/30 border-2 border-rose-200/80 dark:border-rose-800/60 rounded-2xl p-4 flex flex-col gap-2">
+                      <label className="text-[11px] font-black text-rose-800 dark:text-rose-300 uppercase tracking-wider flex items-center gap-1.5">
+                        <AlertCircle size={14} className="text-rose-500" />
                         วันกำหนดส่งของหน่วยเรียน
                       </label>
                       <input
                         type="datetime-local"
-                        className="w-full h-9 border border-rose-200 dark:border-rose-900 bg-white dark:bg-zinc-955 rounded-lg px-3 text-xs font-bold text-rose-600 dark:text-rose-400 focus:outline-hidden"
+                        className="w-full h-11 border-2 border-rose-200 dark:border-rose-800/80 bg-white dark:bg-zinc-950 rounded-xl px-4 text-xs font-black text-rose-700 dark:text-rose-300 focus:outline-hidden focus:ring-4 focus:ring-rose-500/20 transition-all"
                         value={unitForm.dueDate}
                         onChange={(e) =>
                           setUnitForm((prev) => ({
@@ -4406,22 +4686,22 @@ function DVETeacherWorkspace() {
                           }))
                         }
                       />
-                      <p className="text-[10px] text-rose-500/80 font-medium">
-                        ถ้าเรียนครบเวลาแต่เกินวันนี้ ระบบจะบันทึกเป็น "สาย" อัตโนมัติ
+                      <p className="text-[11px] text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1 mt-0.5">
+                        <span>⚠️</span> ถ้าเรียนครบเวลาแต่เกินวันนี้ ระบบจะบันทึกเป็น "สาย" อัตโนมัติ
                       </p>
                     </div>
                   </div>
 
-                  {/* Card 2: รายละเอียด (Description) - expanded rows */}
-                  <div className="bg-white dark:bg-zinc-955 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-4 space-y-3 shadow-sm">
-                    <label className="text-xs font-black text-zinc-650 dark:text-zinc-350 flex items-center gap-1.5 pl-0.5">
-                      <FileText size={14} className="text-zinc-400" />
+                  {/* Card 2: รายละเอียด (Description) */}
+                  <div className="bg-white dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 space-y-3 shadow-sm">
+                    <label className="text-xs font-black text-zinc-700 dark:text-zinc-300 flex items-center gap-2">
+                      <FileText size={16} className="text-emerald-500" />
                       คำอธิบายเนื้อหาหน่วยเรียนย่อ (Description)
                     </label>
                     <textarea
                       placeholder="เขียนรายละเอียด คำอธิบายเนื้อหา หรือใบงานประกอบหน่วยการเรียนรู้ เพื่อให้นักเรียนเข้าใจขอบเขตการเรียน..."
-                      rows={6}
-                      className="w-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 rounded-xl p-3.5 text-xs focus:outline-hidden dark:text-white placeholder:text-zinc-400/90 leading-relaxed"
+                      rows={5}
+                      className="w-full border-2 border-zinc-200/80 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950 rounded-2xl p-4 text-xs sm:text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:text-white placeholder:text-zinc-400 leading-relaxed font-medium transition-all"
                       value={unitForm.content}
                       onChange={(e) =>
                         setUnitForm((prev) => ({ ...prev, content: e.target.value }))
@@ -4430,10 +4710,10 @@ function DVETeacherWorkspace() {
                   </div>
 
                   {/* Card 3: 📂 ไฟล์แนบและสื่อการสอน */}
-                  <div className="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-150 dark:border-emerald-900/30 rounded-2xl p-4 space-y-4">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-emerald-100 dark:border-emerald-900/40 pb-3">
-                      <span className="text-xs font-black text-emerald-700 dark:text-emerald-455 flex items-center gap-1.5">
-                        <FolderOpen size={14} className="text-emerald-500" />
+                  <div className="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-200/60 dark:border-emerald-900/40 rounded-[28px] p-5 sm:p-6 space-y-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-emerald-100 dark:border-emerald-900/40 pb-3.5">
+                      <span className="text-xs font-black text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
+                        <FolderOpen size={16} className="text-emerald-500" />
                         ไฟล์เอกสารดาวน์โหลด (PDF, Word, Powerpoint)
                       </span>
                       <button
@@ -4444,9 +4724,9 @@ function DVETeacherWorkspace() {
                             files: [{ name: "", url: "", type: "file" }, ...prev.files],
                           }))
                         }
-                        className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] font-black rounded-lg transition-all flex items-center gap-1 cursor-pointer shadow-xs hover:scale-[1.02] border-0 shrink-0"
+                        className="px-3.5 py-1.5 bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-black rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/30 hover:-translate-y-0.5 active:scale-95 border-0 shrink-0"
                       >
-                        <Plus size={10} /> เพิ่มไฟล์แนบ
+                        <Plus size={12} className="stroke-3" /> เพิ่มไฟล์แนบ
                       </button>
                     </div>
 
@@ -4456,11 +4736,11 @@ function DVETeacherWorkspace() {
                         f.url?.startsWith("/uploads/") ||
                         f.url?.startsWith("/api/media/"),
                     ).length === 0 ? (
-                      <div className="text-center py-5 border border-dashed border-emerald-250 dark:border-emerald-800/60 rounded-xl text-emerald-650/65 dark:text-emerald-400/50 text-xs font-bold bg-white/40 dark:bg-zinc-955/10">
+                      <div className="text-center py-6 border-2 border-dashed border-emerald-200/70 dark:border-emerald-800/50 rounded-2xl text-emerald-700/70 dark:text-emerald-400/60 text-xs font-bold bg-white/40 dark:bg-zinc-950/20">
                         ยังไม่มีไฟล์แนบในหน่วยเรียนนี้
                       </div>
                     ) : (
-                      <div className="space-y-3.5">
+                      <div className="space-y-3">
                         {unitForm.files.map((file, idx) => {
                           const isDirectFile =
                             file.type === "file" ||
@@ -4468,13 +4748,13 @@ function DVETeacherWorkspace() {
                             file.url?.startsWith("/api/media/");
                           if (!isDirectFile) return null;
                           return (
-                            <div key={idx} className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center bg-white dark:bg-zinc-900 p-2 sm:p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xs transition-all hover:border-emerald-300 dark:hover:border-emerald-800">
+                            <div key={idx} className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center bg-white dark:bg-zinc-900 p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-xs transition-all hover:border-emerald-300 dark:hover:border-emerald-700">
                               <div className="flex-1">
                                 <input
                                   type="text"
                                   placeholder="ชื่อไฟล์ เช่น เอกสารใบงาน 1"
                                   required
-                                  className="w-full h-9 border border-zinc-200 dark:border-zinc-750 bg-zinc-50/50 dark:bg-zinc-950 rounded-lg px-2 sm:px-3 text-xs focus:outline-hidden dark:text-white font-medium"
+                                  className="w-full h-10 border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950 rounded-xl px-3 text-xs focus:outline-hidden focus:border-emerald-500 dark:text-white font-bold"
                                   value={file.name}
                                   onChange={(e) => {
                                     const newFiles = [...unitForm.files];
@@ -4491,10 +4771,10 @@ function DVETeacherWorkspace() {
                                     placeholder="ยังไม่ได้อัปโหลดไฟล์..."
                                     required
                                     readOnly
-                                    className="w-full h-9 border border-zinc-200 dark:border-zinc-750 bg-zinc-50/50 dark:bg-zinc-950 rounded-lg pl-3 pr-20 text-xs focus:outline-hidden text-zinc-500 dark:text-zinc-400 cursor-not-allowed truncate"
+                                    className="w-full h-10 border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950 rounded-xl pl-3 pr-24 text-xs focus:outline-hidden text-zinc-500 dark:text-zinc-400 cursor-not-allowed truncate font-medium"
                                     value={file.url}
                                   />
-                                  <label className="absolute right-1 top-1 h-7 px-2 flex items-center justify-center bg-emerald-500 hover:bg-emerald-655 text-white rounded-md cursor-pointer transition-colors shadow-xs">
+                                  <label className="absolute right-1.5 top-1.5 h-7 px-3 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg cursor-pointer transition-colors shadow-xs text-[10px] font-black">
                                     <input
                                       type="file"
                                       className="hidden"
@@ -4509,12 +4789,10 @@ function DVETeacherWorkspace() {
                                     {fileUploading[idx]?.loading ? (
                                       <div className="flex items-center gap-1">
                                         <Loader2 size={10} className="animate-spin text-white" />
-                                        <span className="text-[9px] font-black text-white">
-                                          {fileUploading[idx].progress}%
-                                        </span>
+                                        <span>{fileUploading[idx].progress}%</span>
                                       </div>
                                     ) : (
-                                      <div className="flex items-center gap-1 text-[9px] font-black text-white">
+                                      <div className="flex items-center gap-1">
                                         <Upload size={10} />
                                         <span>อัปโหลด</span>
                                       </div>
@@ -4528,7 +4806,7 @@ function DVETeacherWorkspace() {
                                     const newFiles = unitForm.files.filter((_, i) => i !== idx);
                                     setUnitForm((prev) => ({ ...prev, files: newFiles }));
                                   }}
-                                  className="w-9 h-9 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg transition-all cursor-pointer border-0 flex items-center justify-center shrink-0"
+                                  className="w-10 h-10 bg-rose-50 hover:bg-rose-500 text-rose-500 hover:text-white rounded-xl transition-all cursor-pointer border border-rose-200/60 dark:border-rose-900/40 flex items-center justify-center shrink-0"
                                 >
                                   <Trash2 size={14} />
                                 </button>
@@ -4541,10 +4819,10 @@ function DVETeacherWorkspace() {
                   </div>
 
                   {/* Card 4: 🔗 ลิงก์และแหล่งข้อมูลภายนอก */}
-                  <div className="bg-blue-500/5 dark:bg-blue-500/10 border border-blue-150 dark:border-blue-900/30 rounded-2xl p-4 space-y-4">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-blue-100 dark:border-blue-900/40 pb-3">
-                      <span className="text-xs font-black text-blue-700 dark:text-blue-450 flex items-center gap-1.5">
-                        <ExternalLink size={14} className="text-blue-500" />
+                  <div className="bg-blue-500/5 dark:bg-blue-500/10 border border-blue-200/60 dark:border-blue-900/40 rounded-[28px] p-5 sm:p-6 space-y-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-blue-100 dark:border-blue-900/40 pb-3.5">
+                      <span className="text-xs font-black text-blue-800 dark:text-blue-300 flex items-center gap-2">
+                        <ExternalLink size={16} className="text-blue-500" />
                         ลิงก์ภายนอก / แหล่งเรียนรู้ (เช่น YouTube, Slides)
                       </span>
                       <button
@@ -4555,9 +4833,9 @@ function DVETeacherWorkspace() {
                             files: [{ name: "", url: "", type: "link" }, ...prev.files],
                           }))
                         }
-                        className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-[11px] font-black rounded-lg transition-all flex items-center gap-1 cursor-pointer shadow-xs hover:scale-[1.02] border-0 shrink-0"
+                        className="px-3.5 py-1.5 bg-linear-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white text-xs font-black rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-md shadow-blue-500/20 hover:shadow-blue-500/30 hover:-translate-y-0.5 active:scale-95 border-0 shrink-0"
                       >
-                        <Plus size={10} /> เพิ่มลิงก์ภายนอก
+                        <Plus size={12} className="stroke-3" /> เพิ่มลิงก์ภายนอก
                       </button>
                     </div>
 
@@ -4568,11 +4846,11 @@ function DVETeacherWorkspace() {
                           !f.url?.startsWith("/uploads/") &&
                           !f.url?.startsWith("/api/media/")),
                     ).length === 0 ? (
-                      <div className="text-center py-5 border border-dashed border-blue-200 dark:border-blue-800/60 rounded-xl text-blue-600/65 dark:text-blue-400/50 text-xs font-bold bg-white/40 dark:bg-zinc-955/10">
+                      <div className="text-center py-6 border-2 border-dashed border-blue-200/70 dark:border-blue-800/50 rounded-2xl text-blue-700/70 dark:text-blue-400/60 text-xs font-bold bg-white/40 dark:bg-zinc-950/20">
                         ยังไม่มีลิงก์ภายนอกในหน่วยเรียนนี้
                       </div>
                     ) : (
-                      <div className="space-y-3.5">
+                      <div className="space-y-3">
                         {unitForm.files.map((file, idx) => {
                           const isDirectFile =
                             file.type === "file" ||
@@ -4580,13 +4858,13 @@ function DVETeacherWorkspace() {
                             file.url?.startsWith("/api/media/");
                           if (isDirectFile) return null;
                           return (
-                            <div key={idx} className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center bg-white dark:bg-zinc-900 p-2 sm:p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-xs transition-all hover:border-blue-300 dark:hover:border-blue-800">
+                            <div key={idx} className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center bg-white dark:bg-zinc-900 p-3 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 shadow-xs transition-all hover:border-blue-300 dark:hover:border-blue-700">
                               <div className="flex-1">
                                 <input
                                   type="text"
                                   placeholder="ชื่อลิงก์ เช่น สไลด์การสอน หรือ วิดีโอแนะนำ"
                                   required
-                                  className="w-full h-9 border border-zinc-200 dark:border-zinc-755 bg-zinc-50/50 dark:bg-zinc-950 rounded-lg px-2 sm:px-3 text-xs focus:outline-hidden dark:text-white font-medium"
+                                  className="w-full h-10 border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950 rounded-xl px-3 text-xs focus:outline-hidden focus:border-blue-500 dark:text-white font-bold"
                                   value={file.name}
                                   onChange={(e) => {
                                     const newFiles = [...unitForm.files];
@@ -4601,7 +4879,7 @@ function DVETeacherWorkspace() {
                                   type="url"
                                   placeholder="วางลิงก์ เช่น https://drive.google.com/..."
                                   required
-                                  className="flex-1 h-9 border border-zinc-200 dark:border-zinc-755 bg-zinc-50/50 dark:bg-zinc-950 rounded-lg px-2 sm:px-3 text-xs focus:outline-hidden dark:text-white truncate"
+                                  className="flex-1 h-10 border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950 rounded-xl px-3 text-xs focus:outline-hidden focus:border-blue-500 dark:text-white truncate font-medium"
                                   value={file.url}
                                   onChange={(e) => {
                                     const newFiles = [...unitForm.files];
@@ -4616,7 +4894,7 @@ function DVETeacherWorkspace() {
                                     const newFiles = unitForm.files.filter((_, i) => i !== idx);
                                     setUnitForm((prev) => ({ ...prev, files: newFiles }));
                                   }}
-                                  className="w-9 h-9 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg transition-all cursor-pointer border-0 flex items-center justify-center shrink-0"
+                                  className="w-10 h-10 bg-rose-50 hover:bg-rose-500 text-rose-500 hover:text-white rounded-xl transition-all cursor-pointer border border-rose-200/60 dark:border-rose-900/40 flex items-center justify-center shrink-0"
                                 >
                                   <Trash2 size={14} />
                                 </button>
@@ -4630,21 +4908,21 @@ function DVETeacherWorkspace() {
                 </div>
 
                 {/* Footer Actions */}
-                <div className="px-4 py-4 sm:px-6 bg-zinc-50 dark:bg-zinc-900/50 flex justify-end gap-2.5 border-t border-zinc-150 dark:border-zinc-800 shrink-0">
+                <div className="px-6 py-5 sm:px-8 bg-zinc-50/80 dark:bg-zinc-900/80 backdrop-blur-md flex justify-end gap-3 border-t border-zinc-200/60 dark:border-zinc-800/80 shrink-0">
                   <button
                     type="button"
                     onClick={() => setIsUnitModalOpen(false)}
-                    className="px-5 py-2.5 bg-white dark:bg-zinc-900 hover:bg-zinc-105 dark:hover:bg-zinc-800 border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-bold text-zinc-555 hover:text-zinc-700 dark:hover:text-zinc-350 transition-colors cursor-pointer"
+                    className="px-6 py-3 rounded-xl text-sm font-black text-zinc-500 bg-white border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
                   >
                     ยกเลิก
                   </button>
                   <button
                     type="submit"
-                    className="relative overflow-hidden px-8 py-3 rounded-2xl bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:via-teal-400 hover:to-emerald-500 text-white text-sm font-black shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all duration-300 border-0 cursor-pointer group ring-1 ring-white/20 inset-ring inset-ring-white/10"
+                    className="relative overflow-hidden px-8 py-3 rounded-xl bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:via-teal-400 hover:to-emerald-500 text-white text-sm font-black shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all duration-300 border-0 cursor-pointer group ring-1 ring-white/20 inset-ring inset-ring-white/10 flex items-center gap-2"
                   >
                     <span className="absolute inset-0 w-full h-full bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></span>
                     <span className="relative z-10 flex items-center gap-2">
-                      <Sparkles size={16} className="text-emerald-100 group-hover:text-white transition-colors" />
+                      <Sparkles size={18} className="text-emerald-100 group-hover:text-white transition-colors" />
                       บันทึกหน่วยเรียน
                     </span>
                   </button>
@@ -4664,55 +4942,60 @@ function DVETeacherWorkspace() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-zinc-950/65 dark:bg-zinc-950/80 backdrop-blur-md"
+              className="absolute inset-0 bg-zinc-950/60 dark:bg-zinc-950/80 backdrop-blur-md"
               onClick={() => setIsQuizModalOpen(false)}
             />
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full h-full sm:h-auto sm:max-h-[90vh] bg-white dark:bg-zinc-900 sm:rounded-[32px] sm:border border-white/20 dark:border-zinc-700/50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] text-left flex flex-col overflow-hidden sm:max-w-6xl"
+              className="relative w-full h-full sm:h-auto sm:max-h-[90vh] bg-white/95 dark:bg-zinc-900/95 sm:rounded-[36px] sm:border border-white/60 dark:border-zinc-800/80 shadow-[0_20px_60px_rgba(0,0,0,0.2)] text-left flex flex-col overflow-hidden sm:max-w-6xl backdrop-blur-3xl"
             >
               <form onSubmit={handleSaveQuiz} className="flex flex-col flex-1 min-h-0 w-full">
-                <div className="shrink-0 px-8 py-6 border-b border-zinc-100 dark:border-zinc-800/50 flex justify-between items-center bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl relative overflow-hidden">
+                {/* Header */}
+                <div className="px-6 py-5 sm:px-8 sm:py-6 border-b border-zinc-100 dark:border-zinc-800/80 flex justify-between items-center bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl relative overflow-hidden shrink-0">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
                   <div className="flex items-center gap-4 relative z-10">
-                    <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/30 flex items-center justify-center text-white">
+                    <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-emerald-400 via-teal-500 to-emerald-600 shadow-lg shadow-emerald-500/30 flex items-center justify-center text-white ring-2 ring-emerald-500/20">
                       <Award size={24} />
                     </div>
                     <div>
-                      <h3 className="text-xl font-black text-emerald-900 dark:text-emerald-100">
+                      <h3 className="text-lg sm:text-xl font-black text-emerald-950 dark:text-emerald-50 leading-tight">
                         {quizForm.id ? "แก้ไขแบบทดสอบ" : "สร้างแบบทดสอบ (Test Builder)"}
                       </h3>
+                      <p className="text-xs text-emerald-700/80 dark:text-emerald-400/80 font-bold mt-0.5">
+                        กำหนดข้อมูลทั่วไป เงื่อนไขการสอบ และชุดคำถามสำหรับผู้เรียน
+                      </p>
                     </div>
                   </div>
                   <button
                     type="button"
                     onClick={() => setIsQuizModalOpen(false)}
-                    className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 cursor-pointer transition-colors relative z-10 border-0 bg-transparent"
+                    className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors border-0 cursor-pointer relative z-10"
                   >
-                    <X size={20} />
+                    <X size={18} />
                   </button>
                 </div>
 
-                <div className="p-4 sm:p-6 space-y-6 flex-1 overflow-y-auto min-h-0 bg-zinc-50/50 dark:bg-zinc-950/50 custom-scrollbar">
+                <div className="p-5 sm:p-8 space-y-6 flex-1 overflow-y-auto min-h-0 bg-zinc-50/40 dark:bg-zinc-950/40 custom-scrollbar">
                   {/* Section 1: ข้อมูลทั่วไป (General Information) */}
-                  <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-sm space-y-5">
-                    <div className="flex items-center gap-2 border-b border-zinc-200/50 dark:border-zinc-800 pb-3 mb-2">
-                      <span className="text-sm font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                        <FileText size={16} /> ข้อมูลทั่วไป (General Info)
+                  <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-sm space-y-5">
+                    <div className="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-800 pb-3.5">
+                      <span className="text-xs font-black text-emerald-800 dark:text-emerald-300 uppercase tracking-wider flex items-center gap-2">
+                        <FileText size={16} className="text-emerald-500" />
+                        ข้อมูลทั่วไป (General Info)
                       </span>
                     </div>
 
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                    <div className="flex flex-col gap-2 group">
+                      <label className="text-xs font-black text-zinc-700 dark:text-zinc-300 group-focus-within:text-emerald-600 dark:group-focus-within:text-emerald-400 transition-colors">
                         หัวข้อแบบทดสอบ *
                       </label>
                       <input
                         type="text"
                         placeholder="เช่น แบบทดสอบหลังเรียนหน่วยที่ 1"
                         required
-                        className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
+                        className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold shadow-xs"
                         value={quizForm.title}
                         onChange={(e) =>
                           setQuizForm((prev) => ({ ...prev, title: e.target.value }))
@@ -4721,12 +5004,12 @@ function DVETeacherWorkspace() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                      <div className="flex flex-col gap-2">
+                        <label className="text-xs font-black text-zinc-700 dark:text-zinc-300">
                           ผูกกับหน่วยการเรียน (Link to Unit)
                         </label>
                         <select
-                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold cursor-pointer"
+                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold cursor-pointer shadow-xs"
                           value={quizForm.unitId}
                           onChange={(e) =>
                             setQuizForm((prev) => ({ ...prev, unitId: e.target.value }))
@@ -4750,12 +5033,12 @@ function DVETeacherWorkspace() {
                         </select>
                       </div>
 
-                      <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                      <div className="flex flex-col gap-2">
+                        <label className="text-xs font-black text-zinc-700 dark:text-zinc-300">
                           ประเภทของแบบทดสอบ / การวัดผล
                         </label>
                         <select
-                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold cursor-pointer"
+                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold cursor-pointer shadow-xs"
                           value={quizForm.quizType || "general"}
                           onChange={(e) =>
                             setQuizForm((prev) => ({ ...prev, quizType: e.target.value }))
@@ -4771,31 +5054,40 @@ function DVETeacherWorkspace() {
                     </div>
                   </div>
 
-                  {/* Section 2: การตั้งค่าระบบ (System Settings) */}
-                  <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-sm space-y-5">
-                    <div className="flex items-center gap-2 border-b border-zinc-200/50 dark:border-zinc-800 pb-3 mb-2">
-                      <span className="text-sm font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                        <Settings2 size={16} /> การตั้งค่าระบบ (Settings)
+                  {/* Section 2: การตั้งค่าระบบ (Settings) */}
+                  <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-sm space-y-5">
+                    <div className="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-800 pb-3.5">
+                      <span className="text-xs font-black text-emerald-800 dark:text-emerald-300 uppercase tracking-wider flex items-center gap-2">
+                        <Settings2 size={16} className="text-emerald-500" />
+                        การตั้งค่าระบบ (Settings)
                       </span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                      <div className="flex flex-col gap-2">
+                        <label className="text-xs font-black text-zinc-700 dark:text-zinc-300">
                           รูปแบบทางเทคนิค (Platform)
                         </label>
-                        <div className="flex border border-slate-200 dark:border-zinc-800 rounded-xl overflow-hidden p-0.5 bg-slate-50 dark:bg-zinc-950">
+                        <div className="flex border-2 border-zinc-200/80 dark:border-zinc-800 rounded-2xl overflow-hidden p-1 bg-zinc-100/70 dark:bg-zinc-950 gap-1 shadow-xs">
                           <button
                             type="button"
                             onClick={() => setQuizForm((prev) => ({ ...prev, isBuiltIn: false }))}
-                            className={`flex-1 py-2 text-center text-xs font-black rounded-lg transition-all ${!quizForm.isBuiltIn ? "bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-sm border dark:border-zinc-800" : "text-zinc-500 border border-transparent"}`}
+                            className={`flex-1 py-2.5 text-center text-xs font-black rounded-xl transition-all cursor-pointer ${
+                              !quizForm.isBuiltIn
+                                ? "bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white shadow-md shadow-emerald-500/25"
+                                : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                            }`}
                           >
                             ลิงก์ภายนอก (Google Form)
                           </button>
                           <button
                             type="button"
                             onClick={() => setQuizForm((prev) => ({ ...prev, isBuiltIn: true }))}
-                            className={`flex-1 py-2 text-center text-xs font-black rounded-lg transition-all ${quizForm.isBuiltIn ? "bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 shadow-sm border dark:border-zinc-800" : "text-zinc-500 border border-transparent"}`}
+                            className={`flex-1 py-2.5 text-center text-xs font-black rounded-xl transition-all cursor-pointer ${
+                              quizForm.isBuiltIn
+                                ? "bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white shadow-md shadow-emerald-500/25"
+                                : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                            }`}
                           >
                             สร้างในแอป (Built-In)
                           </button>
@@ -4803,29 +5095,29 @@ function DVETeacherWorkspace() {
                       </div>
 
                       {quizForm.isBuiltIn ? (
-                        <div className="flex flex-col justify-end pb-1.5">
-                          <label className="flex items-center gap-2 text-xs font-bold text-zinc-700 dark:text-zinc-300 cursor-pointer select-none bg-zinc-50 dark:bg-zinc-950 p-2.5 h-11 rounded-xl border dark:border-zinc-800">
+                        <div className="flex flex-col justify-end">
+                          <label className="flex items-center gap-2.5 text-xs font-black text-zinc-700 dark:text-zinc-300 cursor-pointer select-none bg-white dark:bg-zinc-950 px-4 h-13 rounded-2xl border-2 border-zinc-200/80 dark:border-zinc-800 shadow-xs hover:border-emerald-400/50 transition-all">
                             <input
                               type="checkbox"
-                              className="accent-emerald-500 w-4 h-4"
+                              className="accent-emerald-500 w-4 h-4 rounded"
                               checked={!!quizForm.isShuffle}
                               onChange={(e) =>
                                 setQuizForm((prev) => ({ ...prev, isShuffle: e.target.checked }))
                               }
                             />
-                            🔀 สลับลำดับข้อคำถาม (Shuffle)
+                            <span>🔀 สลับลำดับข้อคำถาม (Shuffle)</span>
                           </label>
                         </div>
                       ) : (
-                        <div className="flex flex-col gap-1.5 animate-fade-in">
-                          <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                        <div className="flex flex-col gap-2 animate-fade-in">
+                          <label className="text-xs font-black text-zinc-700 dark:text-zinc-300">
                             ลิงก์ Google Form สอบออนไลน์ *
                           </label>
                           <input
                             type="url"
                             placeholder="https://docs.google.com/forms/d/..."
                             required={!quizForm.isBuiltIn}
-                            className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
+                            className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold shadow-xs"
                             value={quizForm.googleFormUrl}
                             onChange={(e) =>
                               setQuizForm((prev) => ({ ...prev, googleFormUrl: e.target.value }))
@@ -4835,41 +5127,41 @@ function DVETeacherWorkspace() {
                       )}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t dark:border-zinc-800 pt-4 mt-2">
-                      <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-zinc-100 dark:border-zinc-800 pt-4 mt-2">
+                      <div className="flex flex-col gap-2">
+                        <label className="text-xs font-black text-zinc-700 dark:text-zinc-300">
                           วันเริ่มเปิดให้ทำแบบทดสอบ (Start Date)
                         </label>
                         <input
                           type="datetime-local"
-                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
+                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-xs font-bold focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white shadow-xs"
                           value={quizForm.startDate}
                           onChange={(e) =>
                             setQuizForm((prev) => ({ ...prev, startDate: e.target.value }))
                           }
                         />
                       </div>
-                      <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                      <div className="flex flex-col gap-2">
+                        <label className="text-xs font-black text-zinc-700 dark:text-zinc-300">
                           วันหมดเขตส่งกระดาษคำตอบ (Deadline)
                         </label>
                         <input
                           type="datetime-local"
-                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
+                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-xs font-bold focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white shadow-xs"
                           value={quizForm.deadline}
                           onChange={(e) =>
                             setQuizForm((prev) => ({ ...prev, deadline: e.target.value }))
                           }
                         />
                       </div>
-                      <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                      <div className="flex flex-col gap-2">
+                        <label className="text-xs font-black text-zinc-700 dark:text-zinc-300">
                           คะแนนที่ใช้จริง (หารคะแนน / Scale Score)
                         </label>
                         <input
                           type="number"
                           placeholder="ปล่อยว่างหากใช้คะแนนดิบ"
-                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold"
+                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-sm font-bold focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white shadow-xs"
                           value={quizForm.maxScaleScore === null ? "" : quizForm.maxScaleScore}
                           onChange={(e) =>
                             setQuizForm((prev) => ({
@@ -4884,17 +5176,18 @@ function DVETeacherWorkspace() {
 
                   {/* Section 3: จัดการคำถามแบบทดสอบ (Quiz Content) */}
                   {quizForm.isBuiltIn && (
-                    <div className="bg-white/60 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-sm space-y-5 animate-fade-in flex flex-col">
-                      <div className="flex items-center gap-2 border-b border-zinc-200/50 dark:border-zinc-800 pb-3 mb-2">
-                        <span className="text-sm font-black text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                          <ListChecks size={16} /> จัดการคำถามแบบทดสอบ (Quiz Content)
+                    <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800 rounded-[28px] p-5 sm:p-6 shadow-sm space-y-5 animate-fade-in flex flex-col">
+                      <div className="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-800 pb-3.5">
+                        <span className="text-xs font-black text-emerald-800 dark:text-emerald-300 uppercase tracking-wider flex items-center gap-2">
+                          <ListChecks size={16} className="text-emerald-500" />
+                          จัดการคำถามแบบทดสอบ (Quiz Content)
                         </span>
                       </div>
 
                       {/* Reusable Templates Box */}
-                      <div className="p-4 sm:p-5 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/80 rounded-[20px] space-y-4 shadow-xs">
-                        <h4 className="text-xs font-black text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
-                          <Save size={14} className="text-emerald-500" /> การจัดการแม่แบบแบบทดสอบเพื่อใช้งานซ้ำ
+                      <div className="p-5 bg-linear-to-br from-emerald-500/5 via-white/80 to-teal-500/5 dark:from-emerald-950/20 dark:via-zinc-900/80 dark:to-teal-950/20 border border-emerald-200/60 dark:border-emerald-900/40 rounded-2xl space-y-4 shadow-xs">
+                        <h4 className="text-xs font-black text-zinc-800 dark:text-zinc-200 flex items-center gap-2">
+                          <Save size={15} className="text-emerald-500" /> การจัดการแม่แบบแบบทดสอบเพื่อใช้งานซ้ำ
                         </h4>
 
                         <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
@@ -4910,12 +5203,12 @@ function DVETeacherWorkspace() {
                                 คุณครูสามารถสร้างข้อสอบด้านล่างแล้วกด "บันทึกแม่แบบคำถามนี้" ได้ครับ
                               </div>
                             ) : (
-                              <div className="flex flex-col gap-1">
-                                <label className="text-[10px] font-black text-zinc-400">
+                              <div className="flex flex-col gap-1.5">
+                                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-wider">
                                   โหลดข้อมูลจากแม่แบบที่เคยบันทึกไว้
                                 </label>
                                 <select
-                                  className="w-full h-10 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-lg px-2 text-xs focus:outline-hidden dark:text-white font-bold"
+                                  className="w-full h-11 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 rounded-xl px-3 text-xs focus:outline-hidden dark:text-white font-bold shadow-xs cursor-pointer"
                                   defaultValue=""
                                   onChange={(e) => {
                                     const val = e.target.value;
@@ -4952,7 +5245,7 @@ function DVETeacherWorkspace() {
                               type="button"
                               onClick={handleSaveAsTemplate}
                               disabled={!quizForm.questions || quizForm.questions.length === 0}
-                              className="w-full h-10 bg-emerald-600 hover:bg-emerald-700 disabled:bg-zinc-200 dark:disabled:bg-zinc-800 text-white font-black rounded-lg text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs border-0 disabled:opacity-50"
+                              className="w-full h-11 bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 disabled:from-zinc-200 disabled:to-zinc-300 dark:disabled:from-zinc-800 dark:disabled:to-zinc-800 text-white font-black rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-emerald-500/20 border-0 disabled:opacity-50"
                             >
                               บันทึกแม่แบบคำถามนี้
                             </button>
@@ -4961,15 +5254,15 @@ function DVETeacherWorkspace() {
 
                         {/* List of stored templates so they can be deleted! */}
                         {templates.length > 0 && (
-                          <div className="border-t border-zinc-200 dark:border-zinc-800/80 pt-3 mt-3 space-y-1.5">
-                            <span className="text-[10px] font-black text-zinc-400 block">
+                          <div className="border-t border-zinc-200/60 dark:border-zinc-800/80 pt-3 mt-3 space-y-1.5">
+                            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-wider block">
                               แม่แบบของฉันทั้งหมด (สามารถลบออกได้):
                             </span>
                             <div className="flex flex-wrap gap-1.5 max-h-[80px] overflow-y-auto pr-1">
                               {templates.map((tpl) => (
                                 <div
                                   key={tpl.id}
-                                  className="inline-flex items-center gap-2 pl-2.5 pr-1.5 py-1 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-lg text-[10px] font-black text-zinc-700 dark:text-zinc-350"
+                                  className="inline-flex items-center gap-2 pl-2.5 pr-1.5 py-1 bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-lg text-[10px] font-black text-zinc-700 dark:text-zinc-300 shadow-xs"
                                 >
                                   <span>
                                     {tpl.title} ({tpl.questions?.length || 0} ข้อ)
@@ -4994,48 +5287,49 @@ function DVETeacherWorkspace() {
                         )}
                       </div>
 
-                      <div className="flex justify-between items-center mt-6">
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pt-2">
                         <div className="flex items-center gap-3">
-                          <span className="text-xs font-black text-zinc-500 dark:text-zinc-400">
+                          <span className="text-xs font-black text-zinc-700 dark:text-zinc-300">
                             รายการโจทย์ข้อคำถาม ({quizForm.questions?.length || 0} ข้อ)
                           </span>
                           <button
                             type="button"
                             onClick={() => setShowQuizAnswers(!showQuizAnswers)}
-                            className={`px-2 py-1 rounded-lg text-[10px] font-black transition-all border cursor-pointer flex items-center gap-1 ${showQuizAnswers
-                              ? "bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800"
-                              : "bg-zinc-100 text-zinc-500 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700"
-                              }`}
+                            className={`px-2.5 py-1.5 rounded-lg text-[10px] font-black transition-all border cursor-pointer flex items-center gap-1 shadow-xs ${
+                              showQuizAnswers
+                                ? "bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800"
+                                : "bg-zinc-100 text-zinc-500 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700"
+                            }`}
                           >
-                            {showQuizAnswers ? <EyeOff size={10} /> : <Eye size={10} />}
+                            {showQuizAnswers ? <EyeOff size={11} /> : <Eye size={11} />}
                             {showQuizAnswers ? "ปิดเฉลย" : "แสดงเฉลย"}
                           </button>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <button
                             type="button"
                             onClick={handleDownloadTemplate}
-                            className="px-3 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-800/40 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 border-0 cursor-pointer shadow-sm"
+                            className="px-3.5 py-2 bg-blue-50/80 text-blue-700 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/40 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 border border-blue-200/60 dark:border-blue-800/60 cursor-pointer shadow-xs"
                             title="ดาวน์โหลดไฟล์ต้นแบบ (Excel Template)"
                           >
-                            <Download size={14} /> โหลด Template
+                            <Download size={14} className="text-blue-500" /> โหลด Template
                           </button>
-                          
-                          <input 
-                            type="file" 
-                            ref={fileInputRef} 
-                            onChange={handleImportExcel} 
-                            accept=".xlsx, .xls, .csv, .ods" 
-                            className="hidden" 
+
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleImportExcel}
+                            accept=".xlsx, .xls, .csv, .ods"
+                            className="hidden"
                           />
-                          
+
                           <button
                             type="button"
                             onClick={() => fileInputRef.current?.click()}
-                            className="px-3 py-2 bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-800/40 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 border-0 cursor-pointer shadow-sm"
+                            className="px-3.5 py-2 bg-amber-50/80 text-amber-700 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-300 dark:hover:bg-amber-800/40 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 border border-amber-200/60 dark:border-amber-800/60 cursor-pointer shadow-xs"
                             title="นำเข้าจากไฟล์ Excel"
                           >
-                            <Upload size={14} /> Import Excel
+                            <Upload size={14} className="text-amber-500" /> Import Excel
                           </button>
 
                           <button
@@ -5055,28 +5349,28 @@ function DVETeacherWorkspace() {
                                 questions: [...(prev.questions || []), newQ],
                               }));
                             }}
-                            className="px-4 py-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-300 dark:hover:bg-emerald-500/30 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 border-0 cursor-pointer shadow-sm"
+                            className="px-4 py-2 bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 text-white rounded-xl text-xs font-black transition-all flex items-center gap-1.5 border-0 cursor-pointer shadow-md shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:scale-95"
                           >
-                            <Plus size={14} /> เพิ่มโจทย์คำถาม
+                            <Plus size={14} className="stroke-3" /> เพิ่มโจทย์คำถาม
                           </button>
                         </div>
                       </div>
 
                       {!quizForm.questions || quizForm.questions.length === 0 ? (
-                        <div className="text-center py-8 text-zinc-400 dark:text-zinc-500 text-xs font-bold border border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl">
+                        <div className="text-center py-10 text-zinc-400 dark:text-zinc-500 text-xs font-bold border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl bg-zinc-50/50 dark:bg-zinc-950/20">
                           ยังไม่มีการสร้างคำถามย่อย กรุณากดปุ่ม "เพิ่มโจทย์คำถาม" ด้านบน
                         </div>
                       ) : (
-                        <div className="space-y-6 max-h-[65vh] overflow-y-auto pr-1">
+                        <div className="space-y-5 max-h-[65vh] overflow-y-auto pr-1">
                           {[...(quizForm.questions || [])].reverse().map((q, reverseIdx) => {
                             const qIdx = quizForm.questions.length - 1 - reverseIdx;
                             return (
                               <div
                                 key={q.id}
-                                className="p-5 sm:p-6 bg-white dark:bg-zinc-900/90 shadow-md border border-zinc-200/50 dark:border-zinc-800/80 rounded-[24px] space-y-4 relative transition-all hover:shadow-lg hover:border-emerald-200 dark:hover:border-emerald-900/50 group"
+                                className="p-5 sm:p-6 bg-white dark:bg-zinc-900/90 shadow-md border border-zinc-200/80 dark:border-zinc-800/80 rounded-[26px] space-y-4 relative transition-all hover:shadow-lg hover:border-emerald-300 dark:hover:border-emerald-800 group"
                               >
                                 <div className="flex justify-between items-center gap-2">
-                                  <span className="text-xs font-black text-emerald-600">
+                                  <span className="text-xs font-black text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200/60 dark:border-emerald-800/60 px-3 py-1 rounded-xl">
                                     ข้อที่ {qIdx + 1}
                                   </span>
                                   <button
@@ -5087,7 +5381,7 @@ function DVETeacherWorkspace() {
                                       );
                                       setQuizForm((prev) => ({ ...prev, questions: updated }));
                                     }}
-                                    className="text-rose-500 hover:text-rose-700 p-1 border-0 bg-transparent cursor-pointer text-[10px] font-black"
+                                    className="px-2.5 py-1 bg-rose-50 hover:bg-rose-500 text-rose-600 hover:text-white rounded-lg transition-colors border border-rose-200/60 dark:border-rose-900/60 cursor-pointer text-[10px] font-black"
                                   >
                                     ลบคำถาม
                                   </button>
@@ -5104,7 +5398,7 @@ function DVETeacherWorkspace() {
                                       updated[qIdx].text = e.target.value;
                                       setQuizForm((prev) => ({ ...prev, questions: updated }));
                                     }}
-                                    className="w-full h-12 border-2 border-zinc-200/80 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 transition-all dark:text-white font-bold"
+                                    className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950 rounded-xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 transition-all dark:text-white font-bold shadow-xs"
                                   />
 
                                   <div className="flex flex-col gap-1 mt-2">
@@ -5125,7 +5419,7 @@ function DVETeacherWorkspace() {
                                           </button>
                                         </div>
                                       ) : (
-                                        <label className="flex items-center justify-center h-8 px-3 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-lg cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors">
+                                        <label className="flex items-center justify-center h-9 px-3.5 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors w-fit">
                                           <input
                                             type="file"
                                             accept="image/*"
@@ -5154,9 +5448,9 @@ function DVETeacherWorkspace() {
                                     </div>
                                   </div>
 
-                                  <div className="grid grid-cols-2 gap-2 mt-2">
+                                  <div className="grid grid-cols-2 gap-3 mt-2">
                                     <div className="flex flex-col gap-1">
-                                      <label className="text-[9px] font-black text-zinc-400">
+                                      <label className="text-[10px] font-black text-zinc-400 uppercase tracking-wider">
                                         ประเภทคำตอบ
                                       </label>
                                       <select
@@ -5188,7 +5482,7 @@ function DVETeacherWorkspace() {
                                           }
                                           setQuizForm((prev) => ({ ...prev, questions: updated }));
                                         }}
-                                        className="h-10 border-2 border-zinc-200/80 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 rounded-xl px-3 text-xs focus:outline-hidden focus:border-emerald-500 transition-all dark:text-white font-bold shadow-sm cursor-pointer"
+                                        className="h-10 border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 rounded-xl px-3 text-xs focus:outline-hidden focus:border-emerald-500 transition-all dark:text-white font-bold shadow-xs cursor-pointer"
                                       >
                                         <option value="multiple_choice">
                                           ปรนัย (เลือกตอบ 1 ข้อ)
@@ -5201,7 +5495,7 @@ function DVETeacherWorkspace() {
                                     </div>
 
                                     <div className="flex flex-col gap-1">
-                                      <label className="text-[9px] font-black text-zinc-400">
+                                      <label className="text-[10px] font-black text-zinc-400 uppercase tracking-wider">
                                         คะแนนดิบเต็มของข้อนี้
                                       </label>
                                       <input
@@ -5214,20 +5508,19 @@ function DVETeacherWorkspace() {
                                           updated[qIdx].points = parseInt(e.target.value) || 1;
                                           setQuizForm((prev) => ({ ...prev, questions: updated }));
                                         }}
-                                        className="h-10 border-2 border-zinc-200/80 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 rounded-xl px-3 text-xs focus:outline-hidden focus:border-emerald-500 transition-all dark:text-white font-bold shadow-sm"
+                                        className="h-10 border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 rounded-xl px-3 text-xs focus:outline-hidden focus:border-emerald-500 transition-all dark:text-white font-bold shadow-xs"
                                       />
                                     </div>
                                   </div>
 
                                   {(q.type === "multiple_choice" || q.type === "checkboxes") && (
-                                    <div className="space-y-2 mt-3 pt-3 border-t border-zinc-200 dark:border-zinc-800/80">
-                                      <label className="text-[9px] font-black text-zinc-500 block">
-                                        ป้อนตัวเลือกคำตอบ
-                                        (และกดยืนยันปุ่มวิทยุ/กล่องเพื่อระบุเฉลยที่ถูกต้อง)
+                                    <div className="space-y-2 mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800/80">
+                                      <label className="text-[10px] font-black text-zinc-500 block uppercase tracking-wider">
+                                        ป้อนตัวเลือกคำตอบ (และกดยืนยันปุ่มวิทยุ/กล่องเพื่อระบุเฉลยที่ถูกต้อง)
                                       </label>
-                                      <div className="space-y-1.5">
+                                      <div className="space-y-2">
                                         {(q.options || []).map((opt: string, optIdx: number) => (
-                                          <div key={optIdx} className="flex items-center gap-3 bg-white dark:bg-zinc-900/50 p-2 rounded-2xl border border-zinc-100 dark:border-zinc-800/50 hover:border-emerald-200 dark:hover:border-emerald-900/50 transition-all">
+                                          <div key={optIdx} className="flex items-center gap-3 bg-zinc-50 dark:bg-zinc-950/60 p-2.5 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60 hover:border-emerald-300 dark:hover:border-emerald-800/60 transition-all">
                                             {q.type === "multiple_choice" ? (
                                               <input
                                                 type="radio"
@@ -5243,7 +5536,7 @@ function DVETeacherWorkspace() {
                                                     questions: updated,
                                                   }));
                                                 }}
-                                                className="w-3.5 h-3.5 accent-emerald-500 cursor-pointer"
+                                                className="w-4 h-4 accent-emerald-500 cursor-pointer"
                                               />
                                             ) : (
                                               <input
@@ -5274,7 +5567,7 @@ function DVETeacherWorkspace() {
                                                     questions: updated,
                                                   }));
                                                 }}
-                                                className="w-3.5 h-3.5 accent-emerald-500 cursor-pointer"
+                                                className="w-4 h-4 accent-emerald-500 cursor-pointer"
                                               />
                                             )}
                                             <input
@@ -5306,7 +5599,7 @@ function DVETeacherWorkspace() {
                                                   questions: updated,
                                                 }));
                                               }}
-                                              className="flex-1 h-10 border-2 border-zinc-200/50 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-950 hover:bg-white dark:hover:bg-zinc-900 focus:bg-white dark:focus:bg-zinc-900 rounded-xl px-3 text-xs focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all dark:text-white font-bold"
+                                              className="flex-1 h-10 border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900 rounded-xl px-3 text-xs focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all dark:text-white font-bold"
                                             />
                                             {showQuizAnswers && (
                                               (q.type === "multiple_choice" && q.correctAnswer === opt) ||
@@ -5346,22 +5639,22 @@ function DVETeacherWorkspace() {
                                               }}
                                               className="text-rose-500 hover:text-rose-700 p-1 border-0 bg-transparent cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                                             >
-                                              <X size={10} />
+                                              <X size={12} />
                                             </button>
                                           </div>
                                         ))}
                                       </div>
-                                        <button
-                                          type="button"
-                                          onClick={() => {
-                                            const updated = [...quizForm.questions];
-                                            updated[qIdx].options.push("");
-                                            setQuizForm((prev) => ({ ...prev, questions: updated }));
-                                          }}
-                                          className="mt-3 w-full h-10 border-2 border-dashed border-emerald-200 dark:border-emerald-900/50 text-emerald-600 dark:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer transition-all"
-                                        >
-                                          <Plus size={14} /> เพิ่มช่องตัวเลือกใหม่
-                                        </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const updated = [...quizForm.questions];
+                                          updated[qIdx].options.push("");
+                                          setQuizForm((prev) => ({ ...prev, questions: updated }));
+                                        }}
+                                        className="mt-3 w-full h-10 border-2 border-dashed border-emerald-200 dark:border-emerald-900/50 text-emerald-600 dark:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer transition-all"
+                                      >
+                                        <Plus size={14} className="stroke-3" /> เพิ่มช่องตัวเลือกใหม่
+                                      </button>
                                     </div>
                                   )}
                                 </div>
@@ -5373,19 +5666,25 @@ function DVETeacherWorkspace() {
                     </div>
                   )}
                 </div>
-                <div className="px-6 py-4 bg-zinc-50 dark:bg-zinc-850/50 flex justify-end gap-3 border-t dark:border-zinc-800">
+
+                {/* Footer Actions */}
+                <div className="px-6 py-5 sm:px-8 bg-zinc-50/80 dark:bg-zinc-900/80 backdrop-blur-md flex justify-end gap-3 border-t border-zinc-200/60 dark:border-zinc-800/80 shrink-0">
                   <button
                     type="button"
                     onClick={() => setIsQuizModalOpen(false)}
-                    className="px-5 py-2.5 rounded-lg text-xs font-black text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    className="px-6 py-3 rounded-xl text-sm font-black text-zinc-500 bg-white border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
                   >
                     ยกเลิก
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-md cursor-pointer"
+                    className="relative overflow-hidden px-8 py-3 rounded-xl bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:via-teal-400 hover:to-emerald-500 text-white text-sm font-black shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:-translate-y-1 active:translate-y-0 active:scale-95 transition-all duration-300 border-0 cursor-pointer group ring-1 ring-white/20 inset-ring inset-ring-white/10 flex items-center gap-2"
                   >
-                    บันทึกข้อมูลแบบทดสอบ
+                    <span className="absolute inset-0 w-full h-full bg-linear-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></span>
+                    <span className="relative z-10 flex items-center gap-2">
+                      <Sparkles size={18} className="text-emerald-100 group-hover:text-white transition-colors" />
+                      บันทึกข้อมูลแบบทดสอบ
+                    </span>
                   </button>
                 </div>
               </form>

@@ -170,11 +170,9 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    if (!department) {
-      return NextResponse.json({ error: "Missing department parameter" }, { status: 400 });
-    }
+    const isAllDept = !department || department === "all" || department === "แผนกทั้งหมด";
 
-    if (role !== "super_admin" && role !== "admin") {
+    if (!isAllDept && role !== "super_admin" && role !== "admin") {
       const ownedSubject = await db.collection("dve_subjects").findOne({
         teacherId: userId,
         department: { $regex: escapeRegex(department), $options: "i" },
@@ -199,7 +197,7 @@ export async function GET(req: Request) {
     const targetClean = normalizeDept(department);
     let deptQuery: any = null;
 
-    if (department && role !== "student") {
+    if (!isAllDept && department && role !== "student") {
       // Step 1: Find all possible class groups efficiently
       const [cg1, cg2, cg3] = await Promise.all([
         db.collection("users").distinct("classGroup", { role: "student" }),
