@@ -596,8 +596,8 @@ export default function InternshipScreeningDashboard() {
 
       {/* View Details Modal */}
       {viewingItem && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 sm:p-6 md:p-12 overflow-y-auto" onClick={() => setViewingItem(null)}>
-          <div className="bg-white dark:bg-zinc-900 rounded-[2rem] shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative flex flex-col" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 sm:p-6 md:p-12 overflow-y-auto" onClick={() => setViewingItem(null)}>
+          <div className="bg-white dark:bg-zinc-900 rounded-4xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative flex flex-col" onClick={(e) => e.stopPropagation()}>
             
             {/* Top Cover Image */}
             <div className="relative h-64 sm:h-80 w-full bg-slate-200 dark:bg-zinc-800 shrink-0">
@@ -609,7 +609,7 @@ export default function InternshipScreeningDashboard() {
                 </div>
               )}
               {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+              <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent"></div>
               
               {/* Close Button */}
               <button onClick={() => setViewingItem(null)} className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-colors z-10">

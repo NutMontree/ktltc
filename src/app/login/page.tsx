@@ -234,12 +234,11 @@ export default function LoginPage() {
               transition={{ delay: 0.2 }}
             >
               <div className="flex justify-between items-end mb-2">
-                <label className="text-xs font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
-       🔒 <strong>รหัสผ่าน:</strong>
-                  <strong className="text-[#003fff] text-sm"> เบอร์โทรศัพท์มือถือ</strong>
-                </label>
+               <label className="text-xs font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
+                 🔒 <strong>รหัสผ่าน</strong>
+               </label>
                 <Link
-                  href="https://line.me/R/ti/p/@068xqmlf"
+                  href="/forgot-password"
                   className="text-xs font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 transition-colors pr-1"
                 >
                   ลืมรหัสผ่าน?
@@ -254,7 +253,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-11 pr-12 py-4 bg-white dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600 font-medium shadow-sm hover:shadow-md tracking-wide max-w-full"
-                  placeholder="รหัสผ่าน หรือ เบอร์โทรศัพท์มือถือ"
+                  placeholder="รหัสผ่าน"
                   autoComplete="current-password"
                   required
                 />

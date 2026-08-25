@@ -100,10 +100,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
           }
 
-          // เพิ่มการรองรับการเข้าสู่ระบบด้วยเบอร์โทร (phone) เป็นรหัสผ่าน
-          if (!isPasswordCorrect && user.phone && credentials.password === user.phone) {
-            isPasswordCorrect = true;
-          }
+          // [Security Update] ปิดระบบการเข้าสู่ระบบด้วยเบอร์โทร (phone) แบบ Plain text เพื่อความปลอดภัย
+          // หากผู้ใช้จำรหัสผ่านไม่ได้ จะต้องทำการรีเซ็ตรหัสผ่านผ่านช่องทางที่กำหนดเท่านั้น
 
           // ตรวจสอบว่า user ไม่มีรหัสผ่านและไม่ได้ใช้เบอร์โทรที่ถูกต้อง
           if (!isPasswordCorrect && !user.password) {
@@ -161,8 +159,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const now = Date.now();
       const lastChecked = (newToken.lastChecked as number) || (newToken.loginTimestamp as number) || now;
       
-      // Changed interval to 60000ms (1 min) for quicker session invalidation
-      if (newToken.id && (now - lastChecked > 60000)) {
+      // เปลี่ยนความถี่ในการตรวจสอบ Session จาก 1 นาทีเป็น 10 นาที (600000ms) เพื่อลดภาระการทำงานของ Database อย่างมาก
+      if (newToken.id && (now - lastChecked > 600000)) {
         try {
           const client = await clientPromise;
           const db = client.db("ktltc_db");

@@ -95,6 +95,7 @@
     "remark-gfm": "^4.0.1",
     "remark-html": "^16.0.1",
     "requests": "^0.3.0",
+    "resend": "^6.22.1",
     "server-timing": "^3.3.3",
     "sharp": "^0.34.5",
     "suneditor": "^2.47.8",
