@@ -202,13 +202,13 @@ export function DVEStudentPortal() {
   const [taskView, setTaskView] = useState<"todo" | "submitted">("todo");
 
   // Notification states
-  const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
 
   // Student in-app quiz states
   const [activeQuiz, setActiveQuiz] = useState<any | null>(null);
   const [quizAnswers, setQuizAnswers] = useState<any[]>([]);
   const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
+  const wasQuizModalOpenRef = useRef(false);
   const [submittingQuiz, setSubmittingQuiz] = useState(false);
   const [quizResult, setQuizResult] = useState<{ score: number; maxScore: number } | null>(null);
 
@@ -794,7 +794,10 @@ export function DVEStudentPortal() {
 
   // Handle Pre-test / Post-test flow when Quiz Modal is closed
   useEffect(() => {
-    if (!isQuizModalOpen && activeStudyUnit) {
+    const wasOpen = wasQuizModalOpenRef.current;
+    wasQuizModalOpenRef.current = isQuizModalOpen;
+
+    if (wasOpen && !isQuizModalOpen && activeStudyUnit) {
       if (unitQuizMode === "pretest") {
         const unitIdStr = activeStudyUnit.id || activeStudyUnit._id?.toString();
         const pretest = quizzes.find(
@@ -1002,7 +1005,7 @@ export function DVEStudentPortal() {
   const missingTasksCount = unstudiedUnitsCount + pendingAssignmentsCount;
 
   // Generate notifications - Use filtered study unit attendances
-  useEffect(() => {
+  const notifications = useMemo(() => {
     const newNotifications: any[] = [];
 
     // Notification for incomplete assignments
@@ -1041,7 +1044,7 @@ export function DVEStudentPortal() {
       });
     }
 
-    setNotifications(newNotifications);
+    return newNotifications;
   }, [studyUnitAttendances, quizzes]);
 
   const getRoleThaiLabel = (role?: string) => {

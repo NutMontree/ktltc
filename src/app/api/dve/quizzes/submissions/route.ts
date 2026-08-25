@@ -542,7 +542,7 @@ export async function DELETE(req: Request) {
       _id: new ObjectId(submissionId)
     });
 
-    // Update student's DVE attendance record to reset assignment status
+    // Reset/Delete student's DVE attendance record for this unit/quiz so time and status restart from 0
     const quiz = await db.collection("dve_quizzes").findOne({
       _id: new ObjectId(submission.quizId)
     });
@@ -554,26 +554,17 @@ export async function DELETE(req: Request) {
         studentId: submission.studentId,
         subjectId: subjectId
       };
-      const submissionDate = toBangkokDateString(submission.submittedAt);
-      if (submissionDate) {
-        attendanceQuery.date = submissionDate;
-      }
       if (unitId) {
         attendanceQuery.unitId = unitId;
+      } else {
+        const submissionDate = toBangkokDateString(submission.submittedAt);
+        if (submissionDate) {
+          attendanceQuery.date = submissionDate;
+        }
       }
 
-      await db.collection("dve_attendances").updateOne(
-        attendanceQuery,
-        {
-          $set: {
-            assignmentStatus: "None",
-            score: "",
-            maxScore: 0,
-            imageUrl: "",
-            updatedAt: new Date()
-          }
-        }
-      );
+      // Delete attendance record for this unit so student can restart learning & timer from 0
+      await db.collection("dve_attendances").deleteMany(attendanceQuery);
     }
 
     return NextResponse.json({
