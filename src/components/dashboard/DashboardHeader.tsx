@@ -76,7 +76,7 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
             </h1>
             <p className="text-zinc-500 dark:text-zinc-400 font-medium text-sm sm:text-lg flex items-center gap-2">
               <span className="w-1 h-5 bg-blue-600/20 rounded-full" />
-              วิทยาลัยเทคนิคกันทรลักษ์ • แผงควบคุมระบบบริหารจัดการ
+              {new Date().getHours() < 12 ? "สวัสดีตอนเช้า 🌅" : new Date().getHours() < 18 ? "สวัสดีตอนบ่าย ☀️" : "สวัสดีตอนค่ำ 🌙"} • วิทยาลัยเทคนิคกันทรลักษ์
             </p>
           </motion.div>
         </div>

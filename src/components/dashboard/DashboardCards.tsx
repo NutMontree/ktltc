@@ -153,7 +153,7 @@ export function UsageCard({
   );
 }
 
-export function ActionCard({ href, title, icon: Icon, desc, external, badge, variants }: any) {
+export function ActionCard({ href, title, icon: Icon, desc, external, badge, variants, className }: any) {
   const { searchQuery } = useDashboard();
   const gradients: any = [
     "from-blue-600 to-indigo-700",
@@ -161,7 +161,23 @@ export function ActionCard({ href, title, icon: Icon, desc, external, badge, var
     "from-emerald-600 to-teal-700",
     "from-orange-600 to-red-700",
     "from-sky-600 to-blue-700",
-    "from-zinc-800 to-black",
+    "from-zinc-800 to-zinc-900",
+  ];
+  const lightBgs: any = [
+    "bg-blue-500/10",
+    "bg-purple-500/10",
+    "bg-emerald-500/10",
+    "bg-orange-500/10",
+    "bg-sky-500/10",
+    "bg-zinc-500/10",
+  ];
+  const textColors: any = [
+    "text-blue-600 dark:text-blue-400",
+    "text-purple-600 dark:text-purple-400",
+    "text-emerald-600 dark:text-emerald-400",
+    "text-orange-600 dark:text-orange-400",
+    "text-sky-600 dark:text-sky-400",
+    "text-zinc-600 dark:text-zinc-400",
   ];
   const colorIdx = title.length % gradients.length;
 
@@ -170,7 +186,7 @@ export function ActionCard({ href, title, icon: Icon, desc, external, badge, var
   }
 
   return (
-    <motion.div variants={variants}>
+    <motion.div variants={variants} className={className}>
       <Link
         href={href}
         target={external ? "_blank" : "_self"}
@@ -183,12 +199,12 @@ export function ActionCard({ href, title, icon: Icon, desc, external, badge, var
             </div>
           )}
 
-          <div className="absolute -right-4 -bottom-4 opacity-[0.03] dark:opacity-[0.05] group-hover:opacity-[0.1] transition-opacity">
+          <div className={`absolute -right-4 -bottom-4 opacity-[0.03] dark:opacity-[0.05] group-hover:opacity-[0.1] transition-opacity ${textColors[colorIdx]}`}>
             <Icon size={120} />
           </div>
 
           <div
-            className={`w-14 h-14 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/80 backdrop-blur-sm flex items-center justify-center mb-6 group-hover:bg-linear-to-br ${gradients[colorIdx]} group-hover:text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-inner`}
+            className={`w-14 h-14 rounded-2xl ${lightBgs[colorIdx]} ${textColors[colorIdx]} backdrop-blur-sm flex items-center justify-center mb-6 group-hover:bg-linear-to-br ${gradients[colorIdx]} group-hover:text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-inner`}
           >
             <Icon size={24} />
           </div>

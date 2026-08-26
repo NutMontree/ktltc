@@ -47,18 +47,20 @@ export default function TeacherMenus({ permissions, customMenus, item, userRole,
                 </span>
               </motion.div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-
-                {customMenus.filter(m => m.workspace === "teacher" && permissions?.[m.permissionKey]).map(menu => (
-                  <ActionCard
-                    key={menu._id}
-                    href={menu.href}
-                    title={menu.title}
-                    icon={IconMap[menu.icon] || Layout}
-                    desc={menu.desc}
-                    variants={item}
-                  />
-                ))}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {customMenus.filter(m => m.workspace === "teacher" && permissions?.[m.permissionKey]).map((menu) => {
+                  const Icon = IconMap[menu.icon] || Layout;
+                  return (
+                    <ActionCard
+                      key={menu._id}
+                      href={menu.href}
+                      title={menu.title}
+                      icon={Icon}
+                      desc={menu.desc}
+                      variants={item}
+                    />
+                  );
+                })}
               </div>
             </div>
           )}

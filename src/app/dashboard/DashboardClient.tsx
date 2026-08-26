@@ -279,51 +279,50 @@ export default function DashboardClient({ initialStats, initialPermissions, init
           <DashboardHeader user={user} />
 
           <motion.div variants={container} initial="hidden" animate="show" className="space-y-12">
-            {/* --- Quick Actions Section --- */}
-            {/* --- Search & Actions Bar (Not Sticky) --- */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 w-full mb-2 -mt-2">
-              <motion.div variants={item} className="relative w-full sm:w-64 shrink-0">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Search className="h-4 w-4 text-zinc-400" />
+            {/* --- Hero Search & Actions --- */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 w-full mb-8">
+              <motion.div variants={item} className="relative w-full md:max-w-xl shrink-0">
+                <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-zinc-400" />
                 </div>
                 <input
                   type="text"
                   placeholder="ค้นหาเมนู..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-4 py-2.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all"
+                  className="w-full pl-14 pr-6 py-4 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl border border-white/60 dark:border-white/10 rounded-4xl text-base font-bold focus:outline-none focus:ring-4 focus:ring-blue-500/20 shadow-xl shadow-black/5 dark:shadow-black/40 transition-all placeholder:text-zinc-400"
                 />
               </motion.div>
 
-              {/* ปุ่ม Logout Other Devices */}
-              <motion.div variants={item} className="flex overflow-x-auto hide-scrollbar scrollbar-none items-center gap-2 w-full sm:w-auto shrink-0 *:shrink-0 [-ms-overflow-style:none] pb-2 sm:pb-0">
+              <motion.div variants={item} className="shrink-0 w-full md:w-auto flex justify-end">
                 <LogoutOtherDevicesBtn />
               </motion.div>
             </div>
 
-            {/* --- Quick Actions Tabs (Sticky) --- */}
-            <div className="flex flex-col md:flex-row md:items-center justify-start sticky top-16 md:top-20 z-40 pt-2 pb-4 -mx-4 px-4 md:-mx-8 md:px-8 bg-slate-50/40 dark:bg-zinc-950/40 backdrop-blur-2xl border-b border-white/60 dark:border-white/10 shadow-sm">
-              <motion.div variants={item} className="flex flex-nowrap md:flex-wrap overflow-x-auto hide-scrollbar scrollbar-none gap-3 p-1.5 w-full [&>button]:shrink-0 [-ms-overflow-style:none]">
-                <button
-                  onClick={() => setActiveTab("all")}
-                  className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm ${activeTab === "all" ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 ring-2 ring-zinc-900/20 dark:ring-white/20" : "bg-white text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white border border-zinc-200 dark:border-zinc-800"}`}
-                >
-                  <Layers size={18} />
-                  <span>ทั้งหมด</span>
-                </button>
-                {hasStudentAccess && (
+            {/* --- Quick Actions Tabs (Floating Dock) --- */}
+            <div className="sticky top-16 md:top-20 z-40 flex justify-center w-full pointer-events-none pt-2 pb-6 -mx-4 px-4 md:mx-0 md:px-0">
+              <motion.div variants={item} className="p-1.5 w-full md:w-auto max-w-full pointer-events-auto bg-white/40 dark:bg-zinc-950/40 backdrop-blur-3xl border border-white/60 dark:border-white/10 rounded-[2.5rem] shadow-2xl shadow-black/5 dark:shadow-black/40">
+                <div className="flex flex-nowrap overflow-x-auto gap-2 p-1 w-full max-w-full [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-zinc-300/80 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700/80 [&::-webkit-scrollbar-thumb]:rounded-full pb-1.5">
                   <button
-                    onClick={() => setActiveTab("student")}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm ${activeTab === "student" ? "bg-indigo-600 text-white ring-2 ring-indigo-600/20" : "bg-white text-zinc-600 hover:bg-indigo-50 hover:text-indigo-600 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400 border border-zinc-200 dark:border-zinc-800"}`}
+                    onClick={() => setActiveTab("all")}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shrink-0 ${activeTab === "all" ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-md" : "bg-transparent text-zinc-600 hover:bg-white/50 dark:text-zinc-400 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-white"}`}
                   >
-                    <Users size={18} />
-                    <span>นักเรียน</span>
+                    <Layers size={18} />
+                    <span>ทั้งหมด</span>
                   </button>
-                )}
+                  {hasStudentAccess && (
+                    <button
+                      onClick={() => setActiveTab("student")}
+                      className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shrink-0 ${activeTab === "student" ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20" : "bg-transparent text-zinc-600 hover:bg-white/50 hover:text-indigo-600 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-indigo-400"}`}
+                    >
+                      <Users size={18} />
+                      <span>นักเรียน</span>
+                    </button>
+                  )}
                 {hasTeacherAccess && (
                   <button
                     onClick={() => setActiveTab("teacher")}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm ${activeTab === "teacher" ? "bg-violet-600 text-white ring-2 ring-violet-600/20" : "bg-white text-zinc-600 hover:bg-violet-50 hover:text-violet-600 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-violet-900/30 dark:hover:text-violet-400 border border-zinc-200 dark:border-zinc-800"}`}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shrink-0 ${activeTab === "teacher" ? "bg-violet-600 text-white shadow-md shadow-violet-500/20" : "bg-transparent text-zinc-600 hover:bg-white/50 hover:text-violet-600 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-violet-400"}`}
                   >
                     <BookOpen size={18} />
                     <span>ครูผู้สอน</span>
@@ -332,7 +331,7 @@ export default function DashboardClient({ initialStats, initialPermissions, init
                 {hasStaffAccess && (
                   <button
                     onClick={() => setActiveTab("staff")}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm ${activeTab === "staff" ? "bg-teal-600 text-white ring-2 ring-teal-600/20" : "bg-white text-zinc-600 hover:bg-teal-50 hover:text-teal-600 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-teal-900/30 dark:hover:text-teal-400 border border-zinc-200 dark:border-zinc-800"}`}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shrink-0 ${activeTab === "staff" ? "bg-teal-600 text-white shadow-md shadow-teal-500/20" : "bg-transparent text-zinc-600 hover:bg-white/50 hover:text-teal-600 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-teal-400"}`}
                   >
                     <UserCog size={18} />
                     <span>บุคลากร / HR</span>
@@ -341,7 +340,7 @@ export default function DashboardClient({ initialStats, initialPermissions, init
                 {hasExecAccess && (
                   <button
                     onClick={() => setActiveTab("executive")}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm ${activeTab === "executive" ? "bg-rose-600 text-white ring-2 ring-rose-600/20" : "bg-white text-zinc-600 hover:bg-rose-50 hover:text-rose-600 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-rose-900/30 dark:hover:text-rose-400 border border-zinc-200 dark:border-zinc-800"}`}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shrink-0 ${activeTab === "executive" ? "bg-rose-600 text-white shadow-md shadow-rose-500/20" : "bg-transparent text-zinc-600 hover:bg-white/50 hover:text-rose-600 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-rose-400"}`}
                   >
                     <ShieldCheck size={18} />
                     <span>ผู้บริหาร</span>
@@ -350,12 +349,13 @@ export default function DashboardClient({ initialStats, initialPermissions, init
                 {hasSuperAdminAccess && (
                   <button
                     onClick={() => setActiveTab("superadmin")}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all shadow-sm ${activeTab === "superadmin" ? "bg-sky-600 text-white ring-2 ring-sky-600/20" : "bg-white text-zinc-600 hover:bg-sky-50 hover:text-sky-600 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-sky-900/30 dark:hover:text-sky-400 border border-zinc-200 dark:border-zinc-800"}`}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shrink-0 ${activeTab === "superadmin" ? "bg-sky-600 text-white shadow-md shadow-sky-500/20" : "bg-transparent text-zinc-600 hover:bg-white/50 hover:text-sky-600 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-sky-400"}`}
                   >
                     <Shield size={18} />
                     <span>ผู้ดูแลระบบ</span>
                   </button>
                 )}
+                </div>
               </motion.div>
             </div>
 

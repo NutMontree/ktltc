@@ -47,9 +47,8 @@ export default function StudentMenus({ permissions, customMenus, item, userRole,
                 </span>
               </motion.div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-
-                {customMenus.filter(m => m.workspace === "student" && permissions?.[m.permissionKey]).map(menu => {
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {customMenus.filter(m => m.workspace === "student" && permissions?.[m.permissionKey]).map((menu) => {
                   const Icon = IconMap[menu.icon] || Layout;
                   return (
                     <ActionCard

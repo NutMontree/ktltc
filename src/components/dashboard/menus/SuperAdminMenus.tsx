@@ -1,7 +1,7 @@
 import { ActionCard } from "@/components/dashboard/DashboardCards";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { 
+import {
   Clock, BookOpen, MessageSquare, Layout, Users, Activity, FileText, CheckSquare,
   BarChart3, MonitorPlay, Building2, UserCog, Settings, Flag, Briefcase, Key,
   Volume2, ShieldCheck, PieChart, Megaphone, Map, Calendar, Folder, BookText, HelpCircle,
@@ -32,108 +32,71 @@ export interface MenuProps {
 export default function SuperAdminMenus({ permissions, customMenus, item, userRole, hasAccess, activeTab, stats }: MenuProps) {
   return (
     <>
-{/* ============================== */}
-          {/* 5. SUPER ADMIN WORKSPACE */}
-          {/* ============================== */}
-          {(activeTab === "all" || activeTab === "superadmin") && hasAccess && (
-            <div>
-              <motion.div variants={item} className="mb-8 flex flex-col gap-1">
-                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400 flex items-center gap-4">
-                  <Shield className="w-4 h-4" /> สำหรับผู้ดูแลระบบสูงสุด (Super Admin Only)
-                  <span className="h-px bg-sky-500/10 flex-1" />
-                </h2>
-                <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                  เครื่องมือบริหารจัดการระบบและบุคลากรขั้นสูง
-                </span>
-              </motion.div>
+      {/* ============================== */}
+      {/* 5. SUPER ADMIN WORKSPACE */}
+      {/* ============================== */}
+      {(activeTab === "all" || activeTab === "superadmin") && hasAccess && (
+        <div>
+          <motion.div variants={item} className="mb-8 flex flex-col gap-1">
+            <h2 className="text-xs font-black uppercase tracking-[0.2em] text-sky-600 dark:text-sky-400 flex items-center gap-4">
+              <Shield className="w-4 h-4" /> สำหรับผู้ดูแลระบบ (Super Admin Workspace)
+              <span className="h-px bg-sky-500/10 flex-1" />
+            </h2>
+            <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+              เครื่องมือจัดการระบบ ฐานข้อมูล และสิทธิ์การใช้งาน
+            </span>
+          </motion.div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-
-                {customMenus.filter(m => m.workspace === "superadmin" && permissions?.[m.permissionKey]).map(menu => (
-                  <ActionCard
-                    key={menu._id}
-                    href={menu.href}
-                    title={menu.title}
-                    icon={Layout}
-                    desc={menu.desc}
-                    variants={item}
-                  />
-                ))}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {customMenus.filter(m => m.workspace === "superadmin" && permissions?.[m.permissionKey]).map((menu) => {
+                  const Icon = IconMap[menu.icon] || Layout;
+                  return (
+                    <ActionCard
+                      key={menu._id}
+                      href={menu.href}
+                      title={menu.title}
+                      icon={Icon}
+                      desc={menu.desc}
+                      variants={item}
+                    />
+                  );
+                })}
 
                 {/* Reset views logic component directly here for super admin */}
                 {permissions?.manage_reset_views && (
                   <motion.div variants={item}>
-                    <button
-                      onClick={async () => {
-                        if (
-                          confirm(
-                            "คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตจำนวนผู้เข้าชมทั้งหมดของทุกโฟลเดอร์ให้กลับเป็น 0?",
-                          )
-                        ) {
-                          try {
-                            const res = await fetch("/api/drive/folders?reset=true");
-                            if (res.ok) {
-                              alert("รีเซ็ตจำนวนผู้เข้าชมทั้งหมดเป็น 0 เรียบร้อยแล้ว!");
-                            } else {
-                              alert("เกิดข้อผิดพลาดในการรีเซ็ต");
-                            }
-                          } catch (e) {
-                            alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
-                          }
-                        }
-                      }}
-                      className="text-left w-full h-full group relative flex flex-col p-px rounded-[2.5rem] bg-zinc-200 dark:bg-zinc-800 hover:bg-linear-to-br hover:from-amber-500 hover:to-orange-600 transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-amber-500/20 hover:-translate-y-2 cursor-pointer"
+                    <Link
+                      href="/dashboard/reset-views"
+                      className="group relative flex flex-col h-full rounded-[2.5rem] transition-all duration-500 hover:-translate-y-2 shadow-xl shadow-black/5 dark:shadow-black/40 hover:shadow-2xl hover:shadow-rose-500/20"
                     >
-                      <div className="relative flex flex-col h-full bg-white dark:bg-zinc-950 p-7 rounded-[2.45rem] overflow-hidden transition-colors group-hover:bg-white/95 dark:group-hover:bg-zinc-950/95">
+                      <div className="relative flex flex-col h-full bg-white/40 dark:bg-white/5 backdrop-blur-2xl p-7 rounded-[2.5rem] overflow-hidden transition-all duration-500 border border-white/60 dark:border-white/10 group-hover:bg-white/60 dark:group-hover:bg-white/10 group-hover:border-white/80 dark:group-hover:border-white/20">
                         <div className="absolute -right-4 -bottom-4 opacity-[0.03] dark:opacity-[0.05] group-hover:opacity-[0.1] transition-opacity">
-                          <Settings size={120} />
+                          <Activity size={120} />
                         </div>
 
-                        <div className="w-14 h-14 rounded-2xl bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center mb-6 group-hover:bg-linear-to-br group-hover:from-amber-500 group-hover:to-orange-600 group-hover:text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-inner text-amber-500">
-                          <Settings size={24} />
+                        <div className="w-14 h-14 rounded-2xl bg-zinc-50/80 dark:bg-zinc-900/80 backdrop-blur-sm flex items-center justify-center mb-6 group-hover:bg-linear-to-br from-rose-500 to-red-600 group-hover:text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-inner text-rose-500">
+                          <Activity size={24} />
                         </div>
 
                         <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight mb-2 truncate">
-                          รีเซ็ตยอดดูเป็น 0
+                          รีเซ็ตยอดเข้าชม
                         </h3>
                         <p className="text-zinc-500 dark:text-zinc-500 text-[10px] font-bold uppercase tracking-widest leading-snug mb-6">
-                          รีเซ็ตยอดเข้าชมสะสมของโฟลเดอร์ทั้งหมดกลับเป็นศูนย์
+                          จัดการยอดวิวโพสต์
                         </p>
 
-                        <div className="mt-auto flex items-center gap-2 text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0">
-                          ล้างค่าทันที <ArrowUpRight size={14} strokeWidth={3} />
+                        <div className="mt-auto flex items-center gap-2 text-[10px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0">
+                          เข้าสู่ระบบจัดการ <ArrowUpRight size={14} strokeWidth={3} />
                         </div>
                       </div>
-                    </button>
+                    </Link>
                   </motion.div>
                 )}
               </div>
-              <div className="mt-12">
-                <motion.div variants={item} className="mb-8 flex flex-col gap-1">
-                  <h2 className="text-xs font-black uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400 flex items-center gap-4">
-                    <HelpCircle className="w-4 h-4" /> ส่วนคู่มือ (Manuals)
-                    <span className="h-px bg-teal-500/10 flex-1" />
-                  </h2>
-                  <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-                    เอกสารคู่มือการใช้งานระบบ
-                  </span>
-                </motion.div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-                  {permissions?.access_manual_gate_pass && (
-                    <ActionCard
-                      href="/manual/gate-pass"
-                      title="คู่มือระบบ Gate Pass"
-                      icon={BookOpen}
-                      desc="คำแนะนำการใช้ระบบ Gate Pass"
-                      variants={item}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
+        </div>
+      )}
 
-          
+
     </>
   );
 }
