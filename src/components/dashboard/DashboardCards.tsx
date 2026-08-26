@@ -174,9 +174,9 @@ export function ActionCard({ href, title, icon: Icon, desc, external, badge, var
       <Link
         href={href}
         target={external ? "_blank" : "_self"}
-        className="group relative flex flex-col h-full p-px rounded-[2.5rem] bg-zinc-200 dark:bg-zinc-800 hover:bg-linear-to-br hover:from-blue-500 hover:to-indigo-600 transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 hover:-translate-y-2"
+        className="group relative flex flex-col h-full rounded-[2.5rem] transition-all duration-500 hover:-translate-y-2 shadow-xl shadow-black/5 dark:shadow-black/40 hover:shadow-2xl hover:shadow-blue-500/20"
       >
-        <div className="relative flex flex-col h-full bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl p-7 rounded-[2.45rem] overflow-hidden transition-colors group-hover:bg-white/95 dark:group-hover:bg-zinc-950/95 border border-white/50 dark:border-zinc-800/50">
+        <div className="relative flex flex-col h-full bg-white/40 dark:bg-white/5 backdrop-blur-2xl p-7 rounded-[2.5rem] overflow-hidden transition-all duration-500 border border-white/60 dark:border-white/10 group-hover:bg-white/60 dark:group-hover:bg-white/10 group-hover:border-white/80 dark:group-hover:border-white/20">
           {badge && (
             <div className="absolute top-5 right-5 px-2.5 py-1 bg-rose-500 text-white text-[10px] font-black rounded-lg shadow-lg shadow-rose-500/30 z-10 animate-bounce">
               {badge}
