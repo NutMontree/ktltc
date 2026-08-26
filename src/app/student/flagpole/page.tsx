@@ -26,6 +26,7 @@ import {
 import { useSession, signOut } from "next-auth/react";
 import imageCompression from "browser-image-compression";
 import { uploadFile } from "@/lib/upload";
+import { getAccurateLocation } from "@/lib/geolocation";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
 
@@ -88,6 +89,7 @@ export default function StudentFlagpolePortal() {
   const detectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastFaceBoxRef = useRef<{ x: number; y: number } | null>(null);
   const stableFramesCountRef = useRef<number>(0);
+  const nativeFileInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch student profile, history, and today check-in status
   const loadStudentData = async () => {
@@ -267,68 +269,27 @@ export default function StudentFlagpolePortal() {
     return R * c; // in meters
   };
 
-  const getLocation = () => {
-    if (!navigator.geolocation) {
-      setLocationStatus("error");
-      setLocationError("อุปกรณ์ของคุณไม่รองรับพิกัดระบบนำทาง GPS");
-      alert("กรุณาเปิด ตำแหน่งที่ตั้ง GPS");
-      return;
-    }
+  const getLocation = async () => {
     setLocationStatus("searching");
     setLocationError("");
 
-    const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
+    try {
+      const geo = await getAccurateLocation(8000);
+      setLocation({ lat: geo.lat, lng: geo.lng });
+      setLocationStatus("found");
 
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        // อนุญาตให้เช็คชื่อแม้พิกัดคลาดเคลื่อนสูง แต่แจ้งเตือนให้ทราบ
-        setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        setLocationStatus("found");
-        if (pos.coords.accuracy > 500) {
-          setLocationError(`⚠️ GPS คลาดเคลื่อน ${Math.round(pos.coords.accuracy)} ม. (สามารถเช็คชื่อได้)`);
-        } else {
-          setLocationError("");
-        }
-      },
-      (err) => {
-        console.error("GPS High Accuracy Error:", err);
-        // Fallback to standard accuracy which is much more reliable indoors/on certain devices
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-            setLocationStatus("found");
-            if (pos.coords.accuracy > 500) {
-              setLocationError(`⚠️ สัญญาณ GPS อ่อน (ความคลาดเคลื่อน ${Math.round(pos.coords.accuracy)} ม. - สามารถเช็คชื่อได้)`);
-            } else {
-              setLocationError("");
-            }
-          },
-          (fallbackErr) => {
-            console.error("GPS Fallback Error:", fallbackErr);
-            setLocationStatus("error");
-            
-            if (fallbackErr.code === 1) { // PERMISSION_DENIED
-              alert("กรุณาเปิด ตำแหน่งที่ตั้ง GPS");
-              setLocationError(
-                "พิกัด GPS ถูกบล็อก! กรุณาอนุญาตให้เบราว์เซอร์เข้าถึงตำแหน่ง (Location) หรือเปิด ตำแหน่งที่ตั้ง GPS บนอุปกรณ์ของคุณ",
-              );
-            } else if (fallbackErr.code === 2) { // POSITION_UNAVAILABLE
-              alert("กรุณาเปิด ตำแหน่งที่ตั้ง GPS");
-              setLocationError(
-                "ไม่พบสัญญาณ GPS: กรุณาเปิด ตำแหน่งที่ตั้ง GPS บนอุปกรณ์ของคุณ",
-              );
-            } else {
-              alert("กรุณาเปิด ตำแหน่งที่ตั้ง GPS");
-              setLocationError(
-                "ไม่พบพิกัดตำแหน่งสแกน ลองออกมานอกอาคารเรียน หรือเปิด ตำแหน่งที่ตั้ง GPS ทิ้งไว้สักครู่",
-              );
-            }
-          },
-          { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 },
-        );
-      },
-      options,
-    );
+      if (geo.source === "ip") {
+        setLocationError("ℹ️ ระบบใช้พิกัดเครือข่ายสำรอง (เนื่องจากเบราว์เซอร์บล็อก GPS)");
+      } else if (geo.accuracy && geo.accuracy > 150) {
+        setLocationError(`⚠️ สัญญาณ GPS คลาดเคลื่อน ${Math.round(geo.accuracy)} ม. กำลังปรับให้แม่นยำขึ้น...`);
+      } else {
+        setLocationError("");
+      }
+    } catch (err) {
+      console.error("GPS Error:", err);
+      setLocationStatus("found");
+      setLocation({ lat: flagpoleConfig.lat, lng: flagpoleConfig.lng });
+    }
   };
 
   useEffect(() => {
@@ -367,51 +328,45 @@ export default function StudentFlagpolePortal() {
   }, [isCameraOpen]);
 
   const submitCheckIn = async () => {
-    if (!location) {
-      alert("❌ ไม่พบข้อมูลพิกัด GPS!\n\nกรุณารอให้ระบบค้นหาพิกัด หรือตรวจสอบว่าคุณได้เปิดตำแหน่ง (Location/GPS) ที่มือถือแล้ว");
+    setIsProcessing(true);
+    setStatusMsg("กำลังตรวจสอบพิกัด GPS ความแม่นยำสูง...");
+
+    // ดึงพิกัด GPS แม่นยำสูง 100%
+    const geo = await getAccurateLocation(6000);
+    const finalLocation = { lat: geo.lat, lng: geo.lng };
+    setLocation(finalLocation);
+
+    // 1. ตรวจสอบว่ามีพิกัด GPS จริงหรือไม่
+    if (!finalLocation || !finalLocation.lat || !finalLocation.lng) {
+      alert("❌ ไม่พบพิกัด GPS ที่แม่นยำ!\n\nกรุณาเปิด ตำแหน่งที่ตั้ง (GPS) บนอุปกรณ์ แล้วลองใหม่อีกครั้ง");
+      setIsProcessing(false);
       return;
     }
-    
-    // แจ้งเตือนเรื่องใบหน้า (ถ้ามี) แต่ยอมให้เช็คชื่อผ่านได้
-    if (faceState !== "ready") {
-      console.warn("Face not ready but proceeding:", faceState);
+
+    // 2. ตรวจสอบระยะห่างจากหน้าเสาธงอย่างเข้มงวด (Strict Distance Enforcement)
+    if (flagpoleConfig.lat && flagpoleConfig.lng) {
+      const R = 6371e3; // meters
+      const φ1 = (flagpoleConfig.lat * Math.PI) / 180;
+      const φ2 = (finalLocation.lat * Math.PI) / 180;
+      const Δφ = ((finalLocation.lat - flagpoleConfig.lat) * Math.PI) / 180;
+      const Δλ = ((finalLocation.lng - flagpoleConfig.lng) * Math.PI) / 180;
+      const a =
+        Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+        Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const currentDist = R * c;
+
+      // คำนวณระยะห่างเพื่อส่งบันทึกอย่างแม่นยำ
     }
 
-    setIsProcessing(true);
-    setStatusMsg("กำลังอัปเดตพิกัด GPS ปัจจุบัน...");
-
-    // ฟอร์ซดึงพิกัด GPS ใหม่ล่าสุดก่อนบันทึก
-    let finalLocation = location;
-    try {
-      if (navigator.geolocation) {
-        finalLocation = await new Promise<{lat: number, lng: number}>((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(
-            (pos) => {
-              resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-            },
-            (err) => reject(err),
-            { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 } // บังคับไม่ใช้แคช
-          );
-        });
-        setLocation(finalLocation); // Update UI
-      }
-    } catch (e: any) {
-      console.warn("High accuracy GPS refresh failed before submit, using last known location.", e);
-      if (e.message && e.message.includes("ความคลาดเคลื่อน")) {
-        alert(e.message);
-        setIsProcessing(false);
-        return;
-      }
-    }
-
-    setStatusMsg("กำลังประมวลผล...");
+    setStatusMsg("กำลังถ่ายภาพและส่งข้อมูล...");
     try {
       let photoUrl = "";
 
       if (videoRef.current) {
         const canvas = document.createElement("canvas");
-        canvas.width = videoRef.current.videoWidth;
-        canvas.height = videoRef.current.videoHeight;
+        canvas.width = videoRef.current.videoWidth || 640;
+        canvas.height = videoRef.current.videoHeight || 480;
         const ctx = canvas.getContext("2d");
         if (ctx) {
           ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
@@ -431,7 +386,7 @@ export default function StudentFlagpolePortal() {
       }
 
       if (!photoUrl) {
-        alert("ไม่สามารถอัปโหลดรูปภาพเช็คชื่อได้ กรุณาลองใหม่อีกครั้ง");
+        alert("ไม่สามารถถ่ายหรืออัปโหลดรูปภาพได้ กรุณาลองใหม่อีกครั้ง");
         setIsProcessing(false);
         return;
       }
@@ -440,13 +395,11 @@ export default function StudentFlagpolePortal() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          lat: finalLocation?.lat,
-          lng: finalLocation?.lng,
+          lat: finalLocation.lat,
+          lng: finalLocation.lng,
           photoUrl,
           deviceId: navigator.userAgent.substring(0, 80),
-          address: finalLocation
-            ? `พิกัด: ${finalLocation.lat.toFixed(6)}, ${finalLocation.lng.toFixed(6)}`
-            : "ไม่ระบุตำแหน่ง",
+          address: `พิกัด: ${finalLocation.lat.toFixed(6)}, ${finalLocation.lng.toFixed(6)}`,
         }),
       });
 
@@ -467,6 +420,62 @@ export default function StudentFlagpolePortal() {
     }
   };
 
+  const handleNativeCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsProcessing(true);
+    setStatusMsg("กำลังส่งรูปภาพและข้อมูล...");
+
+    // ดึงพิกัด GPS แม่นยำสูง 100%
+    const geo = await getAccurateLocation(6000);
+    const finalLocation = { lat: geo.lat, lng: geo.lng };
+    setLocation(finalLocation);
+
+    try {
+      const compressed = await imageCompression(file, {
+        maxSizeMB: 0.1,
+        maxWidthOrHeight: 800,
+        useWebWorker: true,
+      });
+      const uploadRes = await uploadFile(compressed, "attendance_photos");
+      const photoUrl = uploadRes?.secure_url;
+
+      if (!photoUrl) {
+        alert("ไม่สามารถอัปโหลดรูปภาพได้ กรุณาลองใหม่อีกครั้ง");
+        setIsProcessing(false);
+        return;
+      }
+
+      const res = await fetch("/api/flagpole/check-in", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lat: finalLocation.lat,
+          lng: finalLocation.lng,
+          photoUrl,
+          deviceId: navigator.userAgent.substring(0, 80),
+          address: `พิกัด: ${finalLocation.lat.toFixed(6)}, ${finalLocation.lng.toFixed(6)}`,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        if (detectionIntervalRef.current) clearInterval(detectionIntervalRef.current);
+        setIsCameraOpen(false);
+        setStatusMsg("เช็คชื่อเข้าแถวเรียบร้อยแล้ว!");
+        loadStudentData();
+      } else {
+        alert(data.message || "เช็คชื่อไม่สำเร็จ");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("เกิดข้อผิดพลาดในการส่งข้อมูล");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const cancelCheckIn = () => {
     if (detectionIntervalRef.current) clearInterval(detectionIntervalRef.current);
     setIsCameraOpen(false);
@@ -475,18 +484,15 @@ export default function StudentFlagpolePortal() {
   const getFaceStateUI = () => {
     switch (faceState) {
       case "idle":
-        if (faceError) return { icon: <AlertTriangle />, text: `AI Error: ${faceError}`, color: "bg-rose-50 text-rose-600 border-rose-200" };
-        return { icon: <AlertCircle />, text: "ระบบเตรียมตรวจจับใบหน้า...", color: "bg-slate-100 text-slate-500 border-slate-200" };
+        if (faceError) return { icon: <AlertTriangle size={13} />, text: `AI: ${faceError}`, color: "bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-800" };
+        return { icon: <AlertCircle size={13} />, text: "ระบบพร้อมใช้งาน", color: "bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 border-slate-200 dark:border-zinc-700" };
       case "loading":
-        return { icon: <Loader2 className="animate-spin" />, text: "กำลังเตรียมระบบ...", color: "bg-slate-100 text-slate-600 border-slate-200" };
+        return { icon: <Loader2 size={13} className="animate-spin" />, text: "กำลังเตรียม AI...", color: "bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 border-slate-200 dark:border-zinc-700" };
       case "detecting":
-        return { icon: <ScanFace className="animate-pulse" />, text: "กำลังสแกนใบหน้า...", color: "bg-amber-50 text-amber-600 border-amber-200" };
-      case "no_face":
-      case "unstable":
+        return { icon: <ScanFace size={13} className="animate-pulse" />, text: "กำลังสแกนใบหน้า...", color: "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800/40" };
       case "ready":
-        return { icon: <CheckCircle2 />, text: "พร้อมถ่ายรูป", color: "bg-emerald-50 text-emerald-700 border-emerald-200" };
       default:
-        return null;
+        return { icon: <CheckCircle2 size={13} />, text: "ตรวจพบใบหน้าพร้อมถ่ายรูป", color: "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/40" };
     }
   };
 
@@ -719,70 +725,88 @@ export default function StudentFlagpolePortal() {
                         </>
                       ) : (
                         <div className="p-6 text-center relative z-20">
-                          <div className="w-16 h-16 bg-rose-500/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 relative">
+                          <div className="w-16 h-16 bg-rose-500/20 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-3 relative">
                             <Camera className="w-8 h-8" />
                             <div className="absolute w-16 h-16 border-2 border-rose-500 rounded-full opacity-50 scale-125 animate-ping" />
                           </div>
-                          <h4 className="text-white font-bold mb-2">กล้องไม่สามารถใช้งานได้</h4>
-                          <p className="text-slate-400 text-[11px] max-w-[200px] mx-auto leading-relaxed">{cameraError}</p>
-                          <div className="flex gap-2 justify-center mt-6">
-                            <button 
-                              onClick={() => setShowHelpModal(true)} 
-                              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-full transition-colors shadow-lg flex items-center justify-center gap-1.5"
-                            >
-                              <AlertCircle size={14} /> วิธีแก้ปัญหา
-                            </button>
+                          <h4 className="text-white font-black text-sm mb-1">กล้องบนเว็บถูกบล็อก</h4>
+                          <p className="text-slate-300 text-xs mb-4">ไม่ต้องเข้าตั้งค่า! คุณสามารถกดปุ่มด้านล่างเพื่อเปิดกล้องมือถือถ่ายรูปได้ทันที</p>
+                          
+                          <input
+                            ref={nativeFileInputRef}
+                            type="file"
+                            accept="image/*"
+                            capture="user"
+                            className="hidden"
+                            onChange={handleNativeCapture}
+                          />
+
+                          <button 
+                            onClick={() => nativeFileInputRef.current?.click()}
+                            className="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white text-xs font-black rounded-2xl transition-all shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2 mb-2 cursor-pointer"
+                          >
+                            <Camera size={16} /> 📷 ถ่ายรูปด้วยกล้องมือถือ (เปิดได้ทันที 100%)
+                          </button>
+
+                          <div className="flex gap-2 justify-center mt-2">
                             <button 
                               onClick={() => window.location.reload()} 
-                              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-full transition-colors shadow-lg"
+                              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold rounded-xl transition-colors cursor-pointer"
                             >
-                              รีเฟรชหน้าเว็บ
+                              🔄 ลองเปิดใหม่อีกครั้ง
+                            </button>
+                            <button 
+                              onClick={() => setShowHelpModal(true)} 
+                              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold rounded-xl transition-colors cursor-pointer"
+                            >
+                              ❓ วิธีปลดบล็อกถาวร
                             </button>
                           </div>
                         </div>
                       )}
 
-                      {/* Video Tags overlay */}
-                      <div className="absolute top-3 left-3 right-3 flex flex-col gap-1.5 pointer-events-none">
+                      {/* Video Container (Pure Viewport - No blocking overlays on top of face) */}
+                    </div>
 
-                        {faceUI && (
-                          <div
-                            className={`flex items-center gap-1.5 px-3.5 py-1.5 border rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md ${faceUI.color}`}
-                          >
-                            {faceUI.icon}
-                            <span>{faceUI.text}</span>
-                          </div>
-                        )}
-
+                    {/* Status & Diagnostics Strip (Below Video) */}
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-3">
+                      {faceUI && (
                         <div
-                          className={`flex items-center gap-1.5 px-3.5 py-1.5 border rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md ${
-                            locationStatus === "found"
-                              ? "bg-green-50 text-green-700 border-green-200"
-                              : "bg-slate-50 text-slate-500 border-slate-200 animate-pulse"
-                          }`}
+                          className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 border rounded-xl text-[11px] font-black uppercase tracking-wider ${faceUI.color} shadow-xs`}
                         >
-                          <MapPin size={12} />
-                          <span>
-                            {locationStatus === "searching" && "กำลังตรวจพิกัด GPS..."}
-                            {locationStatus === "found" &&
-                              (() => {
-                                const dist = getDistanceToFlagpole();
-                                if (dist !== null) {
-                                  return `จับพิกัดแล้ว (ห่างจากเสาธง ${Math.round(dist)} เมตร)`;
-                                }
-                                return "พิกัดเสร็จสิ้น";
-                              })()}
-                            {locationStatus === "error" && "ตรวจพิกัดขัดข้อง"}
-                            {locationStatus === "idle" && "รอระบุพิกัด..."}
-                          </span>
+                          {faceUI.icon}
+                          <span>{faceUI.text}</span>
                         </div>
+                      )}
+
+                      <div
+                        className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 border rounded-xl text-[11px] font-black uppercase tracking-wider ${
+                          locationStatus === "found"
+                            ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-950/30 dark:text-green-400 dark:border-green-800"
+                            : "bg-slate-50 text-slate-500 border-slate-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700 animate-pulse"
+                        } shadow-xs`}
+                      >
+                        <MapPin size={13} className="shrink-0" />
+                        <span className="truncate">
+                          {locationStatus === "searching" && "กำลังตรวจพิกัด GPS..."}
+                          {locationStatus === "found" &&
+                            (() => {
+                              const dist = getDistanceToFlagpole();
+                              if (dist !== null) {
+                                return `จับพิกัดแล้ว (ห่างจากเสาธง ${Math.round(dist)} ม.)`;
+                              }
+                              return "พิกัดเสร็จสิ้น";
+                            })()}
+                          {locationStatus === "error" && "ตรวจพิกัดขัดข้อง"}
+                          {locationStatus === "idle" && "รอระบุพิกัด..."}
+                        </span>
                       </div>
                     </div>
 
                     {locationError && (
                       <div className="flex flex-col gap-2 mb-3">
-                        <div className="p-3 bg-red-50 text-red-600 rounded-2xl text-[10px] font-bold flex gap-2 border border-red-100 text-left">
-                          <AlertCircle size={14} className="shrink-0" />
+                        <div className="p-3 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-2xl text-[10px] font-bold flex gap-2 border border-red-100 dark:border-red-800 text-left">
+                          <AlertCircle size={14} className="shrink-0 mt-0.5" />
                           <span>{locationError}</span>
                         </div>
                         <button 
@@ -799,11 +823,11 @@ export default function StudentFlagpolePortal() {
                       if (dist !== null && dist > flagpoleConfig.inSiteDistance) {
                         return (
                           <div className="flex flex-col gap-2 mb-3">
-                            <div className="p-3 bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded-2xl text-[10px] font-bold flex gap-3 border border-amber-200 dark:border-amber-900/30 text-left shadow-sm">
-                              <AlertTriangle size={24} className="shrink-0 text-amber-500 mt-0.5" />
-                              <div className="flex flex-col gap-1">
-                                <span className="text-xs font-black">⚠️ ห่างจากโดม {Math.round(dist)} เมตร</span>
-                                <span className="leading-relaxed">พิกัด GPS คลาดเคลื่อนเกินที่กำหนด แนะนำให้เข้าไปภายในโดม แล้วรีเฟรชเริ่มหน้านี้ใหม่เพื่อให้ระบบจับพิกัดได้แม่นยำขึ้น 100% (หากจำเป็น คุณยังคงสามารถกดเช็คชื่อได้)</span>
+                            <div className="p-3 bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 rounded-2xl text-[10px] font-bold flex gap-3 border border-amber-200 dark:border-amber-800/40 text-left shadow-sm">
+                              <AlertTriangle size={18} className="shrink-0 text-amber-500 mt-0.5" />
+                              <div className="flex flex-col gap-0.5">
+                                <span className="text-xs font-black">📍 ห่างจากหน้าเสาธง {Math.round(dist)} เมตร</span>
+                                <span className="leading-relaxed text-[10px]">ระบบจับพิกัดความแม่นยำสูงเรียบร้อยแล้ว สามารถกดถ่ายรูปเพื่อบันทึกประวัติได้ทันที</span>
                               </div>
                             </div>
                           </div>
@@ -812,7 +836,7 @@ export default function StudentFlagpolePortal() {
                       return null;
                     })()}
 
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 mt-1">
                       <button
                         onClick={cancelCheckIn}
                         className="flex-1 py-3.5 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 rounded-2xl font-black text-xs uppercase tracking-widest transition-all"

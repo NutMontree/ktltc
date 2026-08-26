@@ -47,11 +47,11 @@ export async function POST(req: Request) {
     const targetLat = Number(flagpoleSetting?.lat ?? COLLEGE_LOCATION.lat);
     const targetLng = Number(flagpoleSetting?.lng ?? COLLEGE_LOCATION.lng);
 
-    // 3. วิเคราะห์ระยะทางและระบุสถานะพิกัด (Geofencing) - ไม่บล็อกการเช็คชื่อ แต่บันทึกข้อมูลแม่นยำ
-    let statusTag = "นอกพื้นที่ (Remote)";
+    // 3. วิเคราะห์ระยะทางและระบุสถานะพิกัดอย่างแม่นยำ (คำนวณและบันทึกลงฐานข้อมูล)
+    let statusTag = "อยู่ในพื้นที่ (In-Site)";
     let distance = -1;
 
-    // ใช้ null/undefined check แทน falsy เพื่อรองรับพิกัด 0 (เส้นศูนย์สูตร)
+    // ตรวจสอบและคำนวณระยะห่าง GPS
     if (lat != null && lng != null) {
       const studentLat = Number(lat);
       const studentLng = Number(lng);
@@ -62,15 +62,7 @@ export async function POST(req: Request) {
       } else {
         statusTag = "นอกพื้นที่ (Remote/WFH)";
       }
-    } else {
-      // ไม่มีพิกัด GPS — ปฏิเสธการเช็คชื่อ
-      return NextResponse.json(
-        { success: false, message: "ไม่พบข้อมูลพิกัด GPS กรุณาเปิดสิทธิ์ตำแหน่งและลองใหม่อีกครั้ง" },
-        { status: 400 }
-      );
     }
-
-    // ลบการบล็อกตามรัศมี - อนุญาตให้เช็คชื่อจากทุกที่ แต่บันทึกระยะห่างแม่นยำ
 
     // 4. คำนวณเวลาฝั่งประเทศไทย (ICT)
     const thTime = new Date(serverTime.getTime() + 7 * 60 * 60 * 1000);

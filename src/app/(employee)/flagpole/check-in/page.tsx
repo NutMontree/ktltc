@@ -440,19 +440,14 @@ export default function FlagpoleCheckInPage() {
   };
 
   const faceStatusUI = getFaceStatusUI();
-  const submitDisabled =
-    isProcessing ||
-    !location ||
-    faceStatus === "not_matched" ||
-    faceStatus === "loading_models" ||
-    faceStatus === "loading_profile";
+  const submitDisabled = isProcessing;
 
   return (
     <div className="h-dvh md:min-h-screen bg-indigo-50/50 dark:bg-zinc-950 py-4 md:py-8 px-4 font-sans overflow-hidden relative flex flex-col items-center">
       {/* Background Glows */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-[10%] -left-[10%] w-[70%] h-[70%] bg-indigo-500/10 blur-[120px] rounded-full" />
-        <div className="absolute -bottom-[10%] -right-[10%] w-[60%] h-[60%] bg-blue-500/10 blur-[120px] rounded-full" />
+        <div className="absolute top-[-10%] left-[-10%] w-[70%] h-[70%] bg-indigo-500/10 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-blue-500/10 blur-[120px] rounded-full" />
       </div>
 
       <div className="w-full max-w-lg relative z-10 flex flex-col h-full max-h-full">
