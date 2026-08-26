@@ -107,7 +107,7 @@ export default function FloatingChatWidget() {
   };
 
   return (
-    <div className="fixed bottom-16 right-4 md:bottom-20 md:right-6 z-50">
+    <div className="print:hidden fixed bottom-16 right-4 md:bottom-20 md:right-6 z-50">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -219,7 +219,7 @@ export default function FloatingChatWidget() {
               <Button
                 isIconOnly
                 radius="full"
-                className="shadow-xl bg-gradient-to-tr from-blue-500 to-purple-600 text-white h-10 w-10 min-w-10 md:h-11 md:w-11 md:min-w-11 hover:scale-110 transition-transform"
+                className="shadow-xl bg-linear-to-tr from-blue-500 to-purple-600 text-white h-10 w-10 min-w-10 md:h-11 md:w-11 md:min-w-11 hover:scale-110 transition-transform"
                 onPress={() => setIsOpen(true)}
               >
                 <MessageCircle className="h-5 w-5 md:h-5 md:w-5" />

@@ -108,7 +108,7 @@ export default async function Footer() {
   const getChildren = (parentId: string) => navItems.filter((item) => item.parentId === parentId);
 
   return (
-    <footer className="relative bg-linear-to-b from-[#0f172a] to-[#020617] text-slate-300 pt-16 pb-28 border-t border-slate-800 overflow-hidden">
+    <footer className="print:hidden relative bg-linear-to-b from-[#0f172a] to-[#020617] text-slate-300 pt-16 pb-28 border-t border-slate-800 overflow-hidden">
       {/* --- Giant Watermark Text (DevStudio Style) --- */}
       <div className="pointer-events-none absolute bottom-12 left-0 w-full flex justify-center items-end overflow-hidden select-none z-0">
         <span className="text-[20vw] font-black leading-none tracking-widest text-slate-800/40 whitespace-nowrap mb-[-3vw]">

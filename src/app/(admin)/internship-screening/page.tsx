@@ -237,8 +237,153 @@ export default function InternshipScreeningDashboard() {
   };
 
   return (
-    <div className="p-4 sm:p-6 md:p-8 lg:p-10 w-full min-h-screen bg-slate-100 dark:bg-zinc-900 transition-colors">
-      <div className="max-w-[1600px] mx-auto space-y-6">
+    <div className="p-4 sm:p-6 md:p-8 lg:p-10 print:p-0 w-full min-h-screen bg-slate-100 print:bg-white dark:bg-zinc-900 transition-colors print-exact-colors">
+      
+      {/* Hidden Print Summary Section */}
+      {isPrintingSummary && (
+        <>
+          <style>{`
+            @media print {
+              @page {
+                margin: 10mm 5mm;
+              }
+              html, body {
+                height: auto !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+              }
+              body * {
+                visibility: hidden;
+              }
+              #print-summary-section, #print-summary-section * {
+                visibility: visible;
+              }
+              #print-summary-section {
+                position: relative !important;
+                left: 0;
+                top: 0;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                background: white !important;
+                padding: 10px !important;
+              }
+              #print-summary-section table {
+                border-collapse: collapse !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                border: 1px solid black !important;
+              }
+              #print-summary-section th, 
+              #print-summary-section td {
+                border: 1px solid black !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                color: black !important;
+                padding: 4px !important;
+                font-size: 14px !important;
+                word-wrap: break-word !important;
+                white-space: normal !important;
+              }
+              #print-summary-section .whitespace-nowrap {
+                white-space: nowrap !important;
+              }
+              #print-summary-section th:first-child,
+              #print-summary-section td:first-child {
+                border-left: 1px solid black !important;
+              }
+              #print-summary-section th:last-child,
+              #print-summary-section td:last-child {
+                border-right: 1px solid black !important;
+              }
+              #print-summary-section thead {
+                display: table-header-group !important;
+              }
+              #print-summary-section tr {
+                page-break-inside: avoid !important;
+              }
+            }
+          `}</style>
+          <div id="print-summary-section" className="print:relative fixed inset-0 z-999999 bg-white text-black p-4 overflow-visible print:overflow-visible">
+            <div className="text-center mb-4">
+              <h1 className="text-xl font-bold mb-1 print-title">รายงานผลคัดกรองฝึกงาน</h1>
+              <h2 className="text-lg font-bold mb-1">วิทยาลัยเทคนิคกันทรลักษ์</h2>
+              <p className="text-sm">
+                {filterClassroom ? `ห้องเรียน: ${filterClassroom}` : 'ทุกห้องเรียน'}
+              </p>
+              <p className="text-sm mt-1">
+                ข้อมูล ณ วันที่: {new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })} น.
+              </p>
+            </div>
+
+            <div className="mb-4 flex justify-center break-inside-avoid">
+              <div className="grid grid-cols-4 w-full max-w-2xl border border-black text-center text-sm">
+                <div className="border-r border-black p-2">
+                  <div className="font-bold">นักศึกษาทั้งหมด</div>
+                  <div className="text-lg font-bold">{totalStudents} <span className="text-xs font-normal">คน</span></div>
+                </div>
+                <div className="border-r border-black p-2">
+                  <div className="font-bold">ปกติด้านสุขภาพจิต</div>
+                  <div className="text-lg font-bold">{normalCount} <span className="text-xs font-normal">คน</span></div>
+                </div>
+                <div className="border-r border-black p-2">
+                  <div className="font-bold">กลุ่มเสี่ยงสุขภาพจิต</div>
+                  <div className="text-lg font-bold">{riskCount} <span className="text-xs font-normal">คน</span></div>
+                </div>
+                <div className="p-2">
+                  <div className="font-bold">ทักษะต้องพัฒนา</div>
+                  <div className="text-lg font-bold">{lowSoftSkillsCount} <span className="text-xs font-normal">คน</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full">
+              <table className="w-full border-collapse border border-black">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border border-black text-center w-10">ที่</th>
+                    <th className="border border-black text-center whitespace-nowrap">ชื่อ-นามสกุล</th>
+                    <th className="border border-black text-center w-24">รหัส</th>
+                    <th className="border border-black text-center">แผนก/ห้องเรียน</th>
+                    <th className="border border-black text-center">ความเครียด</th>
+                    <th className="border border-black text-center">ซึมเศร้า (2Q)</th>
+                    <th className="border border-black text-center">ซึมเศร้า (9Q)</th>
+                    <th className="border border-black text-center">ฆ่าตัวตาย (8Q)</th>
+                    <th className="border border-black text-center">ทักษะทำงาน</th>
+                    <th className="border border-black text-center">สุขภาพจิต</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredData.map((d, i) => (
+                    <tr key={d._id}>
+                      <td className="border border-black text-center">{i + 1}</td>
+                      <td className="border border-black">{d.name}</td>
+                      <td className="border border-black text-center">{d.studentId}</td>
+                      <td className="border border-black text-center text-xs">{d.department}<br/>{d.classroom}</td>
+                      <td className="border border-black text-center">{d.st5Total}</td>
+                      <td className="border border-black text-center">{d.twoQTotal}</td>
+                      <td className="border border-black text-center">{d.q9Total}</td>
+                      <td className="border border-black text-center">{d.q8Total}</td>
+                      <td className="border border-black text-center">{d.softSkillsPercentage < 60 ? 'ต้องพัฒนา' : 'ผ่าน'} ({d.softSkillsScore})</td>
+                      <td className="border border-black text-center font-bold">{d.mentalHealthRisk ? 'เสี่ยง' : 'ปกติ'}</td>
+                    </tr>
+                  ))}
+                  {filteredData.length === 0 && (
+                    <tr>
+                      <td colSpan={10} className="border border-black text-center py-4 text-gray-500">
+                        ไม่มีข้อมูล
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
+
+      <div className={`max-w-[1600px] print:max-w-none mx-auto space-y-6 print:space-y-4 ${viewingItem ? 'print:hidden' : ''}`}>
         
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
@@ -286,11 +431,11 @@ export default function InternshipScreeningDashboard() {
 
         {/* Dashboard Summary Cards */}
         {!isLoading && (
-          <div className="mb-8 p-4 bg-slate-50 dark:bg-zinc-950 rounded-3xl border border-slate-200 dark:border-zinc-800 shadow-sm">
+          <div className="mb-8 p-4 print:p-0 print:bg-transparent print:border-none print:shadow-none bg-slate-50 dark:bg-zinc-950 rounded-3xl border border-slate-200 dark:border-zinc-800 shadow-sm">
             <h3 className="text-sm font-black text-slate-800 dark:text-zinc-200 mb-4 flex items-center gap-2">
               <Activity size={18} className="text-blue-500" /> ภาพรวมผลการประเมินทั้งหมด
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 print:grid-cols-4 gap-4">
               <div onClick={() => setFilterRisk('all')} className={`cursor-pointer p-5 rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${filterRisk === 'all' ? 'bg-blue-100 dark:bg-blue-900/50 border-blue-500 shadow-blue-500/20' : 'bg-white hover:bg-slate-50 dark:bg-zinc-900 dark:hover:bg-zinc-800/80 border-slate-200 dark:border-zinc-800 shadow-sm'}`}>
                 <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-1">
                   <User size={14} /> นักศึกษาทั้งหมด
@@ -321,9 +466,9 @@ export default function InternshipScreeningDashboard() {
 
         {/* Charts Section */}
         {!isLoading && totalStudents > 0 && (
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 print:grid-cols-12">
             {/* Bar Chart: แยกตามแผนกวิชา */}
-            <div className="lg:col-span-8 rounded-3xl bg-white dark:bg-zinc-950 p-8 shadow-sm border border-slate-200 dark:border-zinc-800">
+            <div className="lg:col-span-8 print:col-span-8 rounded-3xl bg-white dark:bg-zinc-950 p-8 shadow-sm border border-slate-200 dark:border-zinc-800">
               <div className="mb-6">
                 <h3 className="text-xl font-black text-slate-800 dark:text-zinc-100">สถานะสุขภาพจิต แยกตามแผนกวิชา</h3>
                 <p className="text-sm text-slate-400">จำนวนนักศึกษากลุ่มปกติ vs กลุ่มเสี่ยง แยกตามแผนกวิชา</p>
@@ -340,7 +485,7 @@ export default function InternshipScreeningDashboard() {
             </div>
 
             {/* Donut Chart: ภาพรวม */}
-            <div className="lg:col-span-4 rounded-3xl bg-white dark:bg-zinc-950 p-8 shadow-sm border border-slate-200 dark:border-zinc-800 flex flex-col items-center justify-center">
+            <div className="lg:col-span-4 print:col-span-4 rounded-3xl bg-white dark:bg-zinc-950 p-8 shadow-sm border border-slate-200 dark:border-zinc-800 flex flex-col items-center justify-center">
               <h3 className="mb-2 text-xl font-black text-slate-800 dark:text-zinc-100 text-center">ภาพรวม</h3>
               <p className="mb-4 text-sm text-slate-400 text-center">สัดส่วนนักศึกษาทั้งหมด</p>
               <ReactApexChart
@@ -373,7 +518,7 @@ export default function InternshipScreeningDashboard() {
         )}
 
         {/* Filters and Search */}
-        <div className="mb-6 p-3 bg-white dark:bg-zinc-950 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm flex flex-col sm:flex-row gap-3 items-center justify-between relative z-50">
+        <div className="mb-6 p-3 bg-white dark:bg-zinc-950 rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm flex flex-col sm:flex-row gap-3 items-center justify-between relative z-50 print:hidden">
           <div className="w-full sm:max-w-md relative">
             <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
               <Search className="h-4 w-4 text-slate-400" />
@@ -440,15 +585,16 @@ export default function InternshipScreeningDashboard() {
                   </Chip>
                 </div>
 
-                <Table 
-                  aria-label={`Screening Data - ${classroomName}`}
-                  className="min-w-full"
-                  removeWrapper
-                  classNames={{
-                    th: "bg-white dark:bg-zinc-950 text-slate-500 dark:text-zinc-500 font-bold py-3 text-xs",
-                    td: "border-b border-slate-100 dark:border-zinc-800/50 py-3",
-                  }}
-                >
+                <div className="overflow-x-auto print:overflow-visible w-full">
+                  <Table 
+                    aria-label={`Screening Data - ${classroomName}`}
+                    className="min-w-full"
+                    removeWrapper
+                    classNames={{
+                      th: "bg-white dark:bg-zinc-950 text-slate-500 dark:text-zinc-500 font-bold py-3 text-xs whitespace-nowrap",
+                      td: "border-b border-slate-100 dark:border-zinc-800/50 py-3 whitespace-nowrap",
+                    }}
+                  >
                   <TableHeader>
                     <TableColumn>ชื่อ-นามสกุล / รหัส</TableColumn>
                     <TableColumn>แผนกวิชา</TableColumn>
@@ -531,6 +677,7 @@ export default function InternshipScreeningDashboard() {
                   </TableBody>
                 </Table>
               </div>
+              </div>
             ))}
           </div>
         )}
@@ -596,11 +743,13 @@ export default function InternshipScreeningDashboard() {
 
       {/* View Details Modal */}
       {viewingItem && (
-        <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 sm:p-6 md:p-12 overflow-y-auto" onClick={() => setViewingItem(null)}>
-          <div className="bg-white dark:bg-zinc-900 rounded-4xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative flex flex-col" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 sm:p-6 md:p-12 overflow-y-auto print:static print:bg-transparent print:p-0 print:block" onClick={() => setViewingItem(null)}>
+          <div className="bg-white dark:bg-zinc-900 rounded-4xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative flex flex-col print:shadow-none print:rounded-none print:max-h-none print:max-w-none print:w-full print:block print:overflow-visible" onClick={(e) => e.stopPropagation()}>
             
-            {/* Top Cover Image */}
-            <div className="relative h-64 sm:h-80 w-full bg-slate-200 dark:bg-zinc-800 shrink-0">
+            {/* --- WEB UI (Hidden in Print) --- */}
+            <div className="print:hidden h-full flex flex-col overflow-hidden">
+              {/* Top Cover Image */}
+            <div className="relative h-64 sm:h-80 print:h-32 w-full bg-slate-200 dark:bg-zinc-800 shrink-0">
               {viewingItem.image ? (
                 <img src={viewingItem.image} alt={viewingItem.name} className="absolute inset-0 w-full h-full object-cover object-top" />
               ) : (
@@ -612,20 +761,20 @@ export default function InternshipScreeningDashboard() {
               <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent"></div>
               
               {/* Close Button */}
-              <button onClick={() => setViewingItem(null)} className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-colors z-10">
+              <button onClick={() => setViewingItem(null)} className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-colors z-10 print:hidden">
                 <X size={24} />
               </button>
 
               {/* Expand/Profile Button */}
               {viewingItem.userId && (
-                <Link href={`/dashboard/profile/${viewingItem.userId}`} className="absolute top-4 left-4 px-4 py-2 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-md transition-colors z-10 text-sm font-bold flex items-center gap-2 border border-white/10">
+                <Link href={`/dashboard/profile/${viewingItem.userId}`} className="absolute top-4 left-4 px-4 py-2 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-md transition-colors z-10 text-sm font-bold flex items-center gap-2 border border-white/10 print:hidden">
                   <User size={16} /> ดูโปรไฟล์เต็ม
                 </Link>
               )}
 
               {/* Title Overlay */}
-              <div className="absolute bottom-0 left-0 w-full p-6 sm:p-8">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white drop-shadow-lg mb-2">{viewingItem.name}</h2>
+              <div className="absolute bottom-0 left-0 w-full p-6 sm:p-8 print:p-4">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl print:text-2xl font-black text-white drop-shadow-lg mb-2 print:mb-0">{viewingItem.name}</h2>
                 <div className="flex flex-wrap items-center gap-2 text-white/90 text-sm sm:text-base font-medium">
                   <span className="flex items-center gap-1"><Briefcase size={16} /> {viewingItem.department}</span>
                   <span className="opacity-50">•</span>
@@ -639,7 +788,7 @@ export default function InternshipScreeningDashboard() {
             </div>
 
             {/* Content Body */}
-            <div className="p-6 sm:p-8 space-y-8 flex-1 overflow-y-auto print:p-0 print:overflow-visible">
+            <div className="p-6 sm:p-8 space-y-8 flex-1 overflow-y-auto print:p-0 print:overflow-visible print:space-y-4">
               {/* Status Header */}
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
@@ -673,42 +822,42 @@ export default function InternshipScreeningDashboard() {
               </div>
 
               {/* Scores Grid */}
-              <div className="space-y-4">
-                <h3 className="text-sm font-black text-slate-500 uppercase tracking-wider">รายละเอียดคะแนน (Screening Results)</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="space-y-4 print:space-y-2">
+                <h3 className="text-sm font-black text-slate-500 uppercase tracking-wider print:text-xs">รายละเอียดคะแนน (Screening Results)</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 print:gap-2">
                   
                   {/* ST5 */}
-                  <div className={`p-5 rounded-2xl border ${viewingItem.st5Total >= 8 ? 'bg-orange-50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-800/30' : 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-800/30'}`}>
-                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2">ความเครียด (ST5)</p>
-                    <p className={`text-4xl font-black mb-1 ${viewingItem.st5Total >= 8 ? 'text-orange-600 dark:text-orange-500' : 'text-emerald-600 dark:text-emerald-500'}`}>{viewingItem.st5Total}</p>
-                    <p className={`text-xs font-bold ${viewingItem.st5Total >= 10 ? 'text-rose-600' : viewingItem.st5Total >= 8 ? 'text-orange-600' : 'text-emerald-600'}`}>
+                  <div className={`p-5 print:p-2 rounded-2xl border ${viewingItem.st5Total >= 8 ? 'bg-orange-50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-800/30' : 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-800/30'}`}>
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 print:mb-0">ความเครียด (ST5)</p>
+                    <p className={`text-4xl print:text-xl font-black mb-1 print:mb-0 ${viewingItem.st5Total >= 8 ? 'text-orange-600 dark:text-orange-500' : 'text-emerald-600 dark:text-emerald-500'}`}>{viewingItem.st5Total}</p>
+                    <p className={`text-xs print:text-[10px] font-bold ${viewingItem.st5Total >= 10 ? 'text-rose-600' : viewingItem.st5Total >= 8 ? 'text-orange-600' : 'text-emerald-600'}`}>
                       แปลผล: {viewingItem.st5Total >= 10 ? 'เครียดรุนแรง' : viewingItem.st5Total >= 8 ? 'เครียดปานกลาง' : viewingItem.st5Total >= 5 ? 'เครียดเล็กน้อย' : 'เครียดน้อย'}
                     </p>
                   </div>
 
                   {/* 2Q */}
-                  <div className={`p-5 rounded-2xl border ${viewingItem.twoQTotal > 0 ? 'bg-orange-50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-800/30' : 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-800/30'}`}>
-                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2">ซึมเศร้าเบื้องต้น (2Q)</p>
-                    <p className={`text-4xl font-black mb-1 ${viewingItem.twoQTotal > 0 ? 'text-orange-600 dark:text-orange-500' : 'text-emerald-600 dark:text-emerald-500'}`}>{viewingItem.twoQTotal}</p>
-                    <p className={`text-xs font-bold ${viewingItem.twoQTotal > 0 ? 'text-orange-600' : 'text-emerald-600'}`}>
+                  <div className={`p-5 print:p-2 rounded-2xl border ${viewingItem.twoQTotal > 0 ? 'bg-orange-50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-800/30' : 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-800/30'}`}>
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 print:mb-0">ซึมเศร้าเบื้องต้น (2Q)</p>
+                    <p className={`text-4xl print:text-xl font-black mb-1 print:mb-0 ${viewingItem.twoQTotal > 0 ? 'text-orange-600 dark:text-orange-500' : 'text-emerald-600 dark:text-emerald-500'}`}>{viewingItem.twoQTotal}</p>
+                    <p className={`text-xs print:text-[10px] font-bold ${viewingItem.twoQTotal > 0 ? 'text-orange-600' : 'text-emerald-600'}`}>
                       แปลผล: {viewingItem.twoQTotal > 0 ? 'มีแนวโน้มซึมเศร้า' : 'ปกติ'}
                     </p>
                   </div>
 
                   {/* 9Q */}
-                  <div className={`p-5 rounded-2xl border ${viewingItem.q9Total >= 13 ? 'bg-rose-50 dark:bg-rose-900/10 border-rose-200 dark:border-rose-800/30' : viewingItem.q9Total >= 7 ? 'bg-orange-50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-800/30' : 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-800/30'}`}>
-                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2">ซึมเศร้า (9Q)</p>
-                    <p className={`text-4xl font-black mb-1 ${viewingItem.q9Total >= 13 ? 'text-rose-600 dark:text-rose-500' : viewingItem.q9Total >= 7 ? 'text-orange-600 dark:text-orange-500' : 'text-emerald-600 dark:text-emerald-500'}`}>{viewingItem.q9Total}</p>
-                    <p className={`text-xs font-bold ${viewingItem.q9Total >= 19 ? 'text-rose-600' : viewingItem.q9Total >= 13 ? 'text-orange-600' : viewingItem.q9Total >= 7 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                  <div className={`p-5 print:p-2 rounded-2xl border ${viewingItem.q9Total >= 13 ? 'bg-rose-50 dark:bg-rose-900/10 border-rose-200 dark:border-rose-800/30' : viewingItem.q9Total >= 7 ? 'bg-orange-50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-800/30' : 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-800/30'}`}>
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 print:mb-0">ซึมเศร้า (9Q)</p>
+                    <p className={`text-4xl print:text-xl font-black mb-1 print:mb-0 ${viewingItem.q9Total >= 13 ? 'text-rose-600 dark:text-rose-500' : viewingItem.q9Total >= 7 ? 'text-orange-600 dark:text-orange-500' : 'text-emerald-600 dark:text-emerald-500'}`}>{viewingItem.q9Total}</p>
+                    <p className={`text-xs print:text-[10px] font-bold ${viewingItem.q9Total >= 19 ? 'text-rose-600' : viewingItem.q9Total >= 13 ? 'text-orange-600' : viewingItem.q9Total >= 7 ? 'text-amber-600' : 'text-emerald-600'}`}>
                       แปลผล: {viewingItem.q9Total >= 19 ? 'ซึมเศร้ารุนแรง' : viewingItem.q9Total >= 13 ? 'ซึมเศร้าปานกลาง' : viewingItem.q9Total >= 7 ? 'ซึมเศร้าน้อย' : 'ปกติ'}
                     </p>
                   </div>
 
                   {/* 8Q */}
-                  <div className={`p-5 rounded-2xl border ${viewingItem.q8Total >= 9 ? 'bg-rose-50 dark:bg-rose-900/10 border-rose-200 dark:border-rose-800/30' : viewingItem.q8Total > 0 ? 'bg-orange-50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-800/30' : 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-800/30'}`}>
-                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2">ฆ่าตัวตาย (8Q)</p>
-                    <p className={`text-4xl font-black mb-1 ${viewingItem.q8Total >= 9 ? 'text-rose-600 dark:text-rose-500' : viewingItem.q8Total > 0 ? 'text-orange-600 dark:text-orange-500' : 'text-emerald-600 dark:text-emerald-500'}`}>{viewingItem.q8Total}</p>
-                    <p className={`text-xs font-bold ${viewingItem.q8Total >= 17 ? 'text-rose-600' : viewingItem.q8Total >= 9 ? 'text-orange-600' : viewingItem.q8Total > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                  <div className={`p-5 print:p-2 rounded-2xl border ${viewingItem.q8Total >= 9 ? 'bg-rose-50 dark:bg-rose-900/10 border-rose-200 dark:border-rose-800/30' : viewingItem.q8Total > 0 ? 'bg-orange-50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-800/30' : 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-100 dark:border-emerald-800/30'}`}>
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 print:mb-0">ฆ่าตัวตาย (8Q)</p>
+                    <p className={`text-4xl print:text-xl font-black mb-1 print:mb-0 ${viewingItem.q8Total >= 9 ? 'text-rose-600 dark:text-rose-500' : viewingItem.q8Total > 0 ? 'text-orange-600 dark:text-orange-500' : 'text-emerald-600 dark:text-emerald-500'}`}>{viewingItem.q8Total}</p>
+                    <p className={`text-xs print:text-[10px] font-bold ${viewingItem.q8Total >= 17 ? 'text-rose-600' : viewingItem.q8Total >= 9 ? 'text-orange-600' : viewingItem.q8Total > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
                       แปลผล: {viewingItem.q8Total >= 17 ? 'แนวโน้มรุนแรงมาก' : viewingItem.q8Total >= 9 ? 'แนวโน้มรุนแรง' : viewingItem.q8Total > 0 ? 'มีแนวโน้ม' : 'ปกติ'}
                     </p>
                   </div>
@@ -716,15 +865,15 @@ export default function InternshipScreeningDashboard() {
                 </div>
 
                 {/* Soft Skills */}
-                <div className={`p-6 rounded-2xl border ${viewingItem.softSkillsPercentage < 60 ? 'bg-amber-50/50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800/30' : 'bg-blue-50/50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800/30'}`}>
-                  <div className="flex items-center justify-between mb-4">
+                <div className={`p-6 print:p-3 rounded-2xl border ${viewingItem.softSkillsPercentage < 60 ? 'bg-amber-50/50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800/30' : 'bg-blue-50/50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800/30'}`}>
+                  <div className="flex items-center justify-between mb-4 print:mb-2">
                     <p className="text-sm font-bold text-slate-700 dark:text-slate-300">ทักษะการทำงานและความพร้อม (Soft Skills)</p>
                     <span className={`text-lg font-black ${viewingItem.softSkillsPercentage < 60 ? 'text-amber-600 dark:text-amber-500' : 'text-blue-600 dark:text-blue-500'}`}>
                       {viewingItem.softSkillsScore} / {viewingItem.softSkillsTotal}
                     </span>
                   </div>
-                  <div className="w-full bg-slate-200 dark:bg-slate-700/50 rounded-full h-3 mb-2 overflow-hidden">
-                    <div className={`h-3 rounded-full ${viewingItem.softSkillsPercentage < 60 ? 'bg-amber-500' : 'bg-blue-500'}`} style={{ width: `${viewingItem.softSkillsPercentage}%` }}></div>
+                  <div className="w-full bg-slate-200 dark:bg-slate-700/50 rounded-full h-3 print:h-2 mb-2 overflow-hidden">
+                    <div className={`h-3 print:h-2 rounded-full ${viewingItem.softSkillsPercentage < 60 ? 'bg-amber-500' : 'bg-blue-500'}`} style={{ width: `${viewingItem.softSkillsPercentage}%` }}></div>
                   </div>
                   <p className="text-xs font-bold text-slate-500 dark:text-slate-400 text-right">
                     คิดเป็น {Math.round(viewingItem.softSkillsPercentage)}% — {viewingItem.softSkillsPercentage < 60 ? 'ควรพัฒนาเพิ่มเติม' : 'ผ่านเกณฑ์มาตรฐาน'}
@@ -732,12 +881,66 @@ export default function InternshipScreeningDashboard() {
                 </div>
               </div>
 
-              {/* Timestamp footer */}
-              <div className="pt-6 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between text-xs font-medium text-slate-400 dark:text-zinc-500">
-                <span>รหัสนักศึกษา: {viewingItem.studentId}</span>
-                <span>ประเมินเมื่อ: {new Date(viewingItem.createdAt).toLocaleString('th-TH', { dateStyle: 'long', timeStyle: 'short' })} น.</span>
+
+            </div>
+            </div> {/* End of WEB UI */}
+
+            {/* --- PRINT UI (Visible ONLY in Print) --- */}
+            <div className="hidden print:block w-full bg-white text-black print:p-0 font-sans">
+              <div className="text-center mb-4">
+                <h1 className="text-2xl font-bold mb-1">รายงานผลประเมินสุขภาพจิตและทักษะความพร้อมก่อนฝึกงาน (รายบุคคล)</h1>
+                <h2 className="text-xl font-bold">วิทยาลัยเทคนิคกันทรลักษ์</h2>
+              </div>
+              
+              <div className="mb-4 border border-black">
+                <h3 className="font-bold text-lg mb-0 border-b border-black p-2 bg-gray-100">ข้อมูลส่วนตัวนักศึกษา</h3>
+                <div className="grid grid-cols-2 gap-4 text-base p-3">
+                  <p><strong>ชื่อ-นามสกุล:</strong> {viewingItem.name}</p>
+                  <p><strong>รหัสนักศึกษา:</strong> {viewingItem.studentId}</p>
+                  <p><strong>แผนกวิชา:</strong> {viewingItem.department}</p>
+                  <p><strong>ห้องเรียน:</strong> {viewingItem.classroom || '-'}</p>
+                  <p><strong>เพศ:</strong> {viewingItem.gender}</p>
+                  <p><strong>อายุ:</strong> {viewingItem.age} ปี</p>
+                </div>
+              </div>
+
+              <div className="mb-4 border border-black">
+                <h3 className="font-bold text-lg mb-0 border-b border-black p-2 bg-gray-100">ผลการประเมินสุขภาพจิต (กรมสุขภาพจิต)</h3>
+                <table className="w-full text-base border-collapse">
+                  <tbody>
+                    <tr className="border-b border-gray-300">
+                      <td className="py-2 px-3 border-r border-gray-300 w-1/2"><strong>ความเครียด (ST5):</strong> {viewingItem.st5Total} คะแนน</td>
+                      <td className="py-2 px-3 w-1/2"><strong>แปลผล:</strong> {viewingItem.st5Total >= 10 ? 'เครียดรุนแรง' : viewingItem.st5Total >= 8 ? 'เครียดปานกลาง' : viewingItem.st5Total >= 5 ? 'เครียดเล็กน้อย' : 'เครียดน้อย'}</td>
+                    </tr>
+                    <tr className="border-b border-gray-300">
+                      <td className="py-2 px-3 border-r border-gray-300 w-1/2"><strong>ซึมเศร้าเบื้องต้น (2Q):</strong> {viewingItem.twoQTotal} คะแนน</td>
+                      <td className="py-2 px-3 w-1/2"><strong>แปลผล:</strong> {viewingItem.twoQTotal > 0 ? 'มีแนวโน้มซึมเศร้า' : 'ปกติ'}</td>
+                    </tr>
+                    <tr className="border-b border-gray-300">
+                      <td className="py-2 px-3 border-r border-gray-300 w-1/2"><strong>ซึมเศร้า (9Q):</strong> {viewingItem.q9Total} คะแนน</td>
+                      <td className="py-2 px-3 w-1/2"><strong>แปลผล:</strong> {viewingItem.q9Total >= 19 ? 'ซึมเศร้ารุนแรง' : viewingItem.q9Total >= 13 ? 'ซึมเศร้าปานกลาง' : viewingItem.q9Total >= 7 ? 'ซึมเศร้าน้อย' : 'ปกติ'}</td>
+                    </tr>
+                    <tr className="border-b border-gray-300">
+                      <td className="py-2 px-3 border-r border-gray-300 w-1/2"><strong>ฆ่าตัวตาย (8Q):</strong> {viewingItem.q8Total} คะแนน</td>
+                      <td className="py-2 px-3 w-1/2"><strong>แปลผล:</strong> {viewingItem.q8Total >= 17 ? 'แนวโน้มรุนแรงมาก' : viewingItem.q8Total >= 9 ? 'แนวโน้มรุนแรง' : viewingItem.q8Total > 0 ? 'มีแนวโน้ม' : 'ปกติ'}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div className="p-3 border-t border-black text-center text-lg font-bold">
+                  สรุปผลความเสี่ยงสุขภาพจิต: {viewingItem.mentalHealthRisk ? 'มีความเสี่ยงด้านสุขภาพจิต' : 'ปกติด้านสุขภาพจิต'}
+                </div>
+              </div>
+
+              <div className="border border-black">
+                <h3 className="font-bold text-lg mb-0 border-b border-black p-2 bg-gray-100">ผลการประเมินทักษะการทำงานและความพร้อม (Soft Skills)</h3>
+                <div className="text-center py-4">
+                  <div className="text-4xl font-bold mb-2">{viewingItem.softSkillsScore} / {viewingItem.softSkillsTotal}</div>
+                  <div className="text-lg">คิดเป็น <strong>{Math.round(viewingItem.softSkillsPercentage)}%</strong></div>
+                  <div className="text-xl font-bold mt-2">{viewingItem.softSkillsPercentage < 60 ? 'ควรพัฒนาเพิ่มเติม' : 'ผ่านเกณฑ์มาตรฐาน'}</div>
+                </div>
               </div>
             </div>
+
           </div>
         </div>
       )}

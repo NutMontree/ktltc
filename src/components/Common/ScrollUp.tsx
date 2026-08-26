@@ -29,7 +29,7 @@ export default function ScrollUp() {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-999">
+    <div className="print:hidden fixed bottom-4 right-4 md:bottom-6 md:right-6 z-999">
       <AnimatePresence>
         {isVisible && (
           <motion.button

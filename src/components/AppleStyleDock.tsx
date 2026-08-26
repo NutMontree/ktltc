@@ -90,7 +90,7 @@ export function AppleStyleDock() {
   }
 
   return (
-    <div className='fixed bottom-1 left-1/2 z-50 max-w-full -translate-x-1/2'>
+    <div className='print:hidden fixed bottom-1 left-1/2 z-50 max-w-full -translate-x-1/2'>
       {/* แก้ไข class 'pb-' กลับเป็น 'pb-2' เพื่อให้ไม่ Error และวงกลมไม่โดนตัด */}
       <Dock className='items-end pb-2' panelHeight={56} magnification={64} distance={100}>
         {dockItems.map((item, idx) => (

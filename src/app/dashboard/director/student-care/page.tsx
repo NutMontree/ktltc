@@ -390,57 +390,57 @@ export default function StudentCarePage() {
               {viewRecord.recordType === 'screening' && viewRecord.sdqData && (
                 <div>
                   <h4 className="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">รายละเอียดคะแนน SDQ (ฉบับครูประเมิน)</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
-                      <div className="text-[10px] text-slate-500 font-bold mb-1">ด้านที่ 1: อารมณ์</div>
-                      <div className="text-xl font-black text-slate-700 dark:text-zinc-300">{viewRecord.sdqData.E}</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:gap-1">
+                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-0 print:border-b print:border-slate-300 print:rounded-none">
+                      <div className="text-[10px] text-slate-500 font-bold mb-1 print:mb-0">ด้านที่ 1: อารมณ์</div>
+                      <div className="text-xl print:text-base print:leading-tight font-black text-slate-700 dark:text-zinc-300">{viewRecord.sdqData.E}</div>
                       {viewRecord.sdqData.E_res && (
-                        <div className={`mt-1 text-[10px] font-bold ${viewRecord.sdqData.E_res === 'problem' ? 'text-rose-500' : viewRecord.sdqData.E_res === 'risk' ? 'text-amber-500' : 'text-emerald-500'}`}>
+                        <div className={`mt-1 print:mt-0 text-[10px] font-bold ${viewRecord.sdqData.E_res === 'problem' ? 'text-rose-500' : viewRecord.sdqData.E_res === 'risk' ? 'text-amber-500' : 'text-emerald-500'}`}>
                           แปลผล: {viewRecord.sdqData.E_res === 'problem' ? 'มีปัญหา' : viewRecord.sdqData.E_res === 'risk' ? 'เสี่ยง' : 'ปกติ'}
                         </div>
                       )}
                     </div>
-                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
-                      <div className="text-[10px] text-slate-500 font-bold mb-1">ด้านที่ 2: ความประพฤติ</div>
-                      <div className="text-xl font-black text-slate-700 dark:text-zinc-300">{viewRecord.sdqData.C}</div>
+                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-0 print:border-b print:border-slate-300 print:rounded-none">
+                      <div className="text-[10px] text-slate-500 font-bold mb-1 print:mb-0">ด้านที่ 2: ความประพฤติ</div>
+                      <div className="text-xl print:text-base print:leading-tight font-black text-slate-700 dark:text-zinc-300">{viewRecord.sdqData.C}</div>
                       {viewRecord.sdqData.C_res && (
-                        <div className={`mt-1 text-[10px] font-bold ${viewRecord.sdqData.C_res === 'problem' ? 'text-rose-500' : viewRecord.sdqData.C_res === 'risk' ? 'text-amber-500' : 'text-emerald-500'}`}>
+                        <div className={`mt-1 print:mt-0 text-[10px] font-bold ${viewRecord.sdqData.C_res === 'problem' ? 'text-rose-500' : viewRecord.sdqData.C_res === 'risk' ? 'text-amber-500' : 'text-emerald-500'}`}>
                           แปลผล: {viewRecord.sdqData.C_res === 'problem' ? 'มีปัญหา' : viewRecord.sdqData.C_res === 'risk' ? 'เสี่ยง' : 'ปกติ'}
                         </div>
                       )}
                     </div>
-                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
-                      <div className="text-[10px] text-slate-500 font-bold mb-1">ด้านที่ 3: สมาธิสั้น</div>
-                      <div className="text-xl font-black text-slate-700 dark:text-zinc-300">{viewRecord.sdqData.H}</div>
+                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-0 print:border-b print:border-slate-300 print:rounded-none">
+                      <div className="text-[10px] text-slate-500 font-bold mb-1 print:mb-0">ด้านที่ 3: สมาธิสั้น</div>
+                      <div className="text-xl print:text-base print:leading-tight font-black text-slate-700 dark:text-zinc-300">{viewRecord.sdqData.H}</div>
                       {viewRecord.sdqData.H_res && (
-                        <div className={`mt-1 text-[10px] font-bold ${viewRecord.sdqData.H_res === 'problem' ? 'text-rose-500' : viewRecord.sdqData.H_res === 'risk' ? 'text-amber-500' : 'text-emerald-500'}`}>
+                        <div className={`mt-1 print:mt-0 text-[10px] font-bold ${viewRecord.sdqData.H_res === 'problem' ? 'text-rose-500' : viewRecord.sdqData.H_res === 'risk' ? 'text-amber-500' : 'text-emerald-500'}`}>
                           แปลผล: {viewRecord.sdqData.H_res === 'problem' ? 'มีปัญหา' : viewRecord.sdqData.H_res === 'risk' ? 'เสี่ยง' : 'ปกติ'}
                         </div>
                       )}
                     </div>
-                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
-                      <div className="text-[10px] text-slate-500 font-bold mb-1">ด้านที่ 4: สัมพันธ์กับเพื่อน</div>
-                      <div className="text-xl font-black text-slate-700 dark:text-zinc-300">{viewRecord.sdqData.Pe}</div>
+                    <div className="print-box p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-0 print:border-b print:border-slate-300 print:rounded-none">
+                      <div className="text-[10px] text-slate-500 font-bold mb-1 print:mb-0">ด้านที่ 4: สัมพันธ์กับเพื่อน</div>
+                      <div className="text-xl print:text-base print:leading-tight font-black text-slate-700 dark:text-zinc-300">{viewRecord.sdqData.Pe}</div>
                       {viewRecord.sdqData.Pe_res && (
-                        <div className={`mt-1 text-[10px] font-bold ${viewRecord.sdqData.Pe_res === 'problem' ? 'text-rose-500' : viewRecord.sdqData.Pe_res === 'risk' ? 'text-amber-500' : 'text-emerald-500'}`}>
+                        <div className={`mt-1 print:mt-0 text-[10px] font-bold ${viewRecord.sdqData.Pe_res === 'problem' ? 'text-rose-500' : viewRecord.sdqData.Pe_res === 'risk' ? 'text-amber-500' : 'text-emerald-500'}`}>
                           แปลผล: {viewRecord.sdqData.Pe_res === 'problem' ? 'มีปัญหา' : viewRecord.sdqData.Pe_res === 'risk' ? 'เสี่ยง' : 'ปกติ'}
                         </div>
                       )}
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
-                    <div className="print-box p-3 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-900/30 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
-                      <div className="text-[10px] text-amber-600 font-bold mb-1">รวม 4 ด้าน</div>
-                      <div className="text-xl font-black text-amber-700 dark:text-amber-500">{viewRecord.sdqData.total}</div>
-                      <div className={`mt-1 text-[10px] font-bold ${viewRecord.sdqType === 'problem' ? 'text-rose-600' : viewRecord.sdqType === 'risk' ? 'text-amber-600' : 'text-emerald-600'}`}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:gap-1 mt-3 print:mt-1">
+                    <div className="print-box p-3 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-900/30 print:bg-transparent print:border-none print:shadow-none print:p-0 print:border-b print:border-slate-300 print:rounded-none">
+                      <div className="text-[10px] text-amber-600 font-bold mb-1 print:mb-0">รวม 4 ด้าน</div>
+                      <div className="text-xl print:text-base print:leading-tight font-black text-amber-700 dark:text-amber-500">{viewRecord.sdqData.total}</div>
+                      <div className={`mt-1 print:mt-0 text-[10px] font-bold ${viewRecord.sdqType === 'problem' ? 'text-rose-600' : viewRecord.sdqType === 'risk' ? 'text-amber-600' : 'text-emerald-600'}`}>
                         แปลผล: {viewRecord.sdqType === 'problem' ? 'มีปัญหา' : viewRecord.sdqType === 'risk' ? 'เสี่ยง' : 'ปกติ'}
                       </div>
                     </div>
-                    <div className="print-box p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/30 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
-                      <div className="text-[10px] text-emerald-600 font-bold mb-1">สัมพันธภาพทางสังคม</div>
-                      <div className="text-xl font-black text-emerald-700 dark:text-emerald-500">{viewRecord.sdqData.P}</div>
+                    <div className="print-box p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/30 print:bg-transparent print:border-none print:shadow-none print:p-0 print:border-b print:border-slate-300 print:rounded-none">
+                      <div className="text-[10px] text-emerald-600 font-bold mb-1 print:mb-0">สัมพันธภาพทางสังคม</div>
+                      <div className="text-xl print:text-base print:leading-tight font-black text-emerald-700 dark:text-emerald-500">{viewRecord.sdqData.P}</div>
                       {viewRecord.sdqData.P_res && (
-                        <div className="mt-1 text-[10px] font-bold text-emerald-600">
+                        <div className="mt-1 print:mt-0 text-[10px] font-bold text-emerald-600">
                           แปลผล: {viewRecord.sdqData.P_res === 'strength' ? 'เป็นจุดแข็ง' : 'ไม่มีจุดแข็ง'}
                         </div>
                       )}
@@ -448,8 +448,8 @@ export default function StudentCarePage() {
                   </div>
 
                   {viewRecord.sdqData.impact && (
-                    <div className="mt-4 pt-4 border-t border-slate-100 dark:border-zinc-800">
-                      <h5 className="text-[10px] font-bold text-slate-400 mb-3 uppercase tracking-wider flex items-center justify-between">
+                    <div className="mt-4 pt-4 print:mt-1 print:pt-1 border-t border-slate-100 dark:border-zinc-800">
+                      <h5 className="text-[10px] font-bold text-slate-400 mb-3 print:mb-1 uppercase tracking-wider flex items-center justify-between">
                         <span>ผลประเมินผลกระทบ (ด้านหลัง)</span>
                         {viewRecord.sdqData.impact.result && (
                           <span className={`px-2 py-1 rounded text-xs ${viewRecord.sdqData.impact.result === 'problem' ? 'bg-rose-100 text-rose-600' : viewRecord.sdqData.impact.result === 'risk' ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600'}`}>
@@ -462,8 +462,8 @@ export default function StudentCarePage() {
                           <p className="text-sm font-bold text-slate-600 dark:text-zinc-400">ไม่มีปัญหา</p>
                         </div>
                       ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-1 print:border-b print:border-slate-300 print:rounded-none">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:gap-1">
+                          <div className="p-3 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-800 print:bg-transparent print:border-none print:shadow-none print:p-0 print:border-b print:border-slate-300 print:rounded-none">
                             <p className="text-[10px] text-slate-500 font-bold mb-1">ระดับปัญหา</p>
                             <p className="text-sm font-black text-rose-600 dark:text-rose-400">
                               {['ไม่', 'มีปัญหาเล็กน้อย', 'มีปัญหาชัดเจน', 'มีปัญหาอย่างมาก'][viewRecord.sdqData.impact.hasProblem]}
@@ -516,7 +516,7 @@ export default function StudentCarePage() {
                 </div>
               )}
 
-              <div className="mt-6 print:mt-2 space-y-6 print:space-y-2">
+              <div className="mt-6 print:mt-1 space-y-6 print:space-y-1">
                 {viewRecord.recordType === 'screening' && viewRecord.sdqData && viewRecord.sdqData.otherConcerns && (
                   <div>
                     <h4 className="text-xs font-bold text-slate-400 mb-2 print:mb-0 uppercase tracking-wider">ความเห็นหรือความกังวลอื่น</h4>
@@ -535,9 +535,9 @@ export default function StudentCarePage() {
               </div>
 
               {viewRecord.imageUrls && viewRecord.imageUrls.length > 0 && (
-                <div className="mt-6 print:mt-4 hidden print:block">
+                <div className="mt-6 print:mt-1 hidden print:block">
                   <h4 className="text-xs font-bold text-slate-400 mb-2 print:mb-0 uppercase tracking-wider">ภาพถ่ายประกอบ ({viewRecord.imageUrls.length} ภาพ)</h4>
-                  <div className="grid grid-cols-3 print:grid-cols-3 gap-2">
+                  <div className="grid grid-cols-3 print:grid-cols-4 gap-2 print:gap-1">
                     {viewRecord.imageUrls.map((url: string, index: number) => (
                       <div key={index} className="aspect-4/3 relative rounded-lg print:rounded-none overflow-hidden border border-slate-200 print:border-none bg-slate-50 print:bg-transparent break-inside-avoid">
                         <img src={url} alt={`ภาพประกอบ ${index + 1}`} className="w-full h-full object-cover" />
@@ -547,7 +547,7 @@ export default function StudentCarePage() {
                 </div>
               )}
 
-              <div className="pt-4 mt-4 print:pt-8 print:mt-4 text-center md:text-right print:text-right break-inside-avoid">
+              <div className="pt-4 mt-4 print:pt-2 print:mt-2 text-center md:text-right print:text-right break-inside-avoid">
                 <div className="inline-flex flex-col items-center justify-center text-center">
                   <div className="flex items-baseline mb-1">
                     <span className="text-sm text-slate-500 mr-2 whitespace-nowrap">ลงชื่อ</span>

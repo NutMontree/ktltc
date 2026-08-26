@@ -1,4 +1,4 @@
-/* 
+    /* 
  * globals.css: ไฟล์กำหนดสไตล์เริ่มต้นและตัวแปรส่วนกลางของทั้งเว็บไซต์
  * 
  * ความเชื่อมโยง: 
@@ -82,4 +82,19 @@ html.dark .custom-antd-select .ant-select-selector {
 .custom-antd-select .ant-select-selection-placeholder {
   line-height: 2.7rem !important;
   color: #a1a1aa !important;
+}
+
+/* ✅ 5. สไตล์สำหรับการพิมพ์รายงาน (Print Media)
+ * บังคับให้เบราว์เซอร์พิมพ์สีพื้นหลังและรายละเอียดให้เหมือนหน้าเว็บมากที่สุด
+ */
+@media print {
+  .print-exact-colors, .print-exact-colors * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  
+  /* ซ่อนปุ่มหรือ UI ที่ไม่จำเป็นตอนพริ้นท์ ถ้ามีคลาส print:hidden */
+  .print\:hidden {
+    display: none !important;
+  }
 }
