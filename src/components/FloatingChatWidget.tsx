@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Button, Input, ScrollShadow, Spinner } from "@heroui/react";
+import { Button, Input, ScrollShadow, Spinner, Tooltip } from "@heroui/react";
 import { MessageCircle, X, Send, Bot } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -42,7 +42,9 @@ export default function FloatingChatWidget() {
     if (!message.trim()) return;
 
     const userMsg = { id: Date.now().toString(), role: "user" as const, content: message };
-    setMessages((prev) => [...prev, userMsg]);
+    const loadingMsg = { id: "loading", role: "ai" as const, content: "typing..." };
+    
+    setMessages((prev) => [...prev, userMsg, loadingMsg]);
     setMessage("");
     setIsLoading(true);
 
@@ -71,11 +73,16 @@ export default function FloatingChatWidget() {
         const chunkText = decoder.decode(value, { stream: true });
         aiMessage += chunkText;
         
-        if (isFirstChunk) {
+        // รอให้มีตัวอักษรจริงๆ โผล่มาก่อน ค่อยปิดจุดไข่ปลา
+        if (isFirstChunk && aiMessage.trim().length > 0) {
           isFirstChunk = false;
-          setIsLoading(false); // ปิดจุดไข่ปลาเมื่อคำแรกมาถึง
-          setMessages((prev) => [...prev, { id: aiMsgId, role: "ai", content: aiMessage }]);
-        } else {
+          setIsLoading(false); 
+          // ลบกล่อง loading ทิ้ง และใส่ข้อความจริงแทน
+          setMessages((prev) => [
+            ...prev.filter(m => m.id !== "loading"), 
+            { id: aiMsgId, role: "ai", content: aiMessage }
+          ]);
+        } else if (!isFirstChunk) {
           // อัปเดตข้อความแบบ Real-time
           setMessages((prev) => 
             prev.map((msg) => 
@@ -85,18 +92,22 @@ export default function FloatingChatWidget() {
         }
       }
       
+      // กันเหนียว กรณีหลุด loop แล้วยังไม่ได้ปิดจุดไข่ปลา
+      setIsLoading(false);
+      setMessages((prev) => prev.filter(m => m.id !== "loading"));
+      
     } catch (error) {
       console.error("Chat Error:", error);
       setIsLoading(false);
       setMessages((prev) => [
-        ...prev,
+        ...prev.filter(m => m.id !== "loading"),
         { id: Date.now().toString(), role: "ai", content: "⚠️ ขออภัย ระบบขัดข้อง ไม่สามารถตอบกลับได้ในขณะนี้" },
       ]);
     }
   };
 
   return (
-    <div className="fixed bottom-20 right-4 md:bottom-24 md:right-6 z-50">
+    <div className="fixed bottom-16 right-4 md:bottom-20 md:right-6 z-50">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -138,23 +149,22 @@ export default function FloatingChatWidget() {
                   <div
                     className={`max-w-[80%] px-4 py-2 rounded-2xl text-sm ${
                       msg.role === "user"
-                        ? "bg-primary text-primary-foreground rounded-tr-none"
+                        ? "bg-primary text-white rounded-tr-none"
                         : "bg-content2 text-foreground rounded-tl-none"
                     }`}
                   >
-                    {msg.content}
+                    {msg.content === "typing..." ? (
+                      <div className="flex items-center gap-1 h-5">
+                        <span className="w-2 h-2 bg-default-400 rounded-full animate-bounce"></span>
+                        <span className="w-2 h-2 bg-default-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                        <span className="w-2 h-2 bg-default-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                      </div>
+                    ) : (
+                      msg.content
+                    )}
                   </div>
                 </div>
               ))}
-              {isLoading && (
-                <div className="flex justify-start mb-2">
-                  <div className="bg-content2 px-4 py-3 rounded-2xl rounded-tl-none flex items-center gap-1">
-                    <span className="w-2 h-2 bg-default-400 rounded-full animate-bounce"></span>
-                    <span className="w-2 h-2 bg-default-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                    <span className="w-2 h-2 bg-default-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
-                  </div>
-                </div>
-              )}
               <div ref={endOfMessagesRef} />
             </ScrollShadow>
 
@@ -198,15 +208,23 @@ export default function FloatingChatWidget() {
             animate={{ scale: 1 }}
             exit={{ scale: 0 }}
           >
-            <Button
-              isIconOnly
-              color="primary"
-              radius="full"
-              className="shadow-lg h-10 w-10 min-w-10 md:h-12 md:w-12 md:min-w-12"
-              onPress={() => setIsOpen(true)}
+            <Tooltip 
+              content="Chat AI" 
+              placement="left" 
+              classNames={{
+                content: "bg-default-900 text-default-100 px-3 py-1.5 text-xs rounded-full shadow-xl font-medium border border-white/10 backdrop-blur-md"
+              }}
+              delay={300}
             >
-              <MessageCircle className="h-5 w-5 md:h-6 md:w-6" />
-            </Button>
+              <Button
+                isIconOnly
+                radius="full"
+                className="shadow-xl bg-gradient-to-tr from-blue-500 to-purple-600 text-white h-10 w-10 min-w-10 md:h-11 md:w-11 md:min-w-11 hover:scale-110 transition-transform"
+                onPress={() => setIsOpen(true)}
+              >
+                <MessageCircle className="h-5 w-5 md:h-5 md:w-5" />
+              </Button>
+            </Tooltip>
           </motion.div>
         )}
       </AnimatePresence>
