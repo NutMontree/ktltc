@@ -2054,7 +2054,7 @@ function DVETeacherWorkspace() {
                       )}
 
                       <div
-                        className="flex justify-end gap-2 mt-3.5 pt-2.5 border-t border-zinc-100 dark:border-zinc-800/80 md:opacity-0 group-hover:opacity-100 transition-all duration-200"
+                        className="flex justify-end gap-2 mt-3.5 pt-2.5 border-t border-zinc-100 dark:border-zinc-800/80 transition-all duration-200"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <button
@@ -2163,7 +2163,7 @@ function DVETeacherWorkspace() {
                           key={unit.id}
                           className="p-5 sm:p-6 rounded-[24px] bg-white/80 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-zinc-800/80 relative group hover:border-emerald-300 dark:hover:border-emerald-700/50 hover:shadow-lg hover:shadow-emerald-500/5 transition-all duration-300"
                         >
-                          <div className="absolute top-5 right-5 flex gap-2 md:opacity-0 group-hover:opacity-100 transition-all duration-200">
+                          <div className="absolute top-5 right-5 flex gap-2 transition-all duration-200">
                             <button
                               onClick={() => {
                                 setUnitForm({

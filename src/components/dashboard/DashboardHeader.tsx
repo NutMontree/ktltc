@@ -69,8 +69,8 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
           </motion.div>
 
           <motion.div variants={itemVariants} className="space-y-1">
-            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black text-zinc-950 dark:text-white tracking-tighter leading-none flex flex-wrap items-center gap-x-4">
-              <span className="uppercase italic">Over</span>
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-zinc-950 dark:text-white tracking-tighter leading-none flex flex-wrap items-center gap-x-2 sm:gap-x-4">
+              <span className="uppercase italic pr-2 sm:pr-4">Over</span>
               <span className="text-blue-600 uppercase">view</span>
               <LayoutDashboard className="w-8 h-8 sm:w-12 sm:h-12 text-zinc-200 dark:text-zinc-800 hidden sm:block" />
             </h1>
