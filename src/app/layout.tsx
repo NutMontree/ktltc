@@ -21,6 +21,7 @@ import { Suspense } from "react";
 import ClientProviders from "@/providers/ClientProviders";
 import ClientBackgroundEffects from "@/components/ClientBackgroundEffects";
 import { AppleStyleDock } from "@/components/AppleStyleDock";
+import FloatingChatWidget from "@/components/FloatingChatWidget";
 
 import { Prompt, Inter, Sarabun, Charm } from 'next/font/google';
 
@@ -156,6 +157,7 @@ export default async function RootLayout({
               </Suspense> */}
               <AppleStyleDock />
               <Footer />
+              <FloatingChatWidget />
         </ClientProviders>
       </body>
     </html>
