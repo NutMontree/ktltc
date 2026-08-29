@@ -35,6 +35,7 @@ import {
   ChevronDown,
   ChevronUp,
   Download,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { Variants } from "framer-motion";
@@ -80,13 +81,20 @@ export default function DashboardClient({ initialStats, initialPermissions, init
   const [activeTab, setActiveTab] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Restore active tab from sessionStorage on mount
+  // Restore active tab from sessionStorage or auto-select based on User Role
   useEffect(() => {
     const savedTab = sessionStorage.getItem("dashboardActiveTab");
     if (savedTab) {
       setActiveTab(savedTab);
+    } else if (status === "authenticated" && session?.user?.role) {
+      const role = (session.user.role || "").toLowerCase();
+      if (role === "student") setActiveTab("student");
+      else if (role === "teacher") setActiveTab("teacher");
+      else if (["staff", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs"].includes(role)) setActiveTab("staff");
+      else if (role === "executive") setActiveTab("executive");
+      else if (role === "super_admin") setActiveTab("superadmin");
     }
-  }, []);
+  }, [status, session]);
 
   // Save active tab to sessionStorage whenever it changes
   useEffect(() => {
@@ -282,16 +290,24 @@ export default function DashboardClient({ initialStats, initialPermissions, init
             {/* --- Hero Search & Actions --- */}
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 w-full mb-8">
               <motion.div variants={item} className="relative w-full md:max-w-xl shrink-0">
-                <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                  <Search className="h-5 w-5 text-zinc-400" />
+                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-blue-500" />
                 </div>
                 <input
                   type="text"
-                  placeholder="ค้นหาเมนู..."
+                  placeholder="🔍 ค้นหาเมนูการใช้งาน (เช่น เช็คชื่อ, ลางาน, สิทธิ์)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-14 pr-6 py-4 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl border border-white/60 dark:border-white/10 rounded-4xl text-base font-bold focus:outline-none focus:ring-4 focus:ring-blue-500/20 shadow-xl shadow-black/5 dark:shadow-black/40 transition-all placeholder:text-zinc-400"
+                  className="w-full pl-13 pr-12 py-3.5 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl border border-blue-500/20 dark:border-white/10 rounded-full text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-blue-500/20 shadow-lg shadow-black/5 transition-all placeholder:text-zinc-400"
                 />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
               </motion.div>
 
               <motion.div variants={item} className="shrink-0 w-full md:w-auto flex justify-end">
