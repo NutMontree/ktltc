@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { Button, Input, ScrollShadow, Spinner, Tooltip } from "@heroui/react";
-import { MessageCircle, X, Send, Bot } from "lucide-react";
+import { MessageCircle, X, Send, Bot, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Message {
@@ -115,17 +115,23 @@ export default function FloatingChatWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
             transition={{ duration: 0.2 }}
-            className="absolute bottom-12 md:bottom-16 right-0 w-[300px] sm:w-[350px] h-[450px] bg-background/80 backdrop-blur-xl border border-divider shadow-2xl rounded-2xl flex flex-col overflow-hidden origin-bottom-right"
+            className="absolute bottom-12 md:bottom-16 right-0 w-[310px] sm:w-[360px] h-[480px] bg-background/95 backdrop-blur-2xl border border-divider/80 shadow-2xl shadow-indigo-950/20 rounded-3xl flex flex-col overflow-hidden origin-bottom-right"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-divider bg-content1/50">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-primary/20 text-primary rounded-full">
-                  <Bot size={20} />
+            <div className="flex items-center justify-between px-4 py-3.5 border-b border-divider bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-transparent backdrop-blur-md">
+              <div className="flex items-center gap-2.5">
+                <div className="relative p-2 bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 text-white rounded-2xl shadow-md shadow-purple-500/30">
+                  <Sparkles size={18} className="text-amber-300 animate-pulse" />
+                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-background rounded-full"></span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm">KTLTC AI Assistant</h3>
-                  <p className="text-xs text-default-500">ถาม-ตอบข้อมูลวิทยาลัย</p>
+                  <h3 className="font-semibold text-sm flex items-center gap-1.5 text-foreground">
+                    KTLTC AI Assistant
+                  </h3>
+                  <p className="text-[11px] text-default-500 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                    พร้อมตอบคำถามข้อมูลวิทยาลัย 24 ชม.
+                  </p>
                 </div>
               </div>
               <Button
@@ -134,30 +140,36 @@ export default function FloatingChatWidget() {
                 variant="light"
                 onPress={() => setIsOpen(false)}
                 radius="full"
+                className="text-default-500 hover:text-foreground"
               >
                 <X size={18} />
               </Button>
             </div>
 
             {/* Chat Body */}
-            <ScrollShadow className="flex-1 p-4 space-y-4">
+            <ScrollShadow className="flex-1 p-4 space-y-4 bg-gradient-to-b from-slate-50/50 via-indigo-50/20 to-purple-50/10 dark:from-slate-950/50 dark:via-indigo-950/20 dark:to-purple-950/10">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} items-start gap-2`}
                 >
+                  {msg.role === "ai" && (
+                    <div className="w-6.5 h-6.5 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                      <Sparkles size={13} className="text-amber-300" />
+                    </div>
+                  )}
                   <div
-                    className={`max-w-[80%] px-4 py-2 rounded-2xl text-sm ${
+                    className={`max-w-[82%] px-4 py-2.5 text-sm ${
                       msg.role === "user"
-                        ? "bg-primary text-white rounded-tr-none"
-                        : "bg-content2 text-foreground rounded-tl-none"
+                        ? "bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 text-white rounded-2xl rounded-tr-xs shadow-md shadow-indigo-500/20 font-medium"
+                        : "bg-content1 dark:bg-slate-900 text-foreground border border-divider/60 shadow-xs rounded-2xl rounded-tl-xs leading-relaxed"
                     }`}
                   >
                     {msg.content === "typing..." ? (
-                      <div className="flex items-center gap-1 h-5">
-                        <span className="w-2 h-2 bg-default-400 rounded-full animate-bounce"></span>
-                        <span className="w-2 h-2 bg-default-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                        <span className="w-2 h-2 bg-default-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                      <div className="flex items-center gap-1.5 py-1 px-1">
+                        <span className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce"></span>
+                        <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                        <span className="w-2 h-2 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
                       </div>
                     ) : (
                       msg.content
@@ -169,11 +181,11 @@ export default function FloatingChatWidget() {
             </ScrollShadow>
 
             {/* Footer / Input */}
-            <div className="p-3 border-t border-divider bg-content1/50">
+            <div className="p-3 border-t border-divider/80 bg-background/90 backdrop-blur-md">
               <div className="flex items-center gap-2">
                 <Input
                   classNames={{
-                    inputWrapper: "bg-content2 hover:bg-content3 focus-within:bg-content3",
+                    inputWrapper: "bg-content2/80 hover:bg-content3/80 focus-within:bg-background focus-within:ring-2 focus-within:ring-purple-500/40 border border-divider/50 transition-all",
                   }}
                   placeholder="พิมพ์ข้อความ..."
                   value={message}
@@ -187,8 +199,8 @@ export default function FloatingChatWidget() {
                 />
                 <Button
                   isIconOnly
-                  color="primary"
                   radius="full"
+                  className="bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 text-white shadow-md shadow-purple-500/30 hover:scale-105 active:scale-95 transition-all disabled:opacity-40 disabled:hover:scale-100 shrink-0"
                   onPress={handleSend}
                   isDisabled={!message.trim() || isLoading}
                 >
@@ -209,20 +221,23 @@ export default function FloatingChatWidget() {
             exit={{ scale: 0 }}
           >
             <Tooltip 
-              content="Chat AI" 
+              content="Chat AI Assistant" 
               placement="left" 
               classNames={{
-                content: "bg-default-900 text-default-100 px-3 py-1.5 text-xs rounded-full shadow-xl font-medium border border-white/10 backdrop-blur-md"
+                content: "bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 text-white px-3.5 py-1.5 text-xs rounded-full shadow-xl font-medium border border-white/20 backdrop-blur-md"
               }}
               delay={300}
             >
               <Button
                 isIconOnly
                 radius="full"
-                className="shadow-xl bg-linear-to-tr from-blue-500 to-purple-600 text-white h-10 w-10 min-w-10 md:h-11 md:w-11 md:min-w-11 hover:scale-110 transition-transform"
+                className="relative shadow-xl shadow-purple-500/40 bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 text-white h-11 w-11 min-w-11 md:h-12 md:w-12 md:min-w-12 hover:scale-110 hover:shadow-purple-500/60 transition-all duration-300 ring-2 ring-white/20"
                 onPress={() => setIsOpen(true)}
               >
-                <MessageCircle className="h-5 w-5 md:h-5 md:w-5" />
+                <div className="relative flex items-center justify-center">
+                  <MessageCircle className="h-5 w-5 md:h-6 md:w-6" />
+                  <Sparkles className="h-3 w-3 text-amber-300 absolute -top-1 -right-1 animate-pulse" />
+                </div>
               </Button>
             </Tooltip>
           </motion.div>

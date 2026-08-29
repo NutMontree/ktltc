@@ -74,7 +74,8 @@ export async function POST(req: NextRequest) {
       
       // ดึงข้อมูล 3 ชิ้นที่ตรงกับคำถามมากที่สุด เรียงตามคะแนนความแม่นยำ (Text Score)
       const kbResults = await kbCollection
-        .find(query, { score: { $meta: "textScore" } })
+        .find(query)
+        .project({ score: { $meta: "textScore" } })
         .sort({ score: { $meta: "textScore" } })
         .limit(3)
         .toArray();
