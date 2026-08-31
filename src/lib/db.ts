@@ -127,16 +127,23 @@ const globalWithMongo = global as typeof globalThis & {
 if (!globalWithMongo._mongoClientPromise) {
   // console.log("🔌 [MongoDB] Initializing new connection...");
   client = new MongoClient(uri, options);
-  globalWithMongo._mongoClientPromise = client.connect()
-    .then((connectedClient) => {
-      console.log("✅ [MongoDB] Connected successfully");
-      return connectedClient;
-    })
-    .catch((err) => {
-      console.error("❌ [MongoDB] Connection failed:", err);
-      globalWithMongo._mongoClientPromise = undefined; // รีเซ็ตเพื่อให้ลองเชื่อมต่อใหม่ได้
-      throw err;
-    });
+  
+  // ฟังก์ชันช่วยเชื่อมต่อซ้ำอัตโนมัติ (Retry Mechanism) 
+  // แก้ปัญหาเวลา PM2 เริ่มทำงานก่อน MongoDB ตอนเปิดเครื่อง
+  const connectWithRetry = async (): Promise<MongoClient> => {
+    while (true) {
+      try {
+        await client.connect();
+        console.log("✅ [MongoDB] Connected successfully");
+        return client;
+      } catch (err) {
+        console.error("❌ [MongoDB] Connection failed, retrying in 5 seconds...", err);
+        await new Promise(resolve => setTimeout(resolve, 5000));
+      }
+    }
+  };
+
+  globalWithMongo._mongoClientPromise = connectWithRetry();
   
   // รันการสร้าง Index ในพื้นหลัง (Background) ไม่ต้องรอให้เสร็จก่อนเริ่มแอป
   createIndexes(globalWithMongo._mongoClientPromise);
