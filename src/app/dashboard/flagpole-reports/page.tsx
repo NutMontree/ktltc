@@ -1375,7 +1375,7 @@ function FlagpoleReportsManagementContent() {
               <div className="p-6 bg-slate-50/50 dark:bg-zinc-800/20 border-t border-slate-100 dark:border-zinc-800 flex justify-end gap-3">
                 <button
                   onClick={() => setIsEditing(false)}
-                  className="px-5 py-2.5 bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-350 rounded-xl font-bold text-xs hover:bg-slate-200 transition-colors"
+                  className="px-5 py-2.5 bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 rounded-xl font-bold text-xs hover:bg-slate-200 transition-colors"
                 >
                   ยกเลิก
                 </button>

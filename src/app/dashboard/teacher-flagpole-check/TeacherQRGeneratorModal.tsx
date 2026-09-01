@@ -96,7 +96,7 @@ export default function TeacherQRGeneratorModal({ isOpen, onClose, department, c
                   level="H"
                   includeMargin={false}
                   imageSettings={{
-                    src: "/ktltc_logo.png",
+                    src: "/favicon.ico",
                     x: undefined,
                     y: undefined,
                     height: 40,
