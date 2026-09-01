@@ -5,20 +5,57 @@ import { encrypt, decrypt } from "@/lib/encryption";
 import { ObjectId } from "mongodb";
 import { randomUUID } from "crypto";
 
-export async function GET() {
+export async function GET(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
+    const { searchParams } = new URL(req.url);
+    const viewAll = searchParams.get("viewAll") === "true";
     const vaultCol = await getVaultCollection();
-    const folders = await vaultCol.find({ userId: new ObjectId(session.user.id) }).sort({ createdAt: -1 }).toArray();
+    
+    let folders = [];
+
+  if (viewAll && session.user.role?.toLowerCase() === "super_admin") {
+      // ดึงทั้งหมดและ Join กับตาราง users เพื่อเอาชื่อเจ้าของ
+      folders = await vaultCol.aggregate([
+        { $sort: { createdAt: -1 } },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "owner"
+          }
+        },
+        {
+          $unwind: {
+            path: "$owner",
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $addFields: {
+            ownerName: "$owner.name",
+            ownerEmail: "$owner.email"
+          }
+        },
+        {
+          $project: {
+            owner: 0 // ไม่ต้องส่ง object owner กลับไปเต็มๆ
+          }
+        }
+      ]).toArray();
+    } else {
+      folders = await vaultCol.find({ userId: new ObjectId(session.user.id) }).sort({ createdAt: -1 }).toArray();
+    }
 
     // กรองเอาเฉพาะข้อมูลที่เป็นแฟ้มจริงๆ (ข้ามของเก่าที่ไม่มี credentials) และถอดรหัส
     const decryptedFolders = folders
-      .filter(folder => folder.folderName)
-      .map(folder => ({
+      .filter((folder: any) => folder.folderName)
+      .map((folder: any) => ({
         ...folder,
         credentials: (folder.credentials || []).map((cred: any) => ({
           ...cred,
@@ -106,6 +143,65 @@ export async function PUT(req: Request) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Vault PUT error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
+
+// PATCH สำหรับแก้ไขข้อมูล Credential ภายใน Folder
+export async function PATCH(req: Request) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const { folderId, credId, title, username, password, folderName } = await req.json();
+
+    const vaultCol = await getVaultCollection();
+
+    // กรณีแก้ไขชื่อโฟลเดอร์
+    if (folderName && !credId) {
+      const result = await vaultCol.updateOne(
+        { _id: new ObjectId(folderId), userId: new ObjectId(session.user.id) },
+        { $set: { folderName, updatedAt: new Date() } }
+      );
+      if (result.matchedCount === 0) return NextResponse.json({ error: "Folder not found or unauthorized" }, { status: 404 });
+      return NextResponse.json({ success: true });
+    }
+
+    // กรณีแก้ไข Credential
+    if (!folderId || !credId || !title || !username || !password) {
+      return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+    }
+
+    const encryptedPassword = encrypt(password);
+    if (!encryptedPassword) {
+      return NextResponse.json({ error: "Encryption failed" }, { status: 500 });
+    }
+
+    const result = await vaultCol.updateOne(
+      { 
+        _id: new ObjectId(folderId), 
+        userId: new ObjectId(session.user.id),
+        "credentials.id": credId 
+      },
+      {
+        $set: { 
+          "credentials.$.title": title,
+          "credentials.$.username": username,
+          "credentials.$.encryptedPassword": encryptedPassword,
+          updatedAt: new Date()
+        }
+      }
+    );
+
+    if (result.matchedCount === 0) {
+      return NextResponse.json({ error: "Credential not found or unauthorized" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Vault PATCH error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

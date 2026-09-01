@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Lock, Plus, Copy, Eye, EyeOff, Trash2, KeyRound, Loader2, Folder, X, FolderPlus
+  Lock, Plus, Copy, Eye, EyeOff, Trash2, KeyRound, Loader2, Folder, X, FolderPlus, Pencil, ShieldCheck
 } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
 
@@ -22,25 +22,33 @@ interface VaultFolder {
   folderName: string;
   credentials: VaultCredential[];
   createdAt: string;
+  ownerName?: string;
 }
 
 export default function PersonalVaultPage() {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
+
+  const isSuperAdmin = session?.user?.role?.toLowerCase() === "super_admin";
 
   const [folders, setFolders] = useState<VaultFolder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isViewAllMode, setIsViewAllMode] = useState(false);
 
   // Modals state
   const [isAddFolderModalOpen, setIsAddFolderModalOpen] = useState(false);
+  const [isEditFolderModalOpen, setIsEditFolderModalOpen] = useState(false);
   const [isAddCredModalOpen, setIsAddCredModalOpen] = useState(false);
   const [isFolderViewModalOpen, setIsFolderViewModalOpen] = useState(false);
+  const [isEditCredModalOpen, setIsEditCredModalOpen] = useState(false);
 
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
+  const [editCredId, setEditCredId] = useState<string | null>(null);
 
   // Form states
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
+  const [editFolderName, setEditFolderName] = useState("");
   const [newTitle, setNewTitle] = useState("");
   const [newUsername, setNewUsername] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -51,14 +59,14 @@ export default function PersonalVaultPage() {
     if (status === "unauthenticated") {
       router.replace("/login");
     } else if (status === "authenticated") {
-      fetchFolders();
+      fetchFolders(isViewAllMode);
     }
-  }, [status, router]);
+  }, [status, router, isViewAllMode]);
 
-  const fetchFolders = async () => {
+  const fetchFolders = async (viewAll = isViewAllMode) => {
     setLoading(true);
     try {
-      const res = await fetch("/api/personal-vault");
+      const res = await fetch(`/api/personal-vault${viewAll ? "?viewAll=true" : ""}`);
       const data = await res.json();
       if (data.success) {
         setFolders(data.folders);
@@ -128,6 +136,71 @@ export default function PersonalVaultPage() {
         fetchFolders();
       } else {
         toast.error(data.error || "บันทึกล้มเหลว");
+      }
+    } catch (error) {
+      toast.error("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleEditFolder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editFolderName || !activeFolderId) return toast.error("กรุณาระบุชื่อโฟลเดอร์");
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/personal-vault", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ folderId: activeFolderId, folderName: editFolderName })
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("แก้ไขชื่อโฟลเดอร์เรียบร้อย");
+        setIsEditFolderModalOpen(false);
+        setEditFolderName("");
+        fetchFolders();
+      } else {
+        toast.error(data.error || "แก้ไขโฟลเดอร์ล้มเหลว");
+      }
+    } catch (error) {
+      toast.error("เกิดข้อผิดพลาด");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleEditCredential = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeFolderId || !editCredId || !newTitle || !newUsername || !newPassword) {
+      return toast.error("กรุณากรอกข้อมูลให้ครบถ้วน");
+    }
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/personal-vault", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          folderId: activeFolderId,
+          credId: editCredId,
+          title: newTitle,
+          username: newUsername,
+          password: newPassword
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        toast.success("แก้ไขข้อมูลเรียบร้อย");
+        setIsEditCredModalOpen(false);
+        setNewTitle("");
+        setNewUsername("");
+        setNewPassword("");
+        fetchFolders();
+      } else {
+        toast.error(data.error || "แก้ไขล้มเหลว");
       }
     } catch (error) {
       toast.error("เกิดข้อผิดพลาดในการเชื่อมต่อ");
@@ -216,13 +289,44 @@ export default function PersonalVaultPage() {
               <p className="text-zinc-500 dark:text-zinc-400 mt-2 font-medium">จัดการและเก็บรหัสผ่านของคุณแบ่งตามโฟลเดอร์ ปลอดภัยด้วยการเข้ารหัสขั้นสูง</p>
             </div>
 
-            <button
-              onClick={() => setIsAddFolderModalOpen(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-100 rounded-2xl font-bold transition-all shadow-md active:scale-95"
-            >
-              <FolderPlus size={20} className="text-cyan-600 dark:text-cyan-400" />
-              สร้างโฟลเดอร์ใหม่
-            </button>
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              {isSuperAdmin && (
+                <button
+                  onClick={() => setIsViewAllMode(!isViewAllMode)}
+                  className={`flex items-center gap-2 px-6 py-3 border rounded-2xl font-bold transition-all shadow-md active:scale-95 ${
+                    isViewAllMode 
+                      ? 'bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-400' 
+                      : 'bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-100'
+                  }`}
+                >
+                  <Eye size={20} />
+                  {isViewAllMode ? "กลับโหมดปกติ" : "ดูข้อมูลทั้งหมด"}
+                </button>
+              )}
+
+              <button
+                onClick={() => setIsAddFolderModalOpen(true)}
+                className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-100 rounded-2xl font-bold transition-all shadow-md active:scale-95"
+              >
+                <FolderPlus size={20} className="text-cyan-600 dark:text-cyan-400" />
+                สร้างโฟลเดอร์ใหม่
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Security Alert Banner */}
+        <div className="bg-linear-to-r from-emerald-500/10 to-teal-500/10 dark:from-emerald-500/5 dark:to-teal-500/5 border border-emerald-200 dark:border-emerald-900/30 rounded-2xl p-4 flex items-start sm:items-center gap-4">
+          <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl text-emerald-600 dark:text-emerald-400 shrink-0">
+            <ShieldCheck size={24} />
+          </div>
+          <div>
+            <h4 className="text-emerald-800 dark:text-emerald-300 font-bold text-sm sm:text-base mb-1">
+              ข้อมูลของคุณถูกเข้ารหัสและเป็นความลับขั้นสูงสุด
+            </h4>
+            <p className="text-emerald-600 dark:text-emerald-500/80 text-xs sm:text-sm font-medium">
+              ระบบ Personal Vault ออกแบบมาเพื่อความเป็นส่วนตัวของคุณโดยเฉพาะ รหัสผ่านทั้งหมดจะถูกเข้ารหัส (Encryption) และมีเพียง <strong>"คุณ"</strong> เท่านั้นที่สามารถมองเห็นข้อมูลของตนเองได้ บุคคลอื่นจะไม่สามารถเข้าถึงข้อมูลของคุณได้อย่างเด็ดขาด
+            </p>
           </div>
         </div>
 
@@ -257,16 +361,35 @@ export default function PersonalVaultPage() {
                         <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium mt-1">
                           {folder.credentials.length} รายการ
                         </p>
+                        {isViewAllMode && folder.ownerName && (
+                          <span className="inline-block mt-1 px-2 py-0.5 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 text-xs font-bold rounded-md truncate max-w-[120px]">
+                            {folder.ownerName}
+                          </span>
+                        )}
                       </div>
                     </div>
 
-                    <button
-                      onClick={(e) => handleDeleteFolder(folder._id, e)}
-                      className="opacity-0 group-hover:opacity-100 p-2 rounded-xl text-zinc-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all"
-                      title="ลบโฟลเดอร์"
-                    >
-                      <Trash2 size={18} />
-                    </button>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveFolderId(folder._id);
+                          setEditFolderName(folder.folderName);
+                          setIsEditFolderModalOpen(true);
+                        }}
+                        className="p-2 rounded-xl text-zinc-400 hover:text-cyan-500 hover:bg-cyan-50 dark:hover:bg-cyan-500/10 transition-all"
+                        title="แก้ไขโฟลเดอร์"
+                      >
+                        <Pencil size={18} />
+                      </button>
+                      <button
+                        onClick={(e) => handleDeleteFolder(folder._id, e)}
+                        className="p-2 rounded-xl text-zinc-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-all"
+                        title="ลบโฟลเดอร์"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
                   </div>
 
                   <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800">
@@ -319,6 +442,40 @@ export default function PersonalVaultPage() {
                 </div>
                 <button type="submit" disabled={isSubmitting} className="w-full py-3.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/20 disabled:opacity-50 transition-all flex justify-center items-center gap-2">
                   {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <FolderPlus size={18} />} บันทึก
+                </button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* 1.5 Edit Folder Modal */}
+      <AnimatePresence>
+        {isEditFolderModalOpen && (
+          <div className="fixed inset-0 z-9999 flex items-center justify-center px-4">
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-zinc-900/40 dark:bg-black/60 backdrop-blur-sm"
+              onClick={() => setIsEditFolderModalOpen(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-sm bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 shadow-2xl overflow-hidden"
+            >
+              <button onClick={() => setIsEditFolderModalOpen(false)} className="absolute top-4 right-4 p-2 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:text-zinc-800 dark:hover:text-white transition-colors">
+                <X size={18} />
+              </button>
+              <h2 className="text-xl font-black text-zinc-800 dark:text-white mb-6">แก้ไขชื่อโฟลเดอร์</h2>
+              <form onSubmit={handleEditFolder} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-2 uppercase">ชื่อโฟลเดอร์ใหม่</label>
+                  <input
+                    type="text" required value={editFolderName} onChange={e => setEditFolderName(e.target.value)}
+                    className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-zinc-800 dark:text-white focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all font-bold"
+                  />
+                </div>
+                <button type="submit" disabled={isSubmitting} className="w-full py-3.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/20 disabled:opacity-50 transition-all flex justify-center items-center gap-2">
+                  {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Pencil size={18} />} บันทึกการแก้ไข
                 </button>
               </form>
             </motion.div>
@@ -411,9 +568,23 @@ export default function PersonalVaultPage() {
                         <div key={cred.id} className="p-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm hover:shadow-md transition-all">
                           <div className="flex justify-between items-start mb-4">
                             <h3 className="text-lg font-bold text-zinc-800 dark:text-zinc-200 truncate">{cred.title}</h3>
-                            <button onClick={() => handleDeleteCredential(activeFolder._id, cred.id)} className="text-zinc-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 p-1.5 rounded-lg transition-colors">
-                              <Trash2 size={16} />
-                            </button>
+                            <div className="flex items-center gap-1">
+                              <button 
+                                onClick={() => {
+                                  setEditCredId(cred.id);
+                                  setNewTitle(cred.title);
+                                  setNewUsername(cred.username);
+                                  setNewPassword(cred.password || "");
+                                  setIsEditCredModalOpen(true);
+                                }} 
+                                className="text-zinc-400 hover:text-cyan-500 hover:bg-cyan-50 dark:hover:bg-cyan-500/10 p-1.5 rounded-lg transition-colors"
+                              >
+                                <Pencil size={16} />
+                              </button>
+                              <button onClick={() => handleDeleteCredential(activeFolder._id, cred.id)} className="text-zinc-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 p-1.5 rounded-lg transition-colors">
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
                           </div>
 
                           <div className="space-y-3">
@@ -448,6 +619,48 @@ export default function PersonalVaultPage() {
                   </div>
                 )}
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* 4. Edit Credential Modal */}
+      <AnimatePresence>
+        {isEditCredModalOpen && (
+          <div className="fixed inset-0 z-9999 flex items-center justify-center px-4">
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-zinc-900/40 dark:bg-black/60 backdrop-blur-sm"
+              onClick={() => setIsEditCredModalOpen(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 shadow-2xl overflow-hidden"
+            >
+              <button onClick={() => setIsEditCredModalOpen(false)} className="absolute top-4 right-4 p-2 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:text-zinc-800 dark:hover:text-white transition-colors">
+                <X size={18} />
+              </button>
+              <h2 className="text-xl font-black text-zinc-800 dark:text-white mb-6">แก้ไขรหัสผ่าน</h2>
+
+              <form onSubmit={handleEditCredential} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-2 uppercase">ชื่อบริการ</label>
+                  <input type="text" required value={newTitle} onChange={e => setNewTitle(e.target.value)} className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-zinc-800 dark:text-white focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all font-medium" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-2 uppercase">Username / Email</label>
+                  <input type="text" required value={newUsername} onChange={e => setNewUsername(e.target.value)} className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-zinc-800 dark:text-white focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all font-medium font-mono" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-2 uppercase">รหัสผ่านใหม่ (ใส่รหัสเดิมถ้าไม่แก้)</label>
+                  <input type="text" required value={newPassword} onChange={e => setNewPassword(e.target.value)} className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-zinc-800 dark:text-white focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all font-medium font-mono tracking-widest" />
+                </div>
+                <div className="pt-2">
+                  <button type="submit" disabled={isSubmitting} className="w-full py-3.5 bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/20 disabled:opacity-50 transition-all flex justify-center items-center gap-2">
+                    {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Pencil size={18} />} บันทึกการแก้ไข
+                  </button>
+                </div>
+              </form>
             </motion.div>
           </div>
         )}

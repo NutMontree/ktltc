@@ -16,6 +16,8 @@ export interface IVaultFolder {
   credentials: IVaultCredential[];
   createdAt: Date;
   updatedAt: Date;
+  ownerName?: string;     // สำหร้บโหมดดูทั้งหมด
+  ownerEmail?: string;
 }
 
 export async function getVaultCollection() {
