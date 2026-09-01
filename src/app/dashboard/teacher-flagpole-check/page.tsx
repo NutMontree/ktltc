@@ -221,8 +221,7 @@ export default function TeacherFlagpoleCheckPage() {
           <div className="flex flex-wrap gap-3">
             <button 
               onClick={() => setIsQRGeneratorOpen(true)}
-              disabled={!department || !selectedClassGroup}
-              className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-600/30"
+              className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-emerald-600/30"
             >
               <Tv size={18} /> สร้าง QR ขึ้นจอทีวี
             </button>

@@ -109,10 +109,10 @@ export default function TeacherQRGeneratorModal({ isOpen, onClose, department, c
             
             <div className="mt-8 text-center space-y-2">
               <p className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
-                {classGroupId || 'ไม่ระบุห้องเรียน'}
+                {classGroupId && classGroupId !== "all" ? classGroupId : 'สแกนได้ทุกแผนกวิชา / ทุกห้องเรียน'}
               </p>
               <p className="text-sm font-bold text-slate-500 dark:text-zinc-400">
-                {department || 'ไม่ระบุแผนก'}
+                {department && department !== "all" ? department : 'สแกนเช็คชื่อรวมของวิทยาลัย'}
               </p>
             </div>
           </div>

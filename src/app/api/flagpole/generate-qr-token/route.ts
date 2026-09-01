@@ -19,26 +19,26 @@ export async function POST(req: Request) {
     }
 
     const data = await req.json();
-    const { department, classGroupId } = data;
+    const department = data.department || "all";
+    const classGroupId = data.classGroupId || "all";
 
-    if (!department || !classGroupId) {
-      return NextResponse.json(
-        { success: false, message: "กรุณาระบุแผนกและกลุ่มเรียน" },
-        { status: 400 }
-      );
-    }
+    const serverTime = new Date();
+    const thTime = new Date(serverTime.getTime() + 7 * 60 * 60 * 1000);
+    const todayDateStr = thTime.toISOString().split('T')[0];
 
-    // Generate a secure JWT token that expires in 15 minutes
+    // Generate a secure JWT token that is unique per day
+    // By using noTimestamp: true, the token will be exactly the same string 
+    // for the entire day, but will change tomorrow.
     const token = jwt.sign(
       { 
         department,
         classGroupId,
         teacherId: session.user.id,
         type: "flagpole_qr_checkin",
-        date: new Date().toISOString().split('T')[0] // today's date
+        date: todayDateStr
       },
       JWT_SECRET,
-      { expiresIn: "15m" } // 15 minutes expiration
+      { noTimestamp: true } 
     );
 
     return NextResponse.json({

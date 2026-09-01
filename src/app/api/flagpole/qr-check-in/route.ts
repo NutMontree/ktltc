@@ -52,8 +52,11 @@ export async function POST(req: Request) {
       );
     }
 
-    const todayDate = new Date().toISOString().split('T')[0];
-    if (decodedToken.date !== todayDate) {
+    const serverTime = new Date();
+    const thTime = new Date(serverTime.getTime() + 7 * 60 * 60 * 1000);
+    const todayDateStr = thTime.toISOString().split('T')[0];
+    
+    if (decodedToken.date !== todayDateStr) {
       return NextResponse.json(
         { success: false, message: "QR Code นี้เป็นของวันอื่น ไม่สามารถใช้งานได้แล้ว" },
         { status: 400 }
@@ -74,8 +77,6 @@ export async function POST(req: Request) {
     // However, it's safer to only allow checking in if they match, or just allow it and record it.
     // We will allow it but verify later if needed. (Optional: check student.department === decodedToken.department)
 
-    const serverTime = new Date();
-    const thTime = new Date(serverTime.getTime() + 7 * 60 * 60 * 1000);
     const thHours = thTime.getUTCHours();
     const thMinutes = thTime.getUTCMinutes();
     const currentTimeVal = thHours * 100 + thMinutes;
