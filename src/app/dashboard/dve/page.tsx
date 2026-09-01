@@ -44,7 +44,7 @@ import {
   AlertCircle,
   Settings2,
   ListChecks,
-  Save,
+  Save, MapPin,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { message, Popconfirm, Select, DatePicker, Modal } from "antd";
@@ -250,6 +250,113 @@ function DVETeacherWorkspace() {
   // แท็บสถานะออกฝึกงาน (Internship Tab States)
   const [internshipStudents, setInternshipStudents] = useState<any[]>([]);
   const [loadingInternship, setLoadingInternship] = useState(false);
+
+  // Location settings for Internship students
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+  const [selectedLocationStudent, setSelectedLocationStudent] = useState<any | null>(null);
+  const [locationForm, setLocationForm] = useState({ lat: "", lng: "" });
+  const [mapsUrl, setMapsUrl] = useState("");
+  const [extractingGps, setExtractingGps] = useState(false);
+  const [savingLocation, setSavingLocation] = useState(false);
+
+  // Profile Image
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [selectedProfileImage, setSelectedProfileImage] = useState("");
+
+  // Edit Profile
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
+  const [profileForm, setProfileForm] = useState({ id: "", name: "", department: "", studentIdNum: "", phone: "", classGroupId: "" });
+  const [savingProfile, setSavingProfile] = useState(false);
+
+  const handleExtractGps = async () => {
+    if (!mapsUrl.trim()) return message.warning("กรุณาวางลิงก์ Google Maps ก่อน");
+    setExtractingGps(true);
+    try {
+      const res = await fetch("/api/utils/extract-gps", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: mapsUrl }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setLocationForm({ lat: data.lat, lng: data.lng });
+        message.success("ดึงพิกัดจากลิงก์สำเร็จ");
+        setMapsUrl("");
+      } else {
+        message.error(data.error || "ไม่สามารถดึงพิกัดได้");
+      }
+    } catch (error) {
+      message.error("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
+    } finally {
+      setExtractingGps(false);
+    }
+  };
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!profileForm.id) return;
+    setSavingProfile(true);
+    try {
+      const res = await fetch("/api/dve/students", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentId: profileForm.id,
+          name: profileForm.name,
+          department: profileForm.department,
+          studentIdNum: profileForm.studentIdNum,
+          phone: profileForm.phone,
+          classGroupId: profileForm.classGroupId
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        message.success("อัปเดตข้อมูลนักเรียนเรียบร้อยแล้ว");
+        setIsEditProfileModalOpen(false);
+        if (activeTab === "internship") {
+          handleLoadInternshipStudents(internshipFilter.department || "all", internshipFilter.classGroupId);
+        }
+      } else {
+        message.error(data.error || "เกิดข้อผิดพลาดในการอัปเดต");
+      }
+    } catch (error) {
+      message.error("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  const handleSaveLocation = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (checkReadOnly() || !selectedLocationStudent) return;
+    setSavingLocation(true);
+    try {
+      const res = await fetch("/api/dve/students", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentId: selectedLocationStudent.id,
+          dveLat: locationForm.lat ? Number(locationForm.lat) : null,
+          dveLng: locationForm.lng ? Number(locationForm.lng) : null,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        message.success("บันทึกพิกัดสถานประกอบการเรียบร้อย");
+        setIsLocationModalOpen(false);
+        if (activeTab === "internship") {
+          handleLoadInternshipStudents(internshipFilter.department || "all", internshipFilter.classGroupId);
+        }
+      } else {
+        message.error(data.error || "เกิดข้อผิดพลาดในการบันทึกพิกัด");
+      }
+    } catch (error) {
+      message.error("เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์");
+    } finally {
+      setSavingLocation(false);
+    }
+  };
+
   const [internshipFilter, setInternshipFilter] = useState({
     department: "all",
     classGroupId: "",
@@ -1758,11 +1865,10 @@ function DVETeacherWorkspace() {
         <div className="flex flex-wrap sm:flex-nowrap gap-1 p-1.5 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/60 dark:border-zinc-800/80 rounded-2xl sm:rounded-[24px] w-full md:w-auto overflow-x-auto scrollbar-hide shadow-lg shadow-zinc-950/5">
           <button
             onClick={() => setActiveTab("subjects")}
-            className={`relative flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl sm:rounded-[18px] text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer z-10 ${
-              activeTab === "subjects"
+            className={`relative flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl sm:rounded-[18px] text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer z-10 ${activeTab === "subjects"
                 ? "text-white shadow-md shadow-emerald-500/25"
                 : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100/60 dark:hover:bg-zinc-800/60"
-            }`}
+              }`}
           >
             {activeTab === "subjects" && (
               <motion.div
@@ -1784,11 +1890,10 @@ function DVETeacherWorkspace() {
                 handleLoadQuizzes(subjects[0].id);
               }
             }}
-            className={`relative flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl sm:rounded-[18px] text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer z-10 ${
-              activeTab === "quizzes"
+            className={`relative flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl sm:rounded-[18px] text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer z-10 ${activeTab === "quizzes"
                 ? "text-white shadow-md shadow-emerald-500/25"
                 : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100/60 dark:hover:bg-zinc-800/60"
-            }`}
+              }`}
           >
             {activeTab === "quizzes" && (
               <motion.div
@@ -1809,11 +1914,10 @@ function DVETeacherWorkspace() {
                 setCheckinFilter((prev) => ({ ...prev, subjectId: subjects[0].id }));
               }
             }}
-            className={`relative flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl sm:rounded-[18px] text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer z-10 ${
-              activeTab === "checkin"
+            className={`relative flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl sm:rounded-[18px] text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer z-10 ${activeTab === "checkin"
                 ? "text-white shadow-md shadow-emerald-500/25"
                 : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100/60 dark:hover:bg-zinc-800/60"
-            }`}
+              }`}
           >
             {activeTab === "checkin" && (
               <motion.div
@@ -1831,11 +1935,10 @@ function DVETeacherWorkspace() {
             onClick={() => {
               setActiveTab("internship");
             }}
-            className={`relative flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl sm:rounded-[18px] text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer z-10 ${
-              activeTab === "internship"
+            className={`relative flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl sm:rounded-[18px] text-xs font-black transition-all flex-1 sm:flex-none whitespace-nowrap cursor-pointer z-10 ${activeTab === "internship"
                 ? "text-white shadow-md shadow-emerald-500/25"
                 : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100/60 dark:hover:bg-zinc-800/60"
-            }`}
+              }`}
           >
             {activeTab === "internship" && (
               <motion.div
@@ -2004,8 +2107,8 @@ function DVETeacherWorkspace() {
                       key={sub.id}
                       onClick={() => handleManageUnits(sub)}
                       className={`p-4 sm:p-5 rounded-[24px] border transition-all duration-300 cursor-pointer text-left group relative overflow-hidden ${activeSubject?.id === sub.id
-                          ? "bg-linear-to-br from-emerald-500/10 via-teal-500/5 to-cyan-500/10 border-emerald-500/40 dark:border-emerald-500/30 shadow-lg shadow-emerald-500/10 dark:from-emerald-950/40 dark:via-zinc-900/80 dark:to-teal-950/30 scale-[1.01]"
-                          : "bg-white/60 dark:bg-zinc-900/60 border-zinc-200/70 dark:border-zinc-800/80 hover:bg-white/90 hover:border-emerald-300 dark:hover:bg-zinc-800/80 dark:hover:border-emerald-500/30 hover:shadow-md"
+                        ? "bg-linear-to-br from-emerald-500/10 via-teal-500/5 to-cyan-500/10 border-emerald-500/40 dark:border-emerald-500/30 shadow-lg shadow-emerald-500/10 dark:from-emerald-950/40 dark:via-zinc-900/80 dark:to-teal-950/30 scale-[1.01]"
+                        : "bg-white/60 dark:bg-zinc-900/60 border-zinc-200/70 dark:border-zinc-800/80 hover:bg-white/90 hover:border-emerald-300 dark:hover:bg-zinc-800/80 dark:hover:border-emerald-500/30 hover:shadow-md"
                         }`}
                     >
                       {/* Active indicator bar */}
@@ -2238,9 +2341,8 @@ function DVETeacherWorkspace() {
                             <div className="mt-4 pl-0 sm:pl-16">
                               <div className="p-3.5 bg-zinc-50/90 dark:bg-zinc-950/40 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60 border-l-4 border-l-emerald-500 shadow-xs">
                                 <p
-                                  className={`text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-line leading-relaxed font-medium transition-all ${
-                                    !expandedUnits[unit.id] ? "line-clamp-3" : ""
-                                  }`}
+                                  className={`text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-line leading-relaxed font-medium transition-all ${!expandedUnits[unit.id] ? "line-clamp-3" : ""
+                                    }`}
                                 >
                                   {unit.content}
                                 </p>
@@ -2383,32 +2485,29 @@ function DVETeacherWorkspace() {
                           setQuizForm((prev) => ({ ...prev, subjectId: s.id }));
                           handleLoadQuizzes(s.id);
                         }}
-                        className={`w-full p-4 rounded-[22px] text-left border transition-all duration-300 relative overflow-hidden cursor-pointer group ${
-                          isSelected
+                        className={`w-full p-4 rounded-[22px] text-left border transition-all duration-300 relative overflow-hidden cursor-pointer group ${isSelected
                             ? "bg-linear-to-br from-emerald-500/10 via-teal-500/5 to-cyan-500/10 border-emerald-500/40 dark:border-emerald-500/30 shadow-lg shadow-emerald-500/10 scale-[1.01]"
                             : "bg-white/60 dark:bg-zinc-900/60 border-zinc-200/70 dark:border-zinc-800/80 hover:bg-white/90 hover:border-emerald-300 dark:hover:bg-zinc-800/80 dark:hover:border-emerald-500/30 hover:shadow-md"
-                        }`}
+                          }`}
                       >
                         {isSelected && (
                           <div className="absolute top-0 left-0 w-1.5 h-full bg-linear-to-b from-emerald-400 via-teal-500 to-cyan-500 shadow-[0_0_12px_rgba(16,185,129,0.5)]" />
                         )}
                         <div className="flex items-center gap-2 mb-1">
                           <span
-                            className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border ${
-                              isSelected
+                            className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border ${isSelected
                                 ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200/60 dark:border-emerald-800/60"
                                 : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200/50 dark:border-zinc-700/50"
-                            }`}
+                              }`}
                           >
                             {s.code}
                           </span>
                         </div>
                         <h4
-                          className={`font-black text-sm truncate leading-snug transition-colors ${
-                            isSelected
+                          className={`font-black text-sm truncate leading-snug transition-colors ${isSelected
                               ? "text-emerald-950 dark:text-emerald-100"
                               : "text-zinc-800 dark:text-zinc-200 group-hover:text-emerald-600 dark:group-hover:text-emerald-400"
-                          }`}
+                            }`}
                         >
                           {s.name}
                         </h4>
@@ -2516,11 +2615,10 @@ function DVETeacherWorkspace() {
                                 </span>
                               )}
                               <span
-                                className={`px-2.5 py-0.5 rounded-lg text-[10px] font-black border shadow-xs ${
-                                  quiz.isBuiltIn
+                                className={`px-2.5 py-0.5 rounded-lg text-[10px] font-black border shadow-xs ${quiz.isBuiltIn
                                     ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200/60 dark:border-emerald-800/60"
                                     : "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border-blue-200/60 dark:border-blue-800/60"
-                                }`}
+                                  }`}
                               >
                                 {quiz.isBuiltIn ? "🧠 แบบทดสอบในแอป" : "🔗 Google Form"}
                               </span>
@@ -2849,6 +2947,7 @@ function DVETeacherWorkspace() {
                 </div>
               )}
             </Modal>
+
 
             {/* 🔍 Individual Student Progress Analyzer */}
             {studentRoster.length > 0 && (
@@ -3717,11 +3816,10 @@ function DVETeacherWorkspace() {
               <button
                 type="button"
                 onClick={() => setInternshipStatusFilter("all")}
-                className={`text-left bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border rounded-[32px] p-6 shadow-xl shadow-zinc-950/5 flex items-center gap-4 relative overflow-hidden group transition-all duration-300 bg-linear-to-br from-blue-500/5 via-white/80 to-indigo-500/5 dark:from-blue-950/20 dark:via-zinc-900/80 dark:to-indigo-950/20 cursor-pointer ${
-                  internshipStatusFilter === "all"
+                className={`text-left bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border rounded-[32px] p-6 shadow-xl shadow-zinc-950/5 flex items-center gap-4 relative overflow-hidden group transition-all duration-300 bg-linear-to-br from-blue-500/5 via-white/80 to-indigo-500/5 dark:from-blue-950/20 dark:via-zinc-900/80 dark:to-indigo-950/20 cursor-pointer ${internshipStatusFilter === "all"
                     ? "ring-2 ring-blue-500 border-blue-500/50 shadow-blue-500/15 scale-[1.02]"
                     : "border-white/60 dark:border-zinc-800/80 hover:border-blue-300 dark:hover:border-blue-800 hover:shadow-2xl hover:scale-[1.01]"
-                }`}
+                  }`}
               >
                 <div className="absolute -top-2 -right-2 p-6 opacity-5 group-hover:scale-110 group-hover:opacity-10 transition-all duration-500 text-blue-600 pointer-events-none">
                   <Users size={96} strokeWidth={1.5} />
@@ -3751,11 +3849,10 @@ function DVETeacherWorkspace() {
               <button
                 type="button"
                 onClick={() => setInternshipStatusFilter((prev) => (prev === "working" ? "all" : "working"))}
-                className={`text-left bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border rounded-[32px] p-6 shadow-xl shadow-zinc-950/5 flex items-center gap-4 relative overflow-hidden group transition-all duration-300 bg-linear-to-br from-emerald-500/10 via-white/80 to-teal-500/10 dark:from-emerald-950/30 dark:via-zinc-900/80 dark:to-teal-950/30 cursor-pointer ${
-                  internshipStatusFilter === "working"
+                className={`text-left bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border rounded-[32px] p-6 shadow-xl shadow-zinc-950/5 flex items-center gap-4 relative overflow-hidden group transition-all duration-300 bg-linear-to-br from-emerald-500/10 via-white/80 to-teal-500/10 dark:from-emerald-950/30 dark:via-zinc-900/80 dark:to-teal-950/30 cursor-pointer ${internshipStatusFilter === "working"
                     ? "ring-2 ring-emerald-500 border-emerald-500/50 shadow-emerald-500/20 scale-[1.02]"
                     : "border-emerald-500/20 dark:border-emerald-500/20 hover:border-emerald-400 dark:hover:border-emerald-700 hover:shadow-2xl hover:scale-[1.01]"
-                }`}
+                  }`}
               >
                 <div className="absolute -top-2 -right-2 p-6 opacity-5 group-hover:scale-110 group-hover:opacity-10 transition-all duration-500 text-emerald-600 pointer-events-none">
                   <Briefcase size={96} strokeWidth={1.5} />
@@ -3785,11 +3882,10 @@ function DVETeacherWorkspace() {
               <button
                 type="button"
                 onClick={() => setInternshipStatusFilter((prev) => (prev === "normal" ? "all" : "normal"))}
-                className={`text-left bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border rounded-[32px] p-6 shadow-xl shadow-zinc-950/5 flex items-center gap-4 relative overflow-hidden group transition-all duration-300 bg-linear-to-br from-zinc-500/5 via-white/80 to-slate-500/5 dark:from-zinc-950/20 dark:via-zinc-900/80 dark:to-slate-950/20 cursor-pointer ${
-                  internshipStatusFilter === "normal"
+                className={`text-left bg-white/70 dark:bg-zinc-900/80 backdrop-blur-2xl border rounded-[32px] p-6 shadow-xl shadow-zinc-950/5 flex items-center gap-4 relative overflow-hidden group transition-all duration-300 bg-linear-to-br from-zinc-500/5 via-white/80 to-slate-500/5 dark:from-zinc-950/20 dark:via-zinc-900/80 dark:to-slate-950/20 cursor-pointer ${internshipStatusFilter === "normal"
                     ? "ring-2 ring-zinc-700 dark:ring-zinc-400 border-zinc-600 shadow-zinc-950/15 scale-[1.02]"
                     : "border-white/60 dark:border-zinc-800/80 hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-2xl hover:scale-[1.01]"
-                }`}
+                  }`}
               >
                 <div className="absolute -top-2 -right-2 p-6 opacity-5 group-hover:scale-110 group-hover:opacity-10 transition-all duration-500 text-zinc-500 pointer-events-none">
                   <BookOpen size={96} strokeWidth={1.5} />
@@ -3906,8 +4002,8 @@ function DVETeacherWorkspace() {
                     {internshipStatusFilter === "working"
                       ? `แสดงเฉพาะ: กำลังออกฝึกงาน (${displayedInternshipStudents.length} คน)`
                       : internshipStatusFilter === "normal"
-                      ? `แสดงเฉพาะ: เรียนปกติ (${displayedInternshipStudents.length} คน)`
-                      : `แสดงผล ${displayedInternshipStudents.length} คน`}
+                        ? `แสดงเฉพาะ: เรียนปกติ (${displayedInternshipStudents.length} คน)`
+                        : `แสดงผล ${displayedInternshipStudents.length} คน`}
                   </span>
                 </div>
               </div>
@@ -3962,7 +4058,7 @@ function DVETeacherWorkspace() {
                                     {student.image ? (
                                       <img
                                         src={student.image}
-                                        className="w-11 h-11 rounded-2xl object-cover ring-2 ring-emerald-500/20 shadow-sm shrink-0"
+                                        className="w-11 h-11 rounded-2xl object-cover ring-2 ring-emerald-500/20 shadow-sm shrink-0 cursor-pointer hover:ring-emerald-500/50 transition-all" onClick={(e) => { e.stopPropagation(); setSelectedProfileImage(student.image); setIsProfileModalOpen(true); }}
                                       />
                                     ) : (
                                       <div className="w-11 h-11 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 text-white flex items-center justify-center font-black text-sm shadow-sm shrink-0">
@@ -3995,11 +4091,10 @@ function DVETeacherWorkspace() {
                                   <button
                                     type="button"
                                     onClick={() => handleToggleInternship(student)}
-                                    className={`inline-flex items-center justify-center px-4 py-2.5 rounded-2xl text-xs font-black border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer shadow-xs ${
-                                      student.isInternship
+                                    className={`inline-flex items-center justify-center px-4 py-2.5 rounded-2xl text-xs font-black border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer shadow-xs ${student.isInternship
                                         ? "bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white border-transparent shadow-md shadow-emerald-500/25"
                                         : "bg-white/90 dark:bg-zinc-800/90 hover:bg-zinc-100 dark:hover:bg-zinc-750 text-zinc-700 dark:text-zinc-300 border-zinc-200/80 dark:border-zinc-700/80"
-                                    }`}
+                                      }`}
                                   >
                                     {student.isInternship ? (
                                       <>
@@ -4031,7 +4126,7 @@ function DVETeacherWorkspace() {
                               {student.image ? (
                                 <img
                                   src={student.image}
-                                  className="w-12 h-12 rounded-2xl object-cover ring-2 ring-emerald-500/20 shadow-sm shrink-0"
+                                  className="w-12 h-12 rounded-2xl object-cover ring-2 ring-emerald-500/20 shadow-sm shrink-0 cursor-pointer hover:ring-emerald-500/50 transition-all" onClick={(e) => { e.stopPropagation(); setSelectedProfileImage(student.image); setIsProfileModalOpen(true); }}
                                 />
                               ) : (
                                 <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 text-white flex items-center justify-center font-black text-sm shadow-sm shrink-0">
@@ -4059,11 +4154,10 @@ function DVETeacherWorkspace() {
                               <button
                                 type="button"
                                 onClick={() => handleToggleInternship(student)}
-                                className={`inline-flex items-center justify-center px-4 py-2 rounded-xl text-xs font-black border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer shadow-xs ${
-                                  student.isInternship
+                                className={`inline-flex items-center justify-center px-4 py-2 rounded-xl text-xs font-black border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer shadow-xs ${student.isInternship
                                     ? "bg-linear-to-r from-emerald-500 to-teal-500 text-white border-transparent shadow-md shadow-emerald-500/25"
                                     : "bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700"
-                                }`}
+                                  }`}
                               >
                                 {student.isInternship ? (
                                   <>
@@ -5072,22 +5166,20 @@ function DVETeacherWorkspace() {
                           <button
                             type="button"
                             onClick={() => setQuizForm((prev) => ({ ...prev, isBuiltIn: false }))}
-                            className={`flex-1 py-2.5 text-center text-xs font-black rounded-xl transition-all cursor-pointer ${
-                              !quizForm.isBuiltIn
+                            className={`flex-1 py-2.5 text-center text-xs font-black rounded-xl transition-all cursor-pointer ${!quizForm.isBuiltIn
                                 ? "bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white shadow-md shadow-emerald-500/25"
                                 : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
-                            }`}
+                              }`}
                           >
                             ลิงก์ภายนอก (Google Form)
                           </button>
                           <button
                             type="button"
                             onClick={() => setQuizForm((prev) => ({ ...prev, isBuiltIn: true }))}
-                            className={`flex-1 py-2.5 text-center text-xs font-black rounded-xl transition-all cursor-pointer ${
-                              quizForm.isBuiltIn
+                            className={`flex-1 py-2.5 text-center text-xs font-black rounded-xl transition-all cursor-pointer ${quizForm.isBuiltIn
                                 ? "bg-linear-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white shadow-md shadow-emerald-500/25"
                                 : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
-                            }`}
+                              }`}
                           >
                             สร้างในแอป (Built-In)
                           </button>
@@ -5295,11 +5387,10 @@ function DVETeacherWorkspace() {
                           <button
                             type="button"
                             onClick={() => setShowQuizAnswers(!showQuizAnswers)}
-                            className={`px-2.5 py-1.5 rounded-lg text-[10px] font-black transition-all border cursor-pointer flex items-center gap-1 shadow-xs ${
-                              showQuizAnswers
+                            className={`px-2.5 py-1.5 rounded-lg text-[10px] font-black transition-all border cursor-pointer flex items-center gap-1 shadow-xs ${showQuizAnswers
                                 ? "bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800"
                                 : "bg-zinc-100 text-zinc-500 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700"
-                            }`}
+                              }`}
                           >
                             {showQuizAnswers ? <EyeOff size={11} /> : <Eye size={11} />}
                             {showQuizAnswers ? "ปิดเฉลย" : "แสดงเฉลย"}
@@ -6600,17 +6691,259 @@ function DVETeacherWorkspace() {
           );
         })()}
       </Modal>
+
+      {/* Edit Profile Modal */}
+      <Modal
+        title={
+          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+            <Edit2 size={18} />
+            <span className="font-black">แก้ไขข้อมูลนักเรียน</span>
+          </div>
+        }
+        open={isEditProfileModalOpen}
+        onCancel={() => setIsEditProfileModalOpen(false)}
+        footer={null}
+        destroyOnHidden
+      >
+        <form onSubmit={handleSaveProfile} className="space-y-4 pt-2">
+          <div className="space-y-4">
+            <div>
+              <label className="text-xs font-black text-zinc-600 dark:text-zinc-400 block mb-1">
+                ชื่อ - นามสกุล
+              </label>
+              <input
+                type="text"
+                required
+                className="w-full border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 py-3 rounded-xl text-sm font-bold focus:outline-hidden focus:border-amber-500 transition-all dark:text-white"
+                value={profileForm.name}
+                onChange={(e) => setProfileForm(prev => ({ ...prev, name: e.target.value }))}
+              />
+            </div>
+            <div>
+              <label className="text-xs font-black text-zinc-600 dark:text-zinc-400 block mb-1">
+                รหัสนักศึกษา
+              </label>
+              <input
+                type="text"
+                required
+                className="w-full border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 py-3 rounded-xl text-sm font-bold focus:outline-hidden focus:border-amber-500 transition-all dark:text-white"
+                value={profileForm.studentIdNum}
+                onChange={(e) => setProfileForm(prev => ({ ...prev, studentIdNum: e.target.value }))}
+              />
+            </div>
+            <div>
+              <label className="text-xs font-black text-zinc-600 dark:text-zinc-400 block mb-1">
+                รหัสกลุ่มเรียน / ห้องเรียน
+              </label>
+              <input
+                type="text"
+                className="w-full border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 py-3 rounded-xl text-sm font-bold focus:outline-hidden focus:border-amber-500 transition-all dark:text-white"
+                value={profileForm.classGroupId}
+                onChange={(e) => setProfileForm(prev => ({ ...prev, classGroupId: e.target.value }))}
+              />
+            </div>
+            <div>
+              <label className="text-xs font-black text-zinc-600 dark:text-zinc-400 block mb-1">
+                แผนกวิชา
+              </label>
+              <select
+                className="w-full border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 py-3 rounded-xl text-sm font-bold focus:outline-hidden focus:border-amber-500 transition-all dark:text-white"
+                value={profileForm.department}
+                onChange={(e) => setProfileForm(prev => ({ ...prev, department: e.target.value }))}
+              >
+                <option value="">-- เลือกแผนกวิชา --</option>
+                {DEPARTMENTS.filter(d => d.startsWith("แผนกวิชา") || d.includes("การจัดการ")).map(d => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-black text-zinc-600 dark:text-zinc-400 block mb-1">
+                เบอร์โทรศัพท์
+              </label>
+              <input
+                type="text"
+                className="w-full border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 py-3 rounded-xl text-sm font-bold focus:outline-hidden focus:border-amber-500 transition-all dark:text-white"
+                value={profileForm.phone}
+                onChange={(e) => setProfileForm(prev => ({ ...prev, phone: e.target.value }))}
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+            <button
+              type="button"
+              onClick={() => setIsEditProfileModalOpen(false)}
+              className="px-5 py-2.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-black rounded-xl transition-all cursor-pointer text-xs"
+            >
+              ยกเลิก
+            </button>
+            <button
+              type="submit"
+              disabled={savingProfile}
+              className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-amber-500/20 text-xs"
+            >
+              {savingProfile ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+              บันทึกข้อมูล
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Location Modal */}
+      <Modal
+        title={
+          <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+            <MapPin size={18} />
+            <span className="font-black">ตั้งค่าพิกัด GPS สถานประกอบการ</span>
+          </div>
+        }
+        open={isLocationModalOpen}
+        onCancel={() => setIsLocationModalOpen(false)}
+        footer={null}
+        destroyOnHidden
+      >
+        {selectedLocationStudent && (
+          <form onSubmit={handleSaveLocation} className="space-y-4 pt-2">
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-xl border border-blue-100 dark:border-blue-800/50 mb-4 text-xs text-blue-700 dark:text-blue-400">
+              ตั้งค่าละติจูดและลองจิจูดสำหรับ <strong className="text-blue-900 dark:text-blue-300">{selectedLocationStudent.name}</strong> 
+              <br/>พิกัดนี้จะใช้สำหรับเช็คชื่อหน้าเสาธง (Flagpole) แทนพิกัดของวิทยาลัย หากไม่ตั้งค่าระบบจะใช้พิกัดวิทยาลัยเป็นค่าเริ่มต้น
+            </div>
+            
+            <div className="p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-xl border border-zinc-200 dark:border-zinc-800 space-y-3 mb-4">
+              <label className="text-xs font-black text-zinc-700 dark:text-zinc-300 block">
+                แกะพิกัดจากลิงก์ Google Maps อัตโนมัติ
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  className="flex-1 border-2 border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-2 rounded-lg text-xs font-bold focus:outline-hidden focus:border-blue-500 transition-all dark:text-white"
+                  placeholder="วางลิงก์ เช่น https://maps.app.goo.gl/..."
+                  value={mapsUrl}
+                  onChange={(e) => setMapsUrl(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleExtractGps();
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={handleExtractGps}
+                  disabled={extractingGps || !mapsUrl}
+                  className="px-3 py-2 bg-zinc-800 hover:bg-zinc-900 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-white rounded-lg text-xs font-black transition-all cursor-pointer disabled:opacity-50 shrink-0"
+                >
+                  {extractingGps ? <Loader2 size={14} className="animate-spin" /> : "ดึงพิกัด"}
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-black text-zinc-600 dark:text-zinc-400 block mb-1">
+                  ละติจูด (Latitude)
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  className="w-full border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 py-3 rounded-xl text-sm font-bold focus:outline-hidden focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all dark:text-white"
+                  placeholder="เช่น 14.754043"
+                  value={locationForm.lat}
+                  onChange={(e) => setLocationForm(prev => ({ ...prev, lat: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-black text-zinc-600 dark:text-zinc-400 block mb-1">
+                  ลองจิจูด (Longitude)
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  className="w-full border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-4 py-3 rounded-xl text-sm font-bold focus:outline-hidden focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all dark:text-white"
+                  placeholder="เช่น 104.65807"
+                  value={locationForm.lng}
+                  onChange={(e) => setLocationForm(prev => ({ ...prev, lng: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            {/* Map Preview */}
+            {locationForm.lat && locationForm.lng && !isNaN(Number(locationForm.lat)) && !isNaN(Number(locationForm.lng)) && (
+              <div className="mt-4 rounded-xl overflow-hidden border-2 border-zinc-200 dark:border-zinc-800 shadow-sm relative">
+                <div className="absolute top-2 right-2 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] font-black text-zinc-600 dark:text-zinc-300 shadow-xs z-10">
+                  พรีวิวแผนที่ (จุดนี้คือที่เช็คชื่อ)
+                </div>
+                <iframe
+                  width="100%"
+                  height="220"
+                  style={{ border: 0, display: "block" }}
+                  loading="lazy"
+                  allowFullScreen
+                  src={`https://maps.google.com/maps?q=${locationForm.lat},${locationForm.lng}&hl=th&z=16&output=embed`}
+                ></iframe>
+              </div>
+            )}
+
+            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+              <button
+                type="button"
+                onClick={() => setIsLocationModalOpen(false)}
+                className="px-5 py-2.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-black rounded-xl transition-all cursor-pointer text-xs"
+              >
+                ยกเลิก
+              </button>
+              <button
+                type="submit"
+                disabled={savingLocation}
+                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-blue-500/20 text-xs"
+              >
+                {savingLocation ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                บันทึกพิกัด
+              </button>
+            </div>
+          </form>
+        )}
+      </Modal>
+
+      {/* Profile Image Modal */}
+      <Modal
+        open={isProfileModalOpen}
+        onCancel={() => setIsProfileModalOpen(false)}
+        footer={null}
+        width="max-content"
+        className="p-0!"
+        destroyOnHidden
+        closable={false}
+        centered
+      >
+        <div className="relative group cursor-pointer" onClick={() => setIsProfileModalOpen(false)}>
+          <img
+            src={selectedProfileImage}
+            className="max-w-[90vw] max-h-[85vh] rounded-3xl object-contain shadow-2xl"
+            alt="Profile"
+          />
+          <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl flex items-center justify-center">
+            <span className="bg-black/50 text-white px-4 py-2 rounded-full text-sm font-bold backdrop-blur-md">
+              คลิกเพื่อปิด
+            </span>
+          </div>
+        </div>
+      </Modal>
+
     </div>
   );
 }
 
 // -------------------------------------------------------------
-// MAIN ENTRYPOINT WRAPPER WITH NEXTAUTH ROLE GUARD
-// -------------------------------------------------------------
 function DVEPortalContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
   const role = (session?.user?.role || "").toLowerCase();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const canAccessDvePortal = ["teacher", "super_admin", "admin", "editor", "director", "deputy_academic"].includes(role);
 
   useEffect(() => {
@@ -6627,7 +6960,7 @@ function DVEPortalContent() {
     }
   }, [status, role, canAccessDvePortal, router]);
 
-  if (status === "loading") {
+  if (!isMounted || status === "loading") {
     return <DVELoader />;
   }
 

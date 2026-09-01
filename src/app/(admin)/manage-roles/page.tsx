@@ -198,7 +198,7 @@ export default function ManageRolesPage() {
       <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-50 dark:bg-zinc-950 gap-4">
         <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
         <span className="text-xs font-black uppercase tracking-widest text-zinc-400">
-          Syncing Personnel Records...
+          กำลังซิงค์ข้อมูลบุคลากร...
         </span>
       </div>
     );

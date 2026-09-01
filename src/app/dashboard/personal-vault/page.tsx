@@ -656,7 +656,7 @@ export default function PersonalVaultPage() {
                   <input type="text" required value={newPassword} onChange={e => setNewPassword(e.target.value)} className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-zinc-800 dark:text-white focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all font-medium font-mono tracking-widest" />
                 </div>
                 <div className="pt-2">
-                  <button type="submit" disabled={isSubmitting} className="w-full py-3.5 bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/20 disabled:opacity-50 transition-all flex justify-center items-center gap-2">
+                  <button type="submit" disabled={isSubmitting} className="w-full py-3.5 bg-linear-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/20 disabled:opacity-50 transition-all flex justify-center items-center gap-2">
                     {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Pencil size={18} />} บันทึกการแก้ไข
                   </button>
                 </div>

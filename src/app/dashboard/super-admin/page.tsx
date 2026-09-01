@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { DEPARTMENT_GROUPS } from "@/constants/departments";
+import DepartmentManagerModal from "@/components/DepartmentManagerModal";
 import {
   Users,
   Activity,
@@ -98,6 +99,20 @@ export default function SuperAdminPage() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [autoApproveSignup, setAutoApproveSignup] = useState(false);
   const [regEnabled, setRegEnabled] = useState(true);
+  const [isDepartmentModalOpen, setIsDepartmentModalOpen] = useState(false);
+  const [departmentGroups, setDepartmentGroups] = useState<any[]>(DEPARTMENT_GROUPS);
+
+  useEffect(() => {
+    fetch('/api/departments')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setDepartmentGroups(data);
+        }
+      })
+      .catch(err => console.error('Failed to load departments', err));
+  }, []);
+
   const [updatingReg, setUpdatingReg] = useState(false);
 
   const [isSavingSettings, setIsSavingSettings] = useState(false);
@@ -627,6 +642,13 @@ export default function SuperAdminPage() {
 
           <div className="flex items-center gap-4 w-full md:w-auto">
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsDepartmentModalOpen(true)}
+                className="flex items-center gap-2 px-6 py-4 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 rounded-3xl hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all shadow-lg font-bold text-xs uppercase tracking-widest"
+              >
+                <Database size={16} className="text-indigo-500" />
+                <span className="hidden sm:inline">จัดการฝ่ายงาน/แผนกวิชา</span>
+              </button>
               <Link
                 href="/manage-roles"
                 className="flex items-center gap-2 px-6 py-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all shadow-lg text-slate-700 dark:text-zinc-300 font-bold text-xs uppercase tracking-widest"
@@ -896,9 +918,9 @@ export default function SuperAdminPage() {
                           >
                             <option value="ไม่มีสังกัด">- ไม่ระบุสังกัดงาน -</option>
                             <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
-                            {DEPARTMENT_GROUPS.map((group) => (
+                            {departmentGroups.map((group) => (
                               <optgroup key={group.label} label={group.label}>
-                                {group.options.map((opt) => (
+                                {group.options.map((opt: any) => (
                                   <option key={opt.value} value={opt.value}>
                                     {opt.label}
                                   </option>
@@ -1124,9 +1146,9 @@ export default function SuperAdminPage() {
                               >
                                 <option value="ไม่มีสังกัด">- ไม่ระบุสังกัดงาน -</option>
                                 <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
-                                {DEPARTMENT_GROUPS.map((group) => (
+                                {departmentGroups.map((group) => (
                                   <optgroup key={group.label} label={group.label}>
-                                    {group.options.map((opt) => (
+                                    {group.options.map((opt: any) => (
                                       <option key={opt.value} value={opt.value}>
                                         {opt.label}
                                       </option>
@@ -1646,9 +1668,9 @@ export default function SuperAdminPage() {
                   >
                     <option value="ไม่มีสังกัด">- ไม่ระบุสังกัดงาน -</option>
                     <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
-                    {DEPARTMENT_GROUPS.map((group) => (
+                    {departmentGroups.map((group) => (
                       <optgroup key={group.label} label={group.label}>
-                        {group.options.map((opt) => (
+                        {group.options.map((opt: any) => (
                           <option key={opt.value} value={opt.value}>
                             {opt.label}
                           </option>
@@ -1724,6 +1746,15 @@ export default function SuperAdminPage() {
           background: #3f3f46;
         }
       `}</style>
-    </div>
+    
+      <DepartmentManagerModal 
+        isOpen={isDepartmentModalOpen} 
+        onClose={() => setIsDepartmentModalOpen(false)} 
+        onSaved={(newGroups) => {
+          setDepartmentGroups(newGroups);
+        }}
+      />
+
+</div>
   );
 }

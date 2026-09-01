@@ -3535,6 +3535,23 @@ function FriendProfilePageContent({ id }: { id: string }) {
                             </h4>
                           </div>
 
+                          {/* แผนกวิชา */}
+                          <div className="space-y-1">
+                            <label className="text-xs font-black text-zinc-500 uppercase">
+                              แผนกวิชา
+                            </label>
+                            <select
+                              value={formData.department || ""}
+                              onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                              className="w-full bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 appearance-none"
+                            >
+                              <option value="">- เลือกแผนกวิชา -</option>
+                              {DEPARTMENT_GROUPS.find(g => g.label === "5. แผนกวิชา")?.options.map(opt => (
+                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                              ))}
+                            </select>
+                          </div>
+
                           {/* รหัสนักศึกษา + ชื่อห้องเรียน */}
                           <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-1">
