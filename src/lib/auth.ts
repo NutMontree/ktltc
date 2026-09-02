@@ -33,7 +33,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // ฟังก์ชันสำหรับตรวจสอบข้อมูลผู้ใช้ตอนกดปุ่ม Login
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
-          throw new Error("กรุณากรอกชื่อผู้ใช้และรหัสผ่าน");
+          throw new Error(encodeURIComponent("กรุณากรอกชื่อผู้ใช้และรหัสผ่าน"));
         }
 
         const cleanUsername = (credentials.username as string).trim();
@@ -142,7 +142,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         } catch (error: any) {
           const message = error?.message || String(error) || "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ";
           console.error(`[AUTH] Authorize Error for "${cleanUsername}":`, message);
-          throw new Error(message);
+          throw new Error(encodeURIComponent(message));
         }
       },
     }),
