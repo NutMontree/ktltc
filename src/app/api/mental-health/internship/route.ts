@@ -69,15 +69,15 @@ export async function GET() {
     const db = client.db();
     const studentIds = screenings.map(s => s.studentId);
 
-    // Find users by username (which is studentId)
+    // Find users by studentId
     const users = await db.collection("users").find(
-      { username: { $in: studentIds } },
-      { projection: { _id: 1, username: 1, image: 1 } }
+      { studentId: { $in: studentIds } },
+      { projection: { _id: 1, studentId: 1, image: 1 } }
     ).toArray();
 
     const userMap = new Map();
     users.forEach((u: any) => {
-      userMap.set(u.username, {
+      userMap.set(u.studentId, {
         userId: u._id.toString(),
         image: u.image
       });
