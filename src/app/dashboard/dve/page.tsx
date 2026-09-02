@@ -44,7 +44,7 @@ import {
   AlertCircle,
   Settings2,
   ListChecks,
-  Save, MapPin,
+  Save, MapPin, TreePine
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { message, Popconfirm, Select, DatePicker, Modal } from "antd";
@@ -1854,6 +1854,15 @@ function DVETeacherWorkspace() {
             >
               <ClipboardList className="w-4 h-4" />
               <span>ระบบตรวจงานและให้คะแนน (Grading)</span>
+              <ArrowRight className="w-4 h-4 ml-1 opacity-70" />
+            </button>
+            
+            <button
+              onClick={() => router.push("/dashboard/botanical")}
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-linear-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white rounded-2xl font-black text-xs sm:text-sm shadow-lg shadow-emerald-500/25 transition-all active:scale-95 cursor-pointer border border-white/10 hover:shadow-emerald-500/40"
+            >
+              <TreePine className="w-4 h-4" />
+              <span>สวนพฤกษศาสตร์ (Botanical Garden)</span>
               <ArrowRight className="w-4 h-4 ml-1 opacity-70" />
             </button>
           </div>
