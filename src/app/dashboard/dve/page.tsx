@@ -1287,7 +1287,15 @@ function DVETeacherWorkspace() {
       if (res.ok) {
         const data = await res.json();
         if (data.success) {
-          setSubmissions(data.submissions || []);
+          const sorted = (data.submissions || []).sort((a: any, b: any) => {
+            const classA = standardizeClassGroupName(a.classGroupId) || "";
+            const classB = standardizeClassGroupName(b.classGroupId) || "";
+            if (classA !== classB) return classA.localeCompare(classB, 'th');
+            const idA = a.studentIdNum || "";
+            const idB = b.studentIdNum || "";
+            return idA.localeCompare(idB, 'th');
+          });
+          setSubmissions(sorted);
         }
       }
     } catch (err) {
@@ -6520,7 +6528,7 @@ function DVETeacherWorkspace() {
                   ยืนยันแก้ไข
                 </button>
 
-                <div style={{ display: "none" }}>
+                <div className="absolute w-0 h-0 overflow-hidden">
                   <div ref={printSubmissionsRef} className="p-8 text-black bg-white">
                     <h2 className="text-xl font-bold mb-4 text-center">รายงานคะแนน: {submissionsQuizTitle}</h2>
                     <table className="w-full text-xs border-collapse border border-gray-300">
