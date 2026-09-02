@@ -27,7 +27,10 @@
         "./src/*"
       ],
       "@designcodeio/threeui": [
-        "./threeui/src/shaders/landing-pages/LandingPages.tsx"
+        "./threeui/index.ts"
+      ],
+      "@designcodeio/threeui/*": [
+        "./threeui/*"
       ],
       "@designcodeio/threeui/style.css": [
         "./threeui/src/shaders/threeui.css"
