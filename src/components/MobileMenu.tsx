@@ -32,7 +32,7 @@ import {
   BookOpen,
   Download,
 } from "lucide-react";
-import { logoutAction } from "@/app/actions";
+import { signOut } from "next-auth/react";
 import { getMenuIcon } from "./NavbarClient";
 import GlassSurface from "./ui/GlassSurface";
 
@@ -275,7 +275,7 @@ export default function MobileMenu({
                             <button
                               onClick={async () => {
                                 try {
-                                  await logoutAction();
+                                  await signOut({ callbackUrl: "/login" });
                                 } catch (err) {
                                   console.error("Logout error:", err);
                                   window.location.href = "/login";

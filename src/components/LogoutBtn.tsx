@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { logoutAction } from "@/app/actions";
+import { signOut } from "next-auth/react";
 
 /**
  * LogoutBtn.tsx (Client Component): ปุ่มสำหรับออกจากระบบ
@@ -22,8 +22,8 @@ export default function LogoutBtn() {
 
     setIsLoading(true);
     try {
-      // เรียกใช้ Server Action
-      await logoutAction();
+      // เรียกใช้ Client-side signOut ของ next-auth เพื่อให้ล้าง Cookie ชัวร์ๆ
+      await signOut({ callbackUrl: "/login" });
     } catch (error) {
       console.error("Logout error:", error);
       setIsLoading(false);
