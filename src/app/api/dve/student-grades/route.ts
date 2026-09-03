@@ -511,10 +511,10 @@ export async function GET(req: Request) {
       const classB = b.classGroupId || "";
       if (classA !== classB) return classA.localeCompare(classB, "th");
 
-      // 3. Sort by sequence
-      const seqA = typeof a.sequence === "number" ? a.sequence : 9999;
-      const seqB = typeof b.sequence === "number" ? b.sequence : 9999;
-      if (seqA !== seqB) return seqA - seqB;
+      // 3. Sort by studentCode
+      const codeA = a.studentCode || "";
+      const codeB = b.studentCode || "";
+      if (codeA !== codeB) return codeA.localeCompare(codeB, "th");
 
       // 4. Sort by name
       return (a.studentName || "").localeCompare(b.studentName || "", "th");
@@ -623,7 +623,7 @@ export async function POST(req: Request) {
         updatedAt: new Date(),
       };
       if (body.sequence !== undefined) {
-        updateData.sequence = Number(body.sequence);
+        updateData.sequence = body.sequence === null ? null : Number(body.sequence);
       }
       await db.collection("dve_student_grades").updateOne(
         { subjectId, studentId },
@@ -648,7 +648,7 @@ export async function POST(req: Request) {
       updatedAt: new Date(),
     };
     if (body.sequence !== undefined) {
-      insertData.sequence = Number(body.sequence);
+      insertData.sequence = body.sequence === null ? null : Number(body.sequence);
     }
     const result = await db.collection("dve_student_grades").insertOne(insertData);
 

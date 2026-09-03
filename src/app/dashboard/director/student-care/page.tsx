@@ -248,7 +248,7 @@ export default function StudentCarePage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-300 dark:text-zinc-700">
+                  <div className="w-full h-full flex items-center justify-center text-slate-300 dark:text-zinc-700 print:hidden">
                     {viewRecord.recordType === 'home_visit' ? <Camera size={64} /> : <ShieldCheck size={64} />}
                   </div>
                 )}
@@ -1037,7 +1037,7 @@ export default function StudentCarePage() {
                 visibility: visible;
               }
               #print-summary-section {
-                position: relative !important;
+                position: absolute !important;
                 left: 0;
                 top: 0;
                 width: 100% !important;
@@ -1350,11 +1350,34 @@ export default function StudentCarePage() {
                       </button>
 
                       <button
-                        onClick={() => {
-                          if (displayedRecords.length === 0) {
+                        onClick={async () => {
+                          if (totalRecords === 0) {
                             toast.error("ไม่มีข้อมูลสำหรับพิมพ์");
                             return;
                           }
+
+                          if (records.length < totalRecords) {
+                            toast.loading("กำลังดึงข้อมูลทั้งหมดสำหรับเตรียมพิมพ์...");
+                            try {
+                              const params = new URLSearchParams({
+                                exportAll: 'true',
+                                search: searchTerm,
+                                department: filterDepartment,
+                                classroom: filterClassroom,
+                                sdqType: filterSdqType || "",
+                                recordType: viewTab
+                              });
+                              const res = await fetch("/api/director/student-care?" + params.toString());
+                              const { data } = await res.json();
+                              setRecords(Array.isArray(data) ? data : []);
+                              toast.dismiss();
+                            } catch (err) {
+                              toast.dismiss();
+                              toast.error("โหลดข้อมูลทั้งหมดล้มเหลว");
+                              return;
+                            }
+                          }
+
                           setIsPrintingSummary(true);
                           setTimeout(() => {
                             window.print();
@@ -2167,7 +2190,7 @@ export default function StudentCarePage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-300 dark:text-zinc-700">
+                  <div className="w-full h-full flex items-center justify-center text-slate-300 dark:text-zinc-700 print:hidden">
                     {viewRecord.recordType === 'home_visit' ? <Camera size={64} /> : <ShieldCheck size={64} />}
                   </div>
                 )}

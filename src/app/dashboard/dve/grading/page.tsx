@@ -256,9 +256,9 @@ export default function DVEGradingPage() {
       setStudentGrades(prev => {
         const newGrades = prev.map(g => g.id === gradeId ? { ...g, sequence: newSequence } : g);
         return newGrades.sort((a, b) => {
-          const seqA = typeof a.sequence === 'number' ? a.sequence : 9999;
-          const seqB = typeof b.sequence === 'number' ? b.sequence : 9999;
-          if (seqA !== seqB) return seqA - seqB;
+          const codeA = a.studentCode || "";
+          const codeB = b.studentCode || "";
+          if (codeA !== codeB) return codeA.localeCompare(codeB, "th");
           return (a.studentName || "").localeCompare(b.studentName || "");
         });
       });
@@ -272,7 +272,7 @@ export default function DVEGradingPage() {
           studentName: grade.studentName,
           scores: grade.scores || {},
           subScores: grade.subScores || {},
-          sequence: newSequence,
+          sequence: newSequence === undefined ? null : newSequence,
           isSequenceUpdateOnly: true
         }),
       });
@@ -959,7 +959,13 @@ export default function DVEGradingPage() {
                     <tr key={grade.id} className="hover:bg-blue-50/40 dark:hover:bg-zinc-800/40 transition-colors group">
                       <td className="px-4 py-4 whitespace-nowrap text-center align-top pt-5">
                         <Input
-                          defaultValue={grade.sequence !== undefined ? grade.sequence : ""}
+                          value={grade.sequence !== undefined && grade.sequence !== null ? grade.sequence : ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            let seq = val.trim() ? Number(val) : undefined;
+                            if (seq !== undefined && isNaN(seq)) return;
+                            setStudentGrades(prev => prev.map(g => g.id === grade.id ? { ...g, sequence: seq } : g));
+                          }}
                           onBlur={(e) => handleSequenceChange(grade.id, e.target.value)}
                           onPressEnter={(e) => {
                             (e.target as HTMLInputElement).blur();

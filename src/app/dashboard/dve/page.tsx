@@ -698,7 +698,7 @@ function DVETeacherWorkspace() {
 
   const printSubmissionsRef = React.useRef(null);
   const handlePrintSubmissions = useReactToPrint({
-    content: () => printSubmissionsRef.current,
+    contentRef: printSubmissionsRef,
     documentTitle: submissionsQuizTitle || "รายงานผลการทดสอบ",
   });
 
