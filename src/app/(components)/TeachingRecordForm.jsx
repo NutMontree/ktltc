@@ -236,6 +236,32 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
       setTimeout(() => setMessage(null), 3000);
     }
   };
+  const handleCopyPrompt = () => {
+    const promptText = `ช่วยเขียนรายละเอียดการสอนให้หน่อย โดยอ้างอิงจากข้อมูลต่อไปนี้:
+วิชา: ${formData.courseCode || "-"} ${formData.courseName || "-"}
+หน่วยที่: ${formData.unitNo || "-"} ${formData.unitName || "-"}
+เรื่อง: ${formData.topic || "-"}
+ประเภท: ${formData.isTheory ? "ทฤษฎี" : ""} ${formData.isPractice ? "ปฏิบัติ" : ""}
+
+ช่วยสร้างข้อมูลตามโครงสร้างนี้ให้หน่อย:
+1. กิจกรรมการเรียนการสอน
+ขั้นนำ: 
+ขั้นสอน (ทฤษฎี และ หรือ ปฏิบัติ):
+ขั้นสรุป: 
+2. ผลการดำเนินกิจกรรมการเรียนการสอน
+3. ปัญหาอุปสรรค/แนวทางการแก้ไขปัญหา
+
+ขอเป็นข้อความสั้นๆ ไม่ต้องยาวมาก และไม่ต้องเป็นทางการมากนะ`;
+
+    navigator.clipboard.writeText(promptText).then(() => {
+      setMessage({ type: "success", text: "คัดลอก Prompt สำหรับถาม AI ภายนอกแล้ว!" });
+      setTimeout(() => setMessage(null), 3000);
+    }).catch(err => {
+      setMessage({ type: "error", text: "ไม่สามารถคัดลอกได้" });
+      setTimeout(() => setMessage(null), 3000);
+    });
+  };
+
   const handleSave = async (e) => {
     e?.preventDefault();
     setLoading(true);
@@ -991,7 +1017,15 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
               <h3 className="text-xl font-black text-black dark:text-white flex items-center gap-2">
                 <span className="text-primary">▶</span> รายละเอียดการสอน
               </h3>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleCopyPrompt}
+                  className="rounded-xl border border-stroke bg-white px-4 py-2.5 text-sm font-bold text-gray-600 shadow-sm transition hover:bg-gray-50 dark:border-strokedark dark:bg-meta-4 dark:text-gray-300 dark:hover:bg-meta-3"
+                  title="คัดลอก Prompt เพื่อนำไปถาม AI ภายนอก"
+                >
+                  📋 คัดลอก Prompt
+                </button>
                 <button
                   type="button"
                   onClick={() => setIsApiKeyModalOpen(true)}

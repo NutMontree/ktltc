@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Bell, Check, Loader2, Info, AlertTriangle, CheckCircle2, User } from "lucide-react";
 import { Popover, Badge, Empty, Button } from "antd";
 import { formatDistanceToNow } from "date-fns";
@@ -284,7 +285,7 @@ export default function NotificationBell() {
       />
 
       {/* Modal สำหรับอ่านการแจ้งเตือนแบบเต็ม */}
-      {selectedNotification && (
+      {selectedNotification && typeof document !== 'undefined' && createPortal(
         <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setSelectedNotification(null)}>
           <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-3xl p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-start gap-4 mb-4">
@@ -317,7 +318,8 @@ export default function NotificationBell() {
               ปิดหน้าต่าง
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
