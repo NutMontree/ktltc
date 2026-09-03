@@ -133,7 +133,7 @@ export default function MobileMenu({
             />
           </button>
         ) : (
-          <Link
+          <Link prefetch={false}
             href={ensureAbsolute(item.path)}
             onClick={closeMenu}
             className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all border border-white/30 dark:border-zinc-800/30 backdrop-blur-sm ${isActive
@@ -265,7 +265,7 @@ export default function MobileMenu({
                             </div>
                           </div>
                           <div className="grid grid-cols-2 gap-2">
-                            <Link
+                            <Link prefetch={false}
                               href={`/dashboard/profile/${userId}`}
                               onClick={closeMenu}
                               className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/30 dark:bg-white/10 backdrop-blur-sm text-[11px] font-bold text-zinc-800 dark:text-zinc-200 border border-white/40 dark:border-white/10 shadow-sm hover:bg-white/40"
@@ -288,7 +288,7 @@ export default function MobileMenu({
                           </div>
                         </div>
                       ) : (
-                        <Link
+                        <Link prefetch={false}
                           href="/login"
                           onClick={closeMenu}
                           className="w-full py-3.5 bg-blue-600/90 backdrop-blur-md text-white rounded-2xl font-black uppercase text-sm shadow-xl shadow-blue-600/20 flex items-center justify-center gap-3"
@@ -307,7 +307,7 @@ export default function MobileMenu({
 
                           {/* การ์ดจัดการข่าวสาร */}
                           {canManageNews && (
-                            <Link
+                            <Link prefetch={false}
                               href="/dashboard/news"
                               onClick={closeMenu}
                               className="group relative flex items-center gap-3 p-3.5 rounded-2xl bg-emerald-500/20 text-emerald-950 dark:text-emerald-200 border border-emerald-400/30 shadow-lg backdrop-blur-md hover:bg-emerald-500/30"
@@ -332,14 +332,14 @@ export default function MobileMenu({
                               <p className="text-[9px] font-black text-sky-600 dark:text-sky-400 uppercase tracking-widest px-2 py-0.5 flex items-center gap-1.5">
                                 <Shield size={12} /> เครื่องมือผู้ดูแล
                               </p>
-                              <Link
+                              <Link prefetch={false}
                                 href="/dashboard/super-admin"
                                 onClick={closeMenu}
                                 className="flex items-center gap-2.5 px-3 py-2 text-[13px] font-bold text-sky-800 dark:text-sky-200 hover:bg-sky-500/20 rounded-xl"
                               >
                                 <Shield size={14} /> ศูนย์ควบคุมจัดการระบบ
                               </Link>
-                              <Link
+                              <Link prefetch={false}
                                 href="/dashboard/permissions"
                                 onClick={closeMenu}
                                 className="flex items-center gap-2.5 px-3 py-2 text-[13px] font-bold text-blue-800 dark:text-blue-200 hover:bg-blue-500/20 rounded-xl"
@@ -351,7 +351,7 @@ export default function MobileMenu({
 
                           {/* Link Dashboard */}
                           {canAccessDashboard && (
-                            <Link
+                            <Link prefetch={false}
                               href="/dashboard"
                               onClick={closeMenu}
                               className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-blue-800 dark:text-blue-200 bg-blue-500/15 backdrop-blur-md rounded-2xl border border-blue-400/30 hover:bg-blue-500/25"
@@ -365,7 +365,7 @@ export default function MobileMenu({
 
                           {/* Chat & Drive */}
                           <div className="grid grid-cols-2 gap-2 pt-1">
-                            <Link
+                            <Link prefetch={false}
                               href="/dashboard/chat"
                               onClick={closeMenu}
                               className="flex items-center justify-center gap-2 py-2.5 px-3 text-[12px] font-bold text-sky-800 dark:text-sky-200 bg-sky-500/15 backdrop-blur-md rounded-xl border border-sky-400/30 hover:bg-sky-500/25"
@@ -373,7 +373,7 @@ export default function MobileMenu({
                               <MessageSquare size={14} /> ระบบแชท
                             </Link>
                             {isStaff && (
-                              <Link
+                              <Link prefetch={false}
                                 href="/dashboard/drive"
                                 onClick={closeMenu}
                                 className="flex items-center justify-center gap-2 py-2.5 px-3 text-[12px] font-bold text-amber-800 dark:text-amber-200 bg-amber-500/15 backdrop-blur-md rounded-xl border border-amber-400/30 hover:bg-amber-500/25"
@@ -392,7 +392,7 @@ export default function MobileMenu({
                             <Activity className="w-3 h-3" /> เมนูหลัก
                           </h4>
                           <div className="space-y-1">
-                            <Link
+                            <Link prefetch={false}
                               href="/"
                               onClick={closeMenu}
                               className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all border border-white/20 dark:border-white/10 backdrop-blur-md ${pathname === "/" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "text-zinc-800 dark:text-zinc-200 bg-white/15 dark:bg-white/5 hover:bg-white/30"}`}
@@ -403,7 +403,7 @@ export default function MobileMenu({
                               หน้าแรก
                             </Link>
 
-                            <Link
+                            <Link prefetch={false}
                               href="/about"
                               onClick={closeMenu}
                               className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all border border-white/20 dark:border-white/10 backdrop-blur-md ${pathname === "/about" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "text-zinc-800 dark:text-zinc-200 bg-white/15 dark:bg-white/5 hover:bg-white/30"}`}
