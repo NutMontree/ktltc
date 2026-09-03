@@ -536,7 +536,7 @@ export async function GET(req: Request) {
         passingScore: config.passingScore,
         gradeScale: config.gradeScale,
       },
-      students: finalCalculatedGrades,
+      grades: finalCalculatedGrades,
     });
   } catch (error: any) {
     console.error("[DVE Student Grades GET API] Error:", error);
