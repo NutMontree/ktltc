@@ -698,7 +698,7 @@ function DVETeacherWorkspace() {
 
   const printSubmissionsRef = React.useRef(null);
   const handlePrintSubmissions = useReactToPrint({
-    contentRef: printSubmissionsRef,
+    content: () => printSubmissionsRef.current,
     documentTitle: submissionsQuizTitle || "รายงานผลการทดสอบ",
   });
 
@@ -711,6 +711,7 @@ function DVETeacherWorkspace() {
       "ลำดับ": idx + 1,
       "รหัสนักศึกษา": sub.studentIdNum || "",
       "ชื่อ-นามสกุล": sub.studentName || "",
+      "แผนก": sub.department || "ไม่ระบุ",
       "ห้องเรียน": standardizeClassGroupName(sub.classGroupId) || "ไม่ระบุ",
       "วันที่ส่ง": new Date(sub.submittedAt).toLocaleDateString("th-TH"),
       "เวลา": new Date(sub.submittedAt).toLocaleTimeString("th-TH"),
@@ -6537,6 +6538,7 @@ function DVETeacherWorkspace() {
                           <th className="p-2 border border-gray-300 text-center">ลำดับ</th>
                           <th className="p-2 border border-gray-300 text-center">รหัสนักศึกษา</th>
                           <th className="p-2 border border-gray-300 text-left">ชื่อ-นามสกุล</th>
+                          <th className="p-2 border border-gray-300 text-center">แผนก</th>
                           <th className="p-2 border border-gray-300 text-center">ห้องเรียน</th>
                           <th className="p-2 border border-gray-300 text-center">วันที่ส่ง</th>
                           <th className="p-2 border border-gray-300 text-center">เวลา</th>
@@ -6549,6 +6551,7 @@ function DVETeacherWorkspace() {
                             <td className="p-2 border border-gray-300 text-center">{idx + 1}</td>
                             <td className="p-2 border border-gray-300 text-center">{sub.studentIdNum || ""}</td>
                             <td className="p-2 border border-gray-300">{sub.studentName}</td>
+                            <td className="p-2 border border-gray-300 text-center">{sub.department || "ไม่ระบุ"}</td>
                             <td className="p-2 border border-gray-300 text-center">{standardizeClassGroupName(sub.classGroupId) || "ไม่ระบุ"}</td>
                             <td className="p-2 border border-gray-300 text-center">{new Date(sub.submittedAt).toLocaleDateString("th-TH")}</td>
                             <td className="p-2 border border-gray-300 text-center">{new Date(sub.submittedAt).toLocaleTimeString("th-TH")}</td>
