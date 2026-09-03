@@ -276,7 +276,13 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
       });
 
       if (!res.ok) {
-        throw new Error("บันทึกไม่สำเร็จ");
+        let errorMsg = "บันทึกไม่สำเร็จ";
+        try {
+          const errorData = await res.json();
+          if (errorData.message) errorMsg = errorData.message;
+          if (errorData.error) errorMsg += ": " + errorData.error;
+        } catch(e) {}
+        throw new Error(errorMsg);
       }
 
       setMessage({ type: "success", text: "บันทึกข้อมูลสำเร็จ!" });
@@ -711,14 +717,9 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
   const fixedOptions = {
     semester: ["1", "2", "3"],
     academicYear: ["2568", "2569", "2570"],
-    courseCode: ["21910-2018"],
-    courseName: ["คอมพิวเตอร์และการบำรุงรักษา"],
     teachingNo: Array.from({ length: 18 }, (_, i) => (i + 1).toString()),
-    date: ["10 สิงหาคม 2569"],
     weekNo: Array.from({ length: 18 }, (_, i) => (i + 1).toString()),
     unitNo: Array.from({ length: 18 }, (_, i) => (i + 1).toString()),
-    unitName: ["หน่วยที่ 9 การติดตั้งซอฟต์แวร์ประยุกต์"],
-    topic: ["อุปกรณ์ฮาร์ดแวร์ภายในและภายนอก และหลักการทำงานของ CPU, RAM, Mainboard"],
     signerName: users.filter(u => u.role === "teacher").map(u => u.name).filter(Boolean),
   };
 
