@@ -199,7 +199,7 @@ export async function GET(req: Request) {
       let catType = "class_work";
       if (title.includes("กลางภาค") || title.includes("midterm")) {
         catType = "midterm";
-      } else if (title.includes("ปลายภาค") || title.includes("final")) {
+      } else if (title.includes("ปลายภาค") || title.includes("final") || title.includes("สอบปลาย")) {
         catType = "final";
       } else if (title.includes("สอบท้ายบท") || title.includes("หลังเรียน") || title.includes("post-test")) {
         catType = "end_chapter";
@@ -500,7 +500,15 @@ export async function GET(req: Request) {
       };
     });
 
-    calculatedGrades.sort((a, b) => {
+    let finalCalculatedGrades = calculatedGrades;
+    if (subject.allowedClassGroups) {
+      const allowedGroups = parseAllowedClassGroups(subject.allowedClassGroups);
+      if (allowedGroups.length > 0) {
+        finalCalculatedGrades = calculatedGrades.filter(g => allowedGroups.includes(g.classGroupId));
+      }
+    }
+
+    finalCalculatedGrades.sort((a, b) => {
       // 1. Sort by department
       const deptA = a.department || "";
       const deptB = b.department || "";
@@ -528,7 +536,7 @@ export async function GET(req: Request) {
         passingScore: config.passingScore,
         gradeScale: config.gradeScale,
       },
-      grades: calculatedGrades,
+      students: finalCalculatedGrades,
     });
   } catch (error: any) {
     console.error("[DVE Student Grades GET API] Error:", error);
