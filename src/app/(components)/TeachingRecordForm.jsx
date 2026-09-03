@@ -251,7 +251,7 @@ const TeachingRecordForm = ({ recordId, initialData = {} }) => {
 2. ผลการดำเนินกิจกรรมการเรียนการสอน
 3. ปัญหาอุปสรรค/แนวทางการแก้ไขปัญหา
 
-ขอเป็นข้อความสั้นๆ ไม่ต้องยาวมาก และไม่ต้องเป็นทางการมากนะ`;
+ขอเป็นข้อความสั้นๆ และไม่ต้องเป็นทางการมาก`;
 
     navigator.clipboard.writeText(promptText).then(() => {
       setMessage({ type: "success", text: "คัดลอก Prompt สำหรับถาม AI ภายนอกแล้ว!" });
