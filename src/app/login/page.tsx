@@ -65,16 +65,23 @@ export default function LoginPage() {
         redirect: false,
       });
       if (result?.error) {
+        let decodedError = result.error;
+        try {
+          // Error messages from NextAuth might be prefixed with "Error: "
+          const errorStr = result.error.replace(/^Error:\s*/, "");
+          decodedError = decodeURIComponent(errorStr);
+        } catch (e) {}
+
         await recordActivity({
           userName: username || "Unknown User",
           action: "LOGIN_FAILED",
-          details: `เข้าสู่ระบบไม่สำเร็จ: ${result.error}`,
+          details: `เข้าสู่ระบบไม่สำเร็จ: ${decodedError}`,
         });
 
-        let errorMessage = "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง";
-        if (result.error.toLowerCase().includes("ยังรอการอนุมัติ")) {
+        let errorMessage = decodedError;
+        if (decodedError.toLowerCase().includes("ยังรอการอนุมัติ")) {
           errorMessage = "บัญชีของคุณยังรอการอนุมัติจาก Super Admin";
-        } else if (result.error.toLowerCase().includes("ไม่พบผู้ใช้งาน")) {
+        } else if (decodedError.toLowerCase().includes("ไม่พบผู้ใช้งาน")) {
           errorMessage = "ไม่พบชื่อผู้ใช้นี้ในระบบ";
         }
 

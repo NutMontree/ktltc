@@ -22,6 +22,7 @@ import ClientProviders from "@/providers/ClientProviders";
 import ClientBackgroundEffects from "@/components/ClientBackgroundEffects";
 import { AppleStyleDock } from "@/components/AppleStyleDock";
 import FloatingChatWidget from "@/components/FloatingChatWidget";
+import NextTopLoader from "nextjs-toploader";
 
 import { Prompt, Inter, Sarabun, Charm } from 'next/font/google';
 
@@ -129,6 +130,17 @@ export default async function RootLayout({
       {/* body: เรียกใช้ฟอนต์ Prompt และกำหนดสีพื้นหลัง/ตัวหนังสือพื้นฐาน */}
       <body className={`${prompt.className} antialiased`} suppressHydrationWarning={true}>
         <ClientProviders>
+              <NextTopLoader 
+                color="#3b82f6" 
+                initialPosition={0.08} 
+                crawlSpeed={200} 
+                height={3} 
+                crawl={true} 
+                showSpinner={false} 
+                easing="ease" 
+                speed={200} 
+                shadow="0 0 10px #3b82f6,0 0 5px #3b82f6" 
+              />
               {/* Navbar: เมนูด้านบน (จะแสดงทุกหน้า) */}
               <Suspense fallback={<NavbarSkeleton />}>
                 <Navbar />

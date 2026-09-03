@@ -8,7 +8,7 @@ import MobileMenu from "./MobileMenu";
 import { NavItem } from "@/types/nav";
 import ThemeToggle from "./ThemeToggle";
 import LanguageSwitcher from "./LanguageSwitcher";
-import { logoutAction } from "@/app/actions";
+import { signOut } from "next-auth/react";
 import {
   FileText,
   UserCog,
@@ -352,8 +352,8 @@ export default function NavbarClient({
 
   const handleLogout = async () => {
     try {
-      // เรียกใช้ Server Action
-      await logoutAction();
+      // เรียกใช้ Client-side signOut
+      await signOut({ callbackUrl: "/login" });
     } catch (error) {
       console.error("Logout error:", error);
       // แม้เกิด error ก็บังคับ redirect ไปหน้า login
