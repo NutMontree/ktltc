@@ -78,6 +78,7 @@ export default function StudentCarePage() {
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "table" | "list">("grid");
   const [isPrintingSummary, setIsPrintingSummary] = useState(false);
+  const [isPrintingChartsOnly, setIsPrintingChartsOnly] = useState(false);
 
   // Student Search
   const [searchQuery, setSearchQuery] = useState("");
@@ -1245,98 +1246,102 @@ export default function StudentCarePage() {
               </div>
             )}
 
-            <div id="print-table-wrapper" className="w-full">
-              <table className="w-full border-collapse border border-black">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="border border-black text-center">ที่</th>
-                    <th className="border border-black text-center whitespace-nowrap">ชื่อ-นามสกุล</th>
-                    {viewTab === 'screening' ? (
-                      <>
-                        <th className="border border-black text-center">ด้านอารมณ์</th>
-                        <th className="border border-black text-center">ด้านความประพฤติ</th>
-                        <th className="border border-black text-center">ด้านพฤติกรรม</th>
-                        <th className="border border-black text-center">ด้านสัมพันธ์กับเพื่อน</th>
-                        <th className="border border-black text-center">ด้านทางสังคม</th>
-                        <th className="border border-black text-center">สรุปผลประเมิน</th>
-                      </>
-                    ) : (
-                      <>
-                        <th className="border border-black text-center w-20">แผนก/ชั้น</th>
-                        <th className="border border-black text-center">สภาพที่พักอาศัย</th>
-                        <th className="border border-black text-center">บันทึกเพิ่มเติม</th>
-                      </>
-                    )}
-                  </tr>
-                </thead>
-                <tbody>
-                  {displayedRecords.map((r, i) => (
-                    <tr key={r._id}>
-                      <td className="border border-black text-center">{i + 1}</td>
-                      <td className="border border-black whitespace-nowrap px-2">{formatStudentName(r.studentName, r.gender)}</td>
-                      {viewTab === 'screening' ? (
-                        <>
-                          <td className="border border-black text-center">{getTranslate(r.sdqData?.E_res)}</td>
-                          <td className="border border-black text-center">{getTranslate(r.sdqData?.C_res)}</td>
-                          <td className="border border-black text-center">{getTranslate(r.sdqData?.H_res)}</td>
-                          <td className="border border-black text-center">{getTranslate(r.sdqData?.Pe_res)}</td>
-                          <td className="border border-black text-center">{getTranslate(r.sdqData?.P_res)}</td>
-                          <td className="border border-black text-center font-bold">
-                            {r.sdqType === 'normal' ? 'ปกติ' : r.sdqType === 'special' ? 'พิเศษ' : r.sdqType === 'risk' ? 'เสี่ยง' : 'มีปัญหา'}
-                          </td>
-                        </>
-                      ) : (
-                        <>
-                          <td className="border border-black text-center">{r.department}<br/>{r.classroom}</td>
-                          <td className="border border-black text-left">{r.address || '-'}</td>
-                          <td className="border border-black text-left">{r.notes || '-'}</td>
-                        </>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Signature Section */}
-            <div className="mt-6 pt-4 break-inside-avoid print:break-inside-avoid">
-              <div className="flex justify-between px-8 md:px-16">
-                {/* Left: Advisor */}
-                <div className="flex flex-col items-center justify-center text-center gap-0">
-                  <div className="flex items-baseline">
-                    <span className="mr-2 whitespace-nowrap">ลงชื่อ</span>
-                    <span className="inline-block text-center text-slate-500 leading-none">...................................................</span>
-                    <span className="ml-2 whitespace-nowrap opacity-0 pointer-events-none select-none print:hidden">ลงชื่อ</span>
-                  </div>
-                  <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>
-                    {(() => {
-                      const teachers = Array.from(new Set(displayedRecords.map(r => r.teacherName).filter(Boolean)));
-                      return teachers.length === 1 ? `(${teachers[0]})` : '(...................................................)';
-                    })()}
-                  </div>
-                  <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>ครูที่ปรึกษา</div>
-                  <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>......./......./.......</div>
+            {!isPrintingChartsOnly && (
+              <>
+                <div id="print-table-wrapper" className="w-full">
+                  <table className="w-full border-collapse border border-black">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="border border-black text-center">ที่</th>
+                        <th className="border border-black text-center whitespace-nowrap">ชื่อ-นามสกุล</th>
+                        {viewTab === 'screening' ? (
+                          <>
+                            <th className="border border-black text-center">ด้านอารมณ์</th>
+                            <th className="border border-black text-center">ด้านความประพฤติ</th>
+                            <th className="border border-black text-center">ด้านพฤติกรรม</th>
+                            <th className="border border-black text-center">ด้านสัมพันธ์กับเพื่อน</th>
+                            <th className="border border-black text-center">ด้านทางสังคม</th>
+                            <th className="border border-black text-center">สรุปผลประเมิน</th>
+                          </>
+                        ) : (
+                          <>
+                            <th className="border border-black text-center w-20">แผนก/ชั้น</th>
+                            <th className="border border-black text-center">สภาพที่พักอาศัย</th>
+                            <th className="border border-black text-center">บันทึกเพิ่มเติม</th>
+                          </>
+                        )}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {displayedRecords.map((r, i) => (
+                        <tr key={r._id}>
+                          <td className="border border-black text-center">{i + 1}</td>
+                          <td className="border border-black whitespace-nowrap px-2">{formatStudentName(r.studentName, r.gender)}</td>
+                          {viewTab === 'screening' ? (
+                            <>
+                              <td className="border border-black text-center">{getTranslate(r.sdqData?.E_res)}</td>
+                              <td className="border border-black text-center">{getTranslate(r.sdqData?.C_res)}</td>
+                              <td className="border border-black text-center">{getTranslate(r.sdqData?.H_res)}</td>
+                              <td className="border border-black text-center">{getTranslate(r.sdqData?.Pe_res)}</td>
+                              <td className="border border-black text-center">{getTranslate(r.sdqData?.P_res)}</td>
+                              <td className="border border-black text-center font-bold">
+                                {r.sdqType === 'normal' ? 'ปกติ' : r.sdqType === 'special' ? 'พิเศษ' : r.sdqType === 'risk' ? 'เสี่ยง' : 'มีปัญหา'}
+                              </td>
+                            </>
+                          ) : (
+                            <>
+                              <td className="border border-black text-center">{r.department}<br/>{r.classroom}</td>
+                              <td className="border border-black text-left">{r.address || '-'}</td>
+                              <td className="border border-black text-left">{r.notes || '-'}</td>
+                            </>
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
 
-                {/* Right: Deputy Director */}
-                <div className="flex flex-col items-center justify-center text-center gap-0">
-                  <div className="flex items-baseline">
-                    <span className="mr-2 whitespace-nowrap">ลงชื่อ</span>
-                    <span className="inline-block text-center text-slate-500 leading-none">...................................................</span>
-                    <span className="ml-2 whitespace-nowrap opacity-0 pointer-events-none select-none print:hidden">ลงชื่อ</span>
+                {/* Signature Section */}
+                <div className="mt-6 pt-4 break-inside-avoid print:break-inside-avoid">
+                  <div className="flex justify-between px-8 md:px-16">
+                    {/* Left: Advisor */}
+                    <div className="flex flex-col items-center justify-center text-center gap-0">
+                      <div className="flex items-baseline">
+                        <span className="mr-2 whitespace-nowrap">ลงชื่อ</span>
+                        <span className="inline-block text-center text-slate-500 leading-none">...................................................</span>
+                        <span className="ml-2 whitespace-nowrap opacity-0 pointer-events-none select-none print:hidden">ลงชื่อ</span>
+                      </div>
+                      <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>
+                        {(() => {
+                          const teachers = Array.from(new Set(displayedRecords.map(r => r.teacherName).filter(Boolean)));
+                          return teachers.length === 1 ? `(${teachers[0]})` : '(...................................................)';
+                        })()}
+                      </div>
+                      <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>ครูที่ปรึกษา</div>
+                      <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>......./......./.......</div>
+                    </div>
+
+                    {/* Right: Deputy Director */}
+                    <div className="flex flex-col items-center justify-center text-center gap-0">
+                      <div className="flex items-baseline">
+                        <span className="mr-2 whitespace-nowrap">ลงชื่อ</span>
+                        <span className="inline-block text-center text-slate-500 leading-none">...................................................</span>
+                        <span className="ml-2 whitespace-nowrap opacity-0 pointer-events-none select-none print:hidden">ลงชื่อ</span>
+                      </div>
+                      <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>{deputyName || '(...................................................)'}</div>
+                      <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนฯ</div>
+                      <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>......./......./.......</div>
+                    </div>
                   </div>
-                  <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>{deputyName || '(...................................................)'}</div>
-                  <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนฯ</div>
-                  <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>......./......./.......</div>
                 </div>
-              </div>
-            </div>
-            {/* Batch Print Individual Records */}
-            {displayedRecords.map((r) => (
-              <div key={r._id}>
-                {renderStudentPrintView(r)}
-              </div>
-            ))}
+                {/* Batch Print Individual Records */}
+                {displayedRecords.map((r) => (
+                  <div key={r._id}>
+                    {renderStudentPrintView(r)}
+                  </div>
+                ))}
+              </>
+            )}
           </div>
 
         </>
@@ -1498,6 +1503,52 @@ export default function StudentCarePage() {
                             }
                           }
 
+                          setIsPrintingChartsOnly(true);
+                          setIsPrintingSummary(true);
+                          setTimeout(() => {
+                            window.print();
+                            setTimeout(() => {
+                              setIsPrintingSummary(false);
+                              setIsPrintingChartsOnly(false);
+                            }, 500);
+                          }, 500);
+                        }}
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 rounded-xl text-sm font-bold hover:bg-rose-100 hover:shadow-md hover:shadow-rose-500/10 active:scale-95 transition-all border border-rose-200 dark:border-rose-800/50"
+                        title="พิมพ์เฉพาะกราฟ (PDF)"
+                      >
+                        <Printer size={16} /> <span className="hidden sm:inline">กราฟ (PDF)</span>
+                      </button>
+
+                      <button
+                        onClick={async () => {
+                          if (totalRecords === 0) {
+                            toast.error("ไม่มีข้อมูลสำหรับพิมพ์");
+                            return;
+                          }
+
+                          if (records.length < totalRecords) {
+                            toast.loading("กำลังดึงข้อมูลทั้งหมดสำหรับเตรียมพิมพ์...");
+                            try {
+                              const params = new URLSearchParams({
+                                exportAll: 'true',
+                                search: searchTerm,
+                                department: filterDepartment,
+                                classroom: filterClassroom,
+                                sdqType: filterSdqType || "",
+                                recordType: viewTab
+                              });
+                              const res = await fetch("/api/director/student-care?" + params.toString());
+                              const { data } = await res.json();
+                              setRecords(Array.isArray(data) ? data : []);
+                              toast.dismiss();
+                            } catch (err) {
+                              toast.dismiss();
+                              toast.error("โหลดข้อมูลทั้งหมดล้มเหลว");
+                              return;
+                            }
+                          }
+
+                          setIsPrintingChartsOnly(false);
                           setIsPrintingSummary(true);
                           setTimeout(() => {
                             window.print();
@@ -1505,9 +1556,9 @@ export default function StudentCarePage() {
                           }, 500);
                         }}
                         className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-xl text-sm font-bold hover:bg-indigo-100 hover:shadow-md hover:shadow-indigo-500/10 active:scale-95 transition-all border border-indigo-200 dark:border-indigo-800/50"
-                        title="พิมพ์สรุปเป็น PDF"
+                        title="พิมพ์สรุปเป็น PDF (รวมตารางรายชื่อ)"
                       >
-                        <Printer size={16} /> <span className="hidden sm:inline">PDF</span>
+                        <Printer size={16} /> <span className="hidden sm:inline">PDF แบบเต็ม</span>
                       </button>
                     </div>
 
