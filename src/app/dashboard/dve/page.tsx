@@ -45,6 +45,7 @@ import {
   Settings2,
   ListChecks,
   Save,
+  Printer,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { message, Popconfirm, Select, DatePicker, Modal } from "antd";
@@ -594,6 +595,10 @@ function DVETeacherWorkspace() {
   const [submissionsPreviewUrl, setSubmissionsPreviewUrl] = useState<string | null>(null);
   const [submissionsPreviewName, setSubmissionsPreviewName] = useState<string | null>(null);
 
+  // Print State
+  const [printData, setPrintData] = useState<{quiz: any, submissions: any[]} | null>(null);
+  const [isPrintingQuiz, setIsPrintingQuiz] = useState<string | null>(null);
+
   // Checklist / Attendances checkin states
   const [checkinFilter, setCheckinFilter] = useState({
     subjectId: "",
@@ -1134,6 +1139,128 @@ function DVETeacherWorkspace() {
       }
     } catch (err) {
       message.error("บันทึกแบบทดสอบล้มเหลว");
+    }
+  };
+
+  const handleExportQuizPdf = async (quiz: any) => {
+    try {
+      setIsPrintingQuiz(quiz.id);
+      
+      const res = await fetch(`/api/dve/quizzes/submissions?quizId=${quiz.id}`);
+      if (!res.ok) throw new Error("Failed to fetch submissions");
+      const data = await res.json();
+      let submissions = data.submissions || [];
+      
+      submissions.sort((a: any, b: any) => {
+        const deptA = a.department || "";
+        const deptB = b.department || "";
+        if (deptA !== deptB) return deptA.localeCompare(deptB, 'th');
+        
+        const classA = a.classGroupId || "";
+        const classB = b.classGroupId || "";
+        if (classA !== classB) return classA.localeCompare(classB, 'th');
+        
+        const idA = a.studentIdNum || "";
+        const idB = b.studentIdNum || "";
+        return idA.localeCompare(idB, 'th');
+      });
+      
+      const subjectName = subjects.find(s => s.id === quiz.subjectId)?.name || 'ไม่ระบุวิชา';
+      const typeName = quiz.isBuiltIn ? "แบบทดสอบในแอป" : "งาน/แบบทดสอบภายนอก";
+      const printDate = new Date().toLocaleString('th-TH');
+      
+      const subtitleText = quiz.title === subjectName 
+        ? `ประเภท: ${typeName}`
+        : `วิชา: ${subjectName} | ประเภท: ${typeName}`;
+
+      let rowsHtml = '';
+      if (submissions.length > 0) {
+        submissions.forEach((sub: any, index: number) => {
+          const score = sub.score !== undefined ? sub.score : '-';
+          const maxScore = sub.maxScore || quiz.maxScaleScore || '-';
+          const submittedAt = sub.submittedAt ? new Date(sub.submittedAt).toLocaleString('th-TH') : '-';
+          
+          rowsHtml += `
+            <tr>
+              <td style="border: 1px solid #ccc; padding: 4px 6px; text-align: center;">${index + 1}</td>
+              <td style="border: 1px solid #ccc; padding: 4px 6px; text-align: center; white-space: nowrap;">${sub.department || '-'}</td>
+              <td style="border: 1px solid #ccc; padding: 4px 6px; text-align: center; white-space: nowrap;">${standardizeClassGroupName(sub.classGroupId)}</td>
+              <td style="border: 1px solid #ccc; padding: 4px 6px; white-space: nowrap;">${sub.studentName}</td>
+              <td style="border: 1px solid #ccc; padding: 4px 6px; text-align: center; font-weight: bold;">${score}</td>
+              <td style="border: 1px solid #ccc; padding: 4px 6px; text-align: center;">${maxScore}</td>
+            </tr>
+          `;
+        });
+      } else {
+        rowsHtml = `
+          <tr>
+            <td colspan="6" style="border: 1px solid #ccc; padding: 12px; text-align: center; color: #666;">
+              ยังไม่มีผู้ส่งงาน
+            </td>
+          </tr>
+        `;
+      }
+
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        throw new Error("ไม่สามารถเปิดหน้าต่างใหม่ได้ กรุณาอนุญาต Pop-ups");
+      }
+
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Export PDF - ${quiz.title}</title>
+            <style>
+              body { font-family: 'Sarabun', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; color: #000; }
+              table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
+              th { background-color: #f3f4f6; border: 1px solid #ccc; padding: 6px; text-align: left; white-space: nowrap; }
+              th.center { text-align: center; }
+              h1 { font-size: 18px; margin-bottom: 6px; text-align: center; }
+              .subtitle { font-size: 12px; color: #4b5563; text-align: center; margin-bottom: 16px; }
+              .footer { margin-top: 20px; text-align: right; font-size: 11px; color: #6b7280; }
+              @media print {
+                @page { margin: 0; }
+                body { padding: 1.5cm; }
+              }
+            </style>
+          </head>
+          <body>
+            <h1>สรุปคะแนนงาน/แบบทดสอบ: ${quiz.title}</h1>
+            <div class="subtitle">${subtitleText}</div>
+            
+            <table>
+              <thead>
+                <tr>
+                  <th class="center" style="width: 5%;">ลำดับ</th>
+                  <th class="center" style="width: 15%;">แผนกวิชา</th>
+                  <th class="center" style="width: 12%;">ระดับชั้น/กลุ่ม</th>
+                  <th style="width: 48%;">ชื่อ-สกุล</th>
+                  <th class="center" style="width: 10%;">คะแนนที่ได้</th>
+                  <th class="center" style="width: 10%;">คะแนนเต็ม</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml}
+              </tbody>
+            </table>
+            
+            <script>
+              window.onload = function() {
+                setTimeout(function() {
+                  window.print();
+                  window.close();
+                }, 500);
+              };
+            </script>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      
+      setIsPrintingQuiz(null);
+    } catch (err: any) {
+      message.error(err.message || "เกิดข้อผิดพลาดในการดึงข้อมูล");
+      setIsPrintingQuiz(null);
     }
   };
 
@@ -1701,7 +1828,8 @@ function DVETeacherWorkspace() {
   };
 
   return (
-    <div className="space-y-4 px-2 sm:px-4 md:px-6 lg:px-8">
+    <>
+    <div className="space-y-4 px-2 sm:px-4 md:px-6 lg:px-8 print:hidden">
       {teacherId && (
         <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 rounded-2xl p-4 flex items-center gap-3">
           <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
@@ -2562,6 +2690,15 @@ function DVETeacherWorkspace() {
                           </div>
 
                           <div className="flex items-center gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-zinc-100 dark:border-zinc-800/60 justify-end">
+                            {/* Export PDF */}
+                            <button
+                              onClick={() => handleExportQuizPdf(quiz)}
+                              disabled={isPrintingQuiz === quiz.id}
+                              className="px-3 py-2 bg-indigo-50 hover:bg-indigo-500 text-indigo-600 hover:text-white dark:bg-indigo-950/50 dark:text-indigo-300 dark:hover:bg-indigo-600 dark:hover:text-white border border-indigo-200/60 dark:border-indigo-800/60 rounded-xl text-xs font-black transition-all shadow-xs flex items-center gap-1.5 cursor-pointer hover:shadow-md hover:shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <Printer size={12} className={isPrintingQuiz === quiz.id ? "animate-pulse" : ""} />
+                              Export PDF
+                            </button>
                             {/* View submissions */}
                             <button
                               onClick={() =>
@@ -6601,6 +6738,58 @@ function DVETeacherWorkspace() {
         })()}
       </Modal>
     </div>
+
+    {/* --- Print Submissions Container --- */}
+    {printData && (
+      <div className="hidden print:block bg-white text-black w-full" style={{ minHeight: '100vh' }}>
+        <div className="text-center mb-6 pt-8">
+          <h1 className="text-2xl font-bold mb-2">สรุปคะแนนงาน/แบบทดสอบ: {printData.quiz.title}</h1>
+          <p className="text-sm text-gray-600">
+            วิชา: {subjects.find(s => s.id === printData.quiz.subjectId)?.name || 'ไม่ระบุวิชา'} | 
+            ประเภท: {printData.quiz.isBuiltIn ? "แบบทดสอบในแอป" : "งาน/แบบทดสอบภายนอก"}
+          </p>
+        </div>
+        
+        <table className="w-full text-sm border-collapse border border-gray-300">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-300 p-2">ลำดับ</th>
+              <th className="border border-gray-300 p-2">รหัสนักศึกษา</th>
+              <th className="border border-gray-300 p-2 text-left">ชื่อ-สกุล</th>
+              <th className="border border-gray-300 p-2">คะแนนที่ได้</th>
+              <th className="border border-gray-300 p-2">คะแนนเต็ม</th>
+              <th className="border border-gray-300 p-2">วัน-เวลาที่ส่ง</th>
+            </tr>
+          </thead>
+          <tbody>
+            {printData.submissions.length > 0 ? (
+              printData.submissions.map((sub: any, index: number) => (
+                <tr key={sub.id || index}>
+                  <td className="border border-gray-300 p-2 text-center">{index + 1}</td>
+                  <td className="border border-gray-300 p-2 text-center">{sub.studentIdNum || '-'}</td>
+                  <td className="border border-gray-300 p-2">{sub.studentName}</td>
+                  <td className="border border-gray-300 p-2 text-center font-bold">{sub.score !== undefined ? sub.score : '-'}</td>
+                  <td className="border border-gray-300 p-2 text-center">{sub.maxScore || printData.quiz.maxScaleScore || '-'}</td>
+                  <td className="border border-gray-300 p-2 text-center">
+                    {sub.submittedAt ? new Date(sub.submittedAt).toLocaleString('th-TH') : '-'}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6} className="border border-gray-300 p-4 text-center text-gray-500">
+                  ยังไม่มีผู้ส่งงาน
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        <div className="mt-8 text-right text-sm">
+          <p>พิมพ์เมื่อ: {new Date().toLocaleString('th-TH')}</p>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
 
@@ -6608,10 +6797,15 @@ function DVETeacherWorkspace() {
 // MAIN ENTRYPOINT WRAPPER WITH NEXTAUTH ROLE GUARD
 // -------------------------------------------------------------
 function DVEPortalContent() {
+  const [mounted, setMounted] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
   const role = (session?.user?.role || "").toLowerCase();
   const canAccessDvePortal = ["teacher", "super_admin", "admin", "editor", "director", "deputy_academic"].includes(role);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -6627,7 +6821,7 @@ function DVEPortalContent() {
     }
   }, [status, role, canAccessDvePortal, router]);
 
-  if (status === "loading") {
+  if (!mounted || status === "loading") {
     return <DVELoader />;
   }
 
@@ -6638,24 +6832,6 @@ function DVEPortalContent() {
 
   return (
     <div className="min-h-screen bg-[#f0f2f5] dark:bg-zinc-950 transition-colors duration-500 pb-20">
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-        .ant-message {
-          position: fixed !important;
-          top: 50% !important;
-          left: 50% !important;
-          transform: translate(-50%, -50%) !important;
-          width: max-content !important;
-          max-width: 90% !important;
-          z-index: 10100 !important;
-        }
-        .ant-message-notice {
-          text-align: center !important;
-        }
-      `,
-        }}
-      />
       <div className="max-w-[1600px] mx-auto px-2 sm:px-4 py-4 sm:py-8">
         <DVETeacherWorkspace />
       </div>

@@ -388,15 +388,17 @@ export async function GET(req: Request) {
         let classGroupId = "";
         let studentIdNum = "";
         let image = "";
+        let department = "";
         try {
           if (s.studentId && ObjectId.isValid(s.studentId)) {
             const userDoc = await db.collection("users").findOne(
               { _id: new ObjectId(s.studentId) },
-              { projection: { classGroupId: 1, username: 1, studentIdNum: 1, image: 1 } }
+              { projection: { classGroupId: 1, username: 1, studentIdNum: 1, image: 1, department: 1 } }
             );
             classGroupId = userDoc?.classGroupId || "";
             studentIdNum = userDoc?.studentIdNum || userDoc?.username || "";
             image = userDoc?.image || "";
+            department = userDoc?.department || "";
           }
         } catch (_) {}
         return {
@@ -406,6 +408,7 @@ export async function GET(req: Request) {
           studentName: s.studentName,
           studentIdNum,
           classGroupId,
+          department,
           image,
           answers: s.answers || [],
           score: s.score || 0,
