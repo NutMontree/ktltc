@@ -5867,7 +5867,7 @@ function DVETeacherWorkspace() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => handlePrintSubmissions()}
+                    onClick={() => handlePrintSubmissions(() => printSubmissionsRef.current)}
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-500 text-red-600 hover:text-white dark:bg-red-900/30 dark:hover:bg-red-600 dark:text-red-400 rounded-lg text-[10px] font-black transition-all cursor-pointer"
                   >
                     <Download size={12} /> PDF
