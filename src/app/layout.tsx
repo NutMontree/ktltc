@@ -142,13 +142,15 @@ export default async function RootLayout({
                 shadow="0 0 10px #3b82f6,0 0 5px #3b82f6" 
               />
               {/* Navbar: เมนูด้านบน (จะแสดงทุกหน้า) */}
-              <Suspense fallback={<NavbarSkeleton />}>
-                <Navbar />
-              </Suspense>
+              <div className="print:hidden">
+                <Suspense fallback={<NavbarSkeleton />}>
+                  <Navbar />
+                </Suspense>
+              </div>
 
               {/* children: เนื้อหาของหน้าที่เราเปิดอยู่ (เช่น หน้า Home, หน้า News) */}
               <Suspense fallback={null}>
-                <div className="pt-20">{children}</div>
+                <div className="pt-20 print:pt-0">{children}</div>
               </Suspense>
 
               {/* รวมเอฟเฟกต์และของที่โหลดเบื้องหลังให้อยู่ฝั่ง Client (ไม่บล็อก Server) */}
