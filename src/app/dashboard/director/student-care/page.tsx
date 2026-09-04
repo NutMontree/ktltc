@@ -1,6 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import dynamic from "next/dynamic";
+import { ApexOptions } from "apexcharts";
+
+const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import { ClipboardList, Plus, AlertCircle, X, MapPin, HeartHandshake, ShieldCheck, Camera, Image as ImageIcon, Send, Check, Trash2, Edit, LayoutGrid, Table, List, User, Search, Download, Printer } from "lucide-react";
@@ -1011,6 +1015,73 @@ export default function StudentCarePage() {
     toast.success("ดาวน์โหลดไฟล์ Excel สำเร็จ");
   };
 
+  // Chart Data: แยกตามแผนกวิชา
+  const chartByDepartment = useMemo(() => {
+    const deptMap: Record<string, { total: number; risk: number; normal: number }> = {};
+    const screeningRecords = records.filter(r => (r.recordType || 'screening') === 'screening');
+    screeningRecords.forEach(d => {
+      const dept = d.department || 'ไม่ระบุ';
+      if (!deptMap[dept]) deptMap[dept] = { total: 0, risk: 0, normal: 0 };
+      deptMap[dept].total++;
+      if (d.sdqType !== 'normal') deptMap[dept].risk++;
+      else deptMap[dept].normal++;
+    });
+    const entries = Object.entries(deptMap).sort((a, b) => b[1].total - a[1].total);
+    return {
+      labels: entries.map(([k]) => k),
+      normal: entries.map(([, v]) => v.normal),
+      risk: entries.map(([, v]) => v.risk),
+    };
+  }, [records]);
+
+  // Chart Data: แยกตามห้องเรียน
+  const chartByClassroom = useMemo(() => {
+    const map: Record<string, { total: number; risk: number }> = {};
+    const screeningRecords = records.filter(r => (r.recordType || 'screening') === 'screening');
+    screeningRecords.forEach(d => {
+      const cls = d.classroom || 'ไม่ระบุ';
+      if (!map[cls]) map[cls] = { total: 0, risk: 0 };
+      map[cls].total++;
+      if (d.sdqType !== 'normal') map[cls].risk++;
+    });
+    const entries = Object.entries(map).sort(([a], [b]) => a.localeCompare(b, 'th'));
+    return {
+      labels: entries.map(([k]) => k),
+      totals: entries.map(([, v]) => v.total),
+      risks: entries.map(([, v]) => v.risk),
+    };
+  }, [records]);
+
+  const barDeptOptions: ApexOptions = {
+    chart: { type: 'bar', stacked: true, toolbar: { show: false }, fontFamily: 'Satoshi, sans-serif' },
+    colors: ['#10b981', '#f43f5e'],
+    plotOptions: { bar: { horizontal: false, columnWidth: '60%', borderRadius: 6 } },
+    dataLabels: { enabled: false },
+    xaxis: { categories: chartByDepartment.labels, labels: { style: { fontSize: '11px' } } },
+    legend: { show: true, position: 'bottom' },
+    grid: { strokeDashArray: 5, borderColor: '#E2E8F0' },
+    fill: { opacity: 1 }
+  };
+
+  const barClassroomOptions: ApexOptions = {
+    chart: { type: 'bar', toolbar: { show: false }, fontFamily: 'Satoshi, sans-serif' },
+    colors: ['#3b82f6', '#f43f5e'],
+    plotOptions: { bar: { horizontal: true, barHeight: '60%', borderRadius: 4 } },
+    dataLabels: { enabled: false },
+    xaxis: { categories: chartByClassroom.labels },
+    legend: { show: true, position: 'bottom' },
+    grid: { strokeDashArray: 5, borderColor: '#E2E8F0' },
+  };
+
+  const donutOptions: ApexOptions = {
+    chart: { type: 'donut', fontFamily: 'Satoshi, sans-serif' },
+    colors: ['#10b981', '#3b82f6', '#f59e0b', '#f43f5e'],
+    labels: ['กลุ่มปกติ', 'กลุ่มพิเศษ', 'กลุ่มเสี่ยง', 'กลุ่มมีปัญหา'],
+    legend: { position: 'bottom', fontWeight: 700 },
+    plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: 'รวมทั้งหมด', fontSize: '14px', fontWeight: '700' } } } } },
+    dataLabels: { enabled: true, formatter: (val: number) => `${Math.round(val)}%` },
+  };
+
   return (
     <div className="relative min-h-screen bg-transparent transition-colors duration-500 overflow-hidden print:min-h-0 print:overflow-visible print:static print:p-0 print:m-0">
       <Toaster position="top-right" />
@@ -1120,6 +1191,55 @@ export default function StudentCarePage() {
                   <div className="p-2">
                     <div className="font-bold">กลุ่มมีปัญหา</div>
                     <div className="text-lg font-bold">{sdqCounts.problem} <span className="text-xs font-normal">คน</span></div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {viewTab === 'screening' && (
+              <div className="grid grid-cols-2 gap-4 mb-4 break-inside-avoid w-full">
+                <div className="border border-black p-4 bg-white flex flex-col items-center justify-center">
+                  <h3 className="text-center font-bold mb-2">สถานะสุขภาพจิต แยกตามแผนกวิชา</h3>
+                  <div className="w-full h-[300px] flex items-center justify-center">
+                    <ReactApexChart
+                      options={{...barDeptOptions, chart: { ...barDeptOptions.chart, animations: { enabled: false } }}}
+                      series={[
+                        { name: 'ปกติ', data: chartByDepartment.normal },
+                        { name: 'เสี่ยง', data: chartByDepartment.risk }
+                      ]}
+                      type="bar"
+                      height={300}
+                    />
+                  </div>
+                </div>
+                <div className="border border-black p-4 bg-white flex flex-col items-center justify-center">
+                  <h3 className="text-center font-bold mb-2">ภาพรวม</h3>
+                  <div className="w-full h-[300px] flex items-center justify-center">
+                    <ReactApexChart
+                      options={{...donutOptions, chart: { ...donutOptions.chart, animations: { enabled: false } }}}
+                      series={[sdqCounts.normal, sdqCounts.special, sdqCounts.risk, sdqCounts.problem]}
+                      type="donut"
+                      height={300}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {viewTab === 'screening' && chartByClassroom.labels.length > 1 && (
+              <div className="mb-4 break-inside-avoid w-full">
+                <div className="border border-black p-4 bg-white flex flex-col items-center justify-center">
+                  <h3 className="text-center font-bold mb-2">จำนวนนักศึกษาแยกตามห้องเรียน</h3>
+                  <div className="w-full flex items-center justify-center" style={{ height: Math.min(600, Math.max(300, chartByClassroom.labels.length * 30)) + 'px' }}>
+                    <ReactApexChart
+                      options={{...barClassroomOptions, chart: { ...barClassroomOptions.chart, animations: { enabled: false } }}}
+                      series={[
+                        { name: 'ทั้งหมด', data: chartByClassroom.totals },
+                        { name: 'เสี่ยง', data: chartByClassroom.risks }
+                      ]}
+                      type="bar"
+                      height={Math.min(600, Math.max(300, chartByClassroom.labels.length * 30))}
+                    />
                   </div>
                 </div>
               </div>
@@ -1440,6 +1560,59 @@ export default function StudentCarePage() {
                     <p className="text-3xl font-black text-rose-900 dark:text-rose-100">{sdqCounts.problem} <span className="text-sm font-bold text-rose-600/50">คน</span></p>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Charts Section */}
+            {!showAdd && viewTab === 'screening' && records.some(r => (r.recordType || 'screening') === 'screening') && totalSdq > 0 && (
+              <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 print:grid-cols-12 mb-8">
+                {/* Bar Chart: แยกตามแผนกวิชา */}
+                <div className="lg:col-span-8 print:col-span-8 rounded-3xl bg-white dark:bg-zinc-950 p-8 shadow-sm border border-slate-200 dark:border-zinc-800">
+                  <div className="mb-6">
+                    <h3 className="text-xl font-black text-slate-800 dark:text-zinc-100">สถานะสุขภาพจิต แยกตามแผนกวิชา</h3>
+                    <p className="text-sm text-slate-400">จำนวนนักศึกษากลุ่มปกติ vs กลุ่มเสี่ยง แยกตามแผนกวิชา</p>
+                  </div>
+                  <ReactApexChart
+                    options={barDeptOptions}
+                    series={[
+                      { name: 'ปกติ', data: chartByDepartment.normal },
+                      { name: 'เสี่ยง', data: chartByDepartment.risk }
+                    ]}
+                    type="bar"
+                    height={350}
+                  />
+                </div>
+
+                {/* Donut Chart: ภาพรวม */}
+                <div className="lg:col-span-4 print:col-span-4 rounded-3xl bg-white dark:bg-zinc-950 p-8 shadow-sm border border-slate-200 dark:border-zinc-800 flex flex-col items-center justify-center">
+                  <h3 className="mb-2 text-xl font-black text-slate-800 dark:text-zinc-100 text-center">ภาพรวม</h3>
+                  <p className="mb-4 text-sm text-slate-400 text-center">สัดส่วนนักศึกษาทั้งหมด</p>
+                  <ReactApexChart
+                    options={donutOptions}
+                    series={[sdqCounts.normal, sdqCounts.special, sdqCounts.risk, sdqCounts.problem]}
+                    type="donut"
+                    height={320}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Horizontal Bar: แยกตามห้องเรียน */}
+            {!showAdd && viewTab === 'screening' && records.some(r => (r.recordType || 'screening') === 'screening') && chartByClassroom.labels.length > 1 && (
+              <div className="mb-8 rounded-3xl bg-white dark:bg-zinc-950 p-8 shadow-sm border border-slate-200 dark:border-zinc-800">
+                <div className="mb-6">
+                  <h3 className="text-xl font-black text-slate-800 dark:text-zinc-100">จำนวนนักศึกษาแยกตามห้องเรียน</h3>
+                  <p className="text-sm text-slate-400">แสดงจำนวนรวมและจำนวนกลุ่มเสี่ยงแต่ละห้องเรียน</p>
+                </div>
+                <ReactApexChart
+                  options={barClassroomOptions}
+                  series={[
+                    { name: 'ทั้งหมด', data: chartByClassroom.totals },
+                    { name: 'เสี่ยง', data: chartByClassroom.risks }
+                  ]}
+                  type="bar"
+                  height={Math.max(250, chartByClassroom.labels.length * 45)}
+                />
               </div>
             )}
 
