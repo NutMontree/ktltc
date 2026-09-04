@@ -5,6 +5,12 @@ const withPWA = withPWAInit({
   disable: process.env.NODE_ENV === "development",
   register: true,
   skipWaiting: true,
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
+  workboxOptions: {
+    disableDevLogs: true,
+  },
 });
 
 /** @type {import('next').NextConfig} */
@@ -114,7 +120,7 @@ const nextConfig = {
     "*": ["public/images/**/*", "public/pdf/**/*", "public/uploads/**/*"],
   },
 
-  serverExternalPackages: ["sharp", "mongodb", "tesseract.js", "isomorphic-dompurify", "jsdom"],
+  serverExternalPackages: ["mongoose", "sharp", "mongodb", "tesseract.js", "isomorphic-dompurify", "jsdom"],
 
   images: {
     unoptimized: false,

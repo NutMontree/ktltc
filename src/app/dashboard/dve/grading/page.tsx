@@ -256,9 +256,9 @@ export default function DVEGradingPage() {
       setStudentGrades(prev => {
         const newGrades = prev.map(g => g.id === gradeId ? { ...g, sequence: newSequence } : g);
         return newGrades.sort((a, b) => {
-          const seqA = typeof a.sequence === 'number' ? a.sequence : 9999;
-          const seqB = typeof b.sequence === 'number' ? b.sequence : 9999;
-          if (seqA !== seqB) return seqA - seqB;
+          const codeA = a.studentCode || "";
+          const codeB = b.studentCode || "";
+          if (codeA !== codeB) return codeA.localeCompare(codeB, "th");
           return (a.studentName || "").localeCompare(b.studentName || "");
         });
       });
@@ -272,7 +272,7 @@ export default function DVEGradingPage() {
           studentName: grade.studentName,
           scores: grade.scores || {},
           subScores: grade.subScores || {},
-          sequence: newSequence,
+          sequence: newSequence === undefined ? null : newSequence,
           isSequenceUpdateOnly: true
         }),
       });
@@ -682,7 +682,7 @@ export default function DVEGradingPage() {
   }
 
   return (
-    <div className="max-w-[1600px] mx-auto w-full bg-linear-to-br from-blue-50 via-sky-50 to-teal-50 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-950 p-2 font-sans">
+    <div className="max-w-[1600px] mx-auto w-full bg-linear-to-br from-blue-50 via-sky-50 to-teal-50 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-950 p-2 font-sans print:min-h-0 print:overflow-visible print:static print:p-0 print:m-0">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700;800&display=swap');
         @page {
@@ -690,6 +690,10 @@ export default function DVEGradingPage() {
           margin: 0;
         }
         @media print {
+          /* นำ padding 5rem (pt-20) ของ root layout ออกตอนพิมพ์ เพื่อไม่ให้หน้าแรกเว้นที่ว่างด้านบน */
+          .pt-20 {
+            padding-top: 0 !important;
+          }
           body {
             -webkit-print-color-adjust: exact;
           }
@@ -714,7 +718,7 @@ export default function DVEGradingPage() {
       `}</style>
       <div className="max-w-[1600px] mx-auto w-full">
         {/* Header */}
-        <div className="mb-8 p-6 sm:p-8 rounded-[24px] bg-linear-to-br from-slate-900 via-blue-950 to-slate-900 text-white shadow-[0_8px_30px_rgb(0,0,0,0.4)] border border-white/10 relative overflow-hidden group">
+        <div className="mb-8 p-6 sm:p-8 rounded-[24px] bg-linear-to-br from-slate-900 via-blue-950 to-slate-900 text-white shadow-[0_8px_30px_rgb(0,0,0,0.4)] border border-white/10 relative overflow-hidden group print:hidden">
           <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-5 group-hover:scale-110 transition-transform duration-700">
             <Calculator size={180} className="w-32 h-32 sm:w-48 sm:h-48 drop-shadow-2xl" />
           </div>
@@ -737,7 +741,7 @@ export default function DVEGradingPage() {
         </div>
 
         {/* Subject Selection */}
-        <div className="bg-white/60 backdrop-blur-xl dark:bg-zinc-900/80 rounded-2xl p-4 sm:p-6 shadow-sm border border-white/40 dark:border-zinc-800 mb-6">
+        <div className="bg-white/60 backdrop-blur-xl dark:bg-zinc-900/80 rounded-2xl p-4 sm:p-6 shadow-sm border border-white/40 dark:border-zinc-800 mb-6 print:hidden">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
             <h2 className="text-lg font-black text-zinc-800 dark:text-white flex items-center gap-2">
               <span className="p-2 bg-blue-100 text-blue-600 rounded-xl">
@@ -783,7 +787,7 @@ export default function DVEGradingPage() {
 
         {/* Grading Configuration */}
         {config && selectedSubjectId && (
-          <div className="bg-white/60 backdrop-blur-xl dark:bg-zinc-900/80 rounded-2xl p-2 sm:p-4 shadow-sm border border-white/40 dark:border-zinc-800 mb-6">
+          <div className="bg-white/60 backdrop-blur-xl dark:bg-zinc-900/80 rounded-2xl p-2 sm:p-4 shadow-sm border border-white/40 dark:border-zinc-800 mb-6 print:hidden">
             <Collapse
               ghost
               className="w-full"
@@ -866,8 +870,8 @@ export default function DVEGradingPage() {
 
         {/* Student Grades */}
         {config && selectedSubjectId && (
-          <div className="bg-white/70 backdrop-blur-xl dark:bg-zinc-800/90 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 dark:border-zinc-700 overflow-hidden mb-8">
-            <div className="p-6 border-b border-white/40 dark:border-zinc-700 print:hidden bg-white/40 dark:bg-zinc-800/50">
+          <div className="bg-white/70 backdrop-blur-xl dark:bg-zinc-800/90 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/60 dark:border-zinc-700 overflow-hidden mb-8 print:hidden">
+            <div className="p-6 border-b border-white/40 dark:border-zinc-700 bg-white/40 dark:bg-zinc-800/50">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <h2 className="text-lg font-black text-slate-800 dark:text-white flex items-center gap-2">
                   <span className="p-2 bg-amber-100 text-amber-600 rounded-xl">
@@ -959,7 +963,13 @@ export default function DVEGradingPage() {
                     <tr key={grade.id} className="hover:bg-blue-50/40 dark:hover:bg-zinc-800/40 transition-colors group">
                       <td className="px-4 py-4 whitespace-nowrap text-center align-top pt-5">
                         <Input
-                          defaultValue={grade.sequence !== undefined ? grade.sequence : ""}
+                          value={grade.sequence !== undefined && grade.sequence !== null ? grade.sequence : ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            let seq = val.trim() ? Number(val) : undefined;
+                            if (seq !== undefined && isNaN(seq)) return;
+                            setStudentGrades(prev => prev.map(g => g.id === grade.id ? { ...g, sequence: seq } : g));
+                          }}
                           onBlur={(e) => handleSequenceChange(grade.id, e.target.value)}
                           onPressEnter={(e) => {
                             (e.target as HTMLInputElement).blur();
@@ -1273,10 +1283,10 @@ export default function DVEGradingPage() {
             className="hidden print:block p-4 bg-white text-black w-full"
             style={{ fontFamily: "'Sarabun', 'TH Sarabun PSK', 'TH SarabunPSK', sans-serif" }}
           >
-            <div className="text-center space-y-2 mb-6">
-              <h2 className="text-2xl font-black">วิทยาลัยเทคนิคกันทรลักษ์</h2>
-              <h3 className="text-xl font-bold">รายงานผลการประเมินการฝึกงานระบบทวิภาคี (Grade Sheet)</h3>
-              <p className="text-sm">
+            <div className="text-center space-y-1 mb-4">
+              <h2 className="text-xl font-black">วิทยาลัยเทคนิคกันทรลักษ์</h2>
+              <h3 className="text-lg font-bold">รายงานผลการประเมินการฝึกงานระบบทวิภาคี (Grade Sheet)</h3>
+              <p className="text-xs">
                 <strong>วิชา:</strong> [{(subjects.find(s => s.id === selectedSubjectId))?.code}] {(subjects.find(s => s.id === selectedSubjectId))?.name} &nbsp;&nbsp;&nbsp;&nbsp;
                 <strong>แผนกวิชา:</strong> {(subjects.find(s => s.id === selectedSubjectId))?.department}
                 {selectedClassGroup && (
@@ -1288,37 +1298,47 @@ export default function DVEGradingPage() {
             <table className="w-full border-collapse border border-black text-xs">
               <thead>
                 <tr>
-                  <th className="border border-black p-2 text-center">ลำดับ</th>
-                  <th className="border border-black p-2 text-center">รหัสนักศึกษา</th>
-                  <th className="border border-black p-2 text-left">ชื่อ-นามสกุล</th>
+                  <th className="border border-black px-1 py-0.5 text-center">ลำดับ</th>
+                  <th className="border border-black px-1 py-0.5 text-center">รหัสนักศึกษา</th>
+                  <th className="border border-black px-1 py-0.5 text-left">ชื่อ-นามสกุล</th>
                   {config.categories.map(cat => (
-                    <th key={cat.id} className="border border-black p-2 text-center">{cat.name} ({cat.points})</th>
+                    <th key={cat.id} className="border border-black px-1 py-0.5 text-center">{cat.name} ({cat.points})</th>
                   ))}
-                  <th className="border border-black p-2 text-center">คะแนนรวม</th>
-                  <th className="border border-black p-2 text-center">เกรด</th>
-                  <th className="border border-black p-2 text-center">ผลการเรียน</th>
+                  <th className="border border-black px-1 py-0.5 text-center">คะแนนรวม</th>
+                  <th className="border border-black px-1 py-0.5 text-center">เกรด</th>
+                  <th className="border border-black px-1 py-0.5 text-center">ผลการเรียน</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredGrades.map((g, idx) => (
                   <tr key={g.id}>
-                    <td className="border border-black p-2 text-center">{idx + 1}</td>
-                    <td className="border border-black p-2 text-center">{g.studentCode || ""}</td>
-                    <td className="border border-black p-2 text-left">{g.studentName}</td>
-                    {config.categories.map(cat => (
-                      <td key={cat.id} className="border border-black p-2 text-center">{g.scores[cat.id] ?? 0}</td>
-                    ))}
-                    <td className="border border-black p-2 text-center font-bold">{g.totalScore}</td>
-                    <td className="border border-black p-2 text-center font-bold">{g.finalGrade}</td>
-                    <td className="border border-black p-2 text-center">{g.isPassed ? "ผ่าน" : "ไม่ผ่าน"}</td>
+                    <td className="border border-black px-1 py-0.5 text-center">{idx + 1}</td>
+                    <td className="border border-black px-1 py-0.5 text-center">{g.studentCode || ""}</td>
+                    <td className="border border-black px-1 py-0.5 text-left">{g.studentName}</td>
+                    {config.categories.map(cat => {
+                      let displayScore = g.scores[cat.id] || 0;
+                      const hasSubCategories = cat.subCategories && cat.subCategories.length > 0;
+                      if (hasSubCategories) {
+                        const catSubScores = g.subScores?.[cat.id] || {};
+                        const earnedSubPoints = cat.subCategories!.reduce((sum, s) => sum + (Number(catSubScores[s.id]) || 0), 0);
+                        const maxSubPoints = cat.subCategories!.reduce((sum, s) => sum + (Number(s.points) || 0), 0) || 1;
+                        displayScore = Math.round((earnedSubPoints / maxSubPoints) * cat.points);
+                      }
+                      return (
+                        <td key={cat.id} className="border border-black px-1 py-0.5 text-center">{displayScore}</td>
+                      );
+                    })}
+                    <td className="border border-black px-1 py-0.5 text-center font-bold">{g.totalScore}</td>
+                    <td className="border border-black px-1 py-0.5 text-center font-bold">{g.finalGrade}</td>
+                    <td className="border border-black px-1 py-0.5 text-center">{g.isPassed ? "ผ่าน" : "ไม่ผ่าน"}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
-            <div className="mt-12 flex justify-between text-sm">
+            <div className="mt-6 flex justify-between text-xs">
               <div></div>
-              <div className="text-center space-y-8">
+              <div className="text-center space-y-4">
                 <p>ลงชื่อ.......................................................... ครูผู้สอน</p>
                 <p>(..........................................................)</p>
                 <p>วันที่........./........./.........</p>
@@ -1448,26 +1468,6 @@ export default function DVEGradingPage() {
           )}
         </AnimatePresence>
 
-        <style dangerouslySetInnerHTML={{
-          __html: `
-          @media print {
-            body * {
-              visibility: hidden;
-            }
-            #printable-grade-sheet, #printable-grade-sheet * {
-              visibility: visible;
-            }
-            #printable-grade-sheet {
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: 100%;
-              display: block !important;
-              background: white !important;
-              color: black !important;
-            }
-          }
-        `}} />
       </div>
     </div>
   );

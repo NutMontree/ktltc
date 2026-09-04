@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import clientPromise from "@/lib/db";
 import { authConfig } from "@/auth.config";
 import { ObjectId } from "mongodb";
+import { redis } from "@/lib/redis";
 
 /**
  * auth.ts: ไฟล์หลักสำหรับระบบ Authentication (NextAuth v5)
@@ -32,7 +33,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // ฟังก์ชันสำหรับตรวจสอบข้อมูลผู้ใช้ตอนกดปุ่ม Login
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
-          throw new Error("กรุณากรอกชื่อผู้ใช้และรหัสผ่าน");
+          throw new Error(encodeURIComponent("กรุณากรอกชื่อผู้ใช้และรหัสผ่าน"));
         }
 
         const cleanUsername = (credentials.username as string).trim();
@@ -141,7 +142,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         } catch (error: any) {
           const message = error?.message || String(error) || "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ";
           console.error(`[AUTH] Authorize Error for "${cleanUsername}":`, message);
-          throw new Error(message);
+          throw new Error(encodeURIComponent(message));
         }
       },
     }),
@@ -212,33 +213,32 @@ export async function hasPermission(role: string, feature: string, department?: 
   if (roleLower === "super_admin") return true;
 
   try {
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
-    // ค้นหาตารางสิทธิ์ (role_permissions) จากฐานข้อมูล
-    const rolePermissions = await db.collection("role_permissions").findOne({ role: roleLower });
-    
-    let hasRolePermission = false;
-    if (rolePermissions && rolePermissions.permissions) {
-      hasRolePermission = !!rolePermissions.permissions[feature];
+    const cacheKey = `perm:${roleLower}:${department || 'none'}:${faction || 'none'}`;
+    const cachedData = await redis.get(cacheKey);
+    let rolePerms;
+    let deptPerms;
+    let factionPerms;
+
+    if (cachedData) {
+      const parsed = JSON.parse(cachedData);
+      rolePerms = parsed.rolePerms;
+      deptPerms = parsed.deptPerms;
+      factionPerms = parsed.factionPerms;
+    } else {
+      const client = await clientPromise;
+      const db = client.db("ktltc_db");
+      
+      rolePerms = await db.collection("role_permissions").findOne({ role: roleLower });
+      if (department) deptPerms = await db.collection("department_permissions").findOne({ department });
+      if (faction) factionPerms = await db.collection("department_permissions").findOne({ department: faction });
+      
+      // Cache data for 1 hour to prevent constant MongoDB querying
+      await redis.set(cacheKey, JSON.stringify({ rolePerms, deptPerms, factionPerms }), 'EX', 3600);
     }
 
-    if (hasRolePermission) return true;
-
-    // ตรวจสอบสิทธิ์จากแผนก (department)
-    if (department) {
-      const deptPermissions = await db.collection("department_permissions").findOne({ department });
-      if (deptPermissions && deptPermissions.permissions && deptPermissions.permissions[feature]) {
-        return true;
-      }
-    }
-
-    // ตรวจสอบสิทธิ์จากฝ่าย (faction) เผื่อผู้ใช้ใส่สลับกันหรือตั้งสิทธิ์ไว้ที่ฝ่าย
-    if (faction) {
-      const factionPermissions = await db.collection("department_permissions").findOne({ department: faction });
-      if (factionPermissions && factionPermissions.permissions && factionPermissions.permissions[feature]) {
-        return true;
-      }
-    }
+    if (rolePerms?.permissions?.[feature]) return true;
+    if (deptPerms?.permissions?.[feature]) return true;
+    if (factionPerms?.permissions?.[feature]) return true;
 
     return false;
   } catch (error) {

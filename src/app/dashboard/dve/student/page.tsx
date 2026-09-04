@@ -2514,7 +2514,7 @@ export function DVEStudentPortal() {
                                 {(q.options || []).map((opt: string, oIdx: number) => (
                                   <label
                                     key={oIdx}
-                                    className="flex items-center gap-3 p-2.5 rounded-lg border border-slate-100 dark:border-zinc-900 hover:bg-purple-50/20 dark:hover:bg-purple-950/5 cursor-pointer transition-colors text-xs font-bold text-zinc-700 dark:text-zinc-350"
+                                    className="flex items-center gap-3 p-2.5 rounded-lg border border-slate-100 dark:border-zinc-900 hover:bg-purple-50/20 dark:hover:bg-purple-950/5 cursor-pointer transition-colors text-xs font-bold text-zinc-700 dark:text-zinc-300"
                                   >
                                     <input
                                       type="radio"
@@ -2548,7 +2548,7 @@ export function DVEStudentPortal() {
                                   return (
                                     <label
                                       key={oIdx}
-                                      className="flex items-center gap-3 p-2.5 rounded-lg border border-slate-100 dark:border-zinc-900 hover:bg-purple-50/20 dark:hover:bg-purple-950/5 cursor-pointer transition-colors text-xs font-bold text-zinc-700 dark:text-zinc-350"
+                                      className="flex items-center gap-3 p-2.5 rounded-lg border border-slate-100 dark:border-zinc-900 hover:bg-purple-50/20 dark:hover:bg-purple-950/5 cursor-pointer transition-colors text-xs font-bold text-zinc-700 dark:text-zinc-300"
                                     >
                                       <input
                                         type="checkbox"

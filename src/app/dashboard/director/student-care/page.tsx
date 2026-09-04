@@ -1,9 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import dynamic from "next/dynamic";
+import { ApexOptions } from "apexcharts";
+
+const ReactApexChart = dynamic(() => import("react-apexcharts"), { ssr: false });
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
-import { ClipboardList, Plus, AlertCircle, X, MapPin, HeartHandshake, ShieldCheck, Camera, Image as ImageIcon, Send, Check, Trash2, Edit, LayoutGrid, Table, List, User, Search, Download, Printer } from "lucide-react";
+import { ClipboardList, Plus, AlertCircle, X, MapPin, HeartHandshake, ShieldCheck, Camera, Image as ImageIcon, Send, Check, Trash2, Edit, LayoutGrid, Table, List, User, Search, Download, Printer, BarChart3 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { toast, Toaster } from "react-hot-toast";
 import { uploadFile } from "@/lib/upload";
@@ -74,12 +78,16 @@ export default function StudentCarePage() {
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "table" | "list">("grid");
   const [isPrintingSummary, setIsPrintingSummary] = useState(false);
+  const [isPrintingChartsOnly, setIsPrintingChartsOnly] = useState(false);
 
   // Student Search
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+
+  // Chart Modal
+  const [showChartModal, setShowChartModal] = useState(false);
 
   // SDQ Modal
   const [showSDQModal, setShowSDQModal] = useState(false);
@@ -138,8 +146,11 @@ export default function StudentCarePage() {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [displayLimit, setDisplayLimit] = useState(30);
+  const [renderLimit, setRenderLimit] = useState(30);
   const [totalRecords, setTotalRecords] = useState(0);
   const [sdqCounts, setSdqCounts] = useState({ normal: 0, risk: 0, problem: 0, special: 0 });
+  const [chartByDepartment, setChartByDepartment] = useState({ labels: [] as string[], normal: [] as number[], risk: [] as number[] });
+  const [chartByClassroom, setChartByClassroom] = useState({ labels: [] as string[], totals: [] as number[], normal: [] as number[], special: [] as number[], risks: [] as number[], problems: [] as number[] });
   const [filterSdqType, setFilterSdqType] = useState<string | null>(null);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
 
@@ -248,7 +259,7 @@ export default function StudentCarePage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-300 dark:text-zinc-700">
+                  <div className="w-full h-full flex items-center justify-center text-slate-300 dark:text-zinc-700 print:hidden">
                     {viewRecord.recordType === 'home_visit' ? <Camera size={64} /> : <ShieldCheck size={64} />}
                   </div>
                 )}
@@ -584,6 +595,7 @@ export default function StudentCarePage() {
   const fetchRecords = async (skip = 0, append = false) => {
     if (skip === 0) {
       setLoading(true);
+      setRenderLimit(30);
     } else {
       setIsFetchingMore(true);
     }
@@ -598,7 +610,7 @@ export default function StudentCarePage() {
         recordType: viewTab
       });
       const res = await fetch("/api/director/student-care?" + params.toString());
-      const { data, total, sdqCounts: stats } = await res.json();
+      const { data, total, sdqCounts: stats, chartByDepartment: deptStats, chartByClassroom: clsStats } = await res.json();
 
       if (append) {
         setRecords(prev => {
@@ -611,6 +623,8 @@ export default function StudentCarePage() {
       }
       setTotalRecords(total || 0);
       if (stats) setSdqCounts(stats);
+      if (deptStats) setChartByDepartment(deptStats);
+      if (clsStats) setChartByClassroom(clsStats);
     } catch (error) {
       console.error(error);
       toast.error("ดึงข้อมูลล้มเหลว");
@@ -620,7 +634,12 @@ export default function StudentCarePage() {
   };
 
   const loadMore = () => {
-    fetchRecords(records.length, true);
+    if (renderLimit < records.length) {
+      setRenderLimit(prev => prev + 30);
+    } else {
+      setRenderLimit(prev => prev + 30);
+      fetchRecords(records.length, true);
+    }
   };
 
   const getLocation = () => {
@@ -925,7 +944,7 @@ export default function StudentCarePage() {
   };
 
   // Pagination replaces client-side filtering
-  const displayedRecords = records;
+  const displayedRecords = (isPrintingSummary && !isPrintingChartsOnly) ? records : records.slice(0, renderLimit);
   const totalSdq = sdqCounts.normal + sdqCounts.risk + sdqCounts.problem + sdqCounts.special || 1;
 
   const exportToExcel = async () => {
@@ -1011,6 +1030,27 @@ export default function StudentCarePage() {
     toast.success("ดาวน์โหลดไฟล์ Excel สำเร็จ");
   };
 
+  const barDeptOptions: ApexOptions = {
+    chart: { type: 'bar', stacked: true, toolbar: { show: false }, fontFamily: 'Satoshi, sans-serif' },
+    colors: ['#10b981', '#f43f5e'],
+    plotOptions: { bar: { horizontal: true, barHeight: '60%', borderRadius: 4 } },
+    dataLabels: { enabled: false },
+    xaxis: { categories: chartByDepartment.labels, labels: { style: { fontSize: '11px' } } },
+    legend: { show: true, position: 'bottom' },
+    grid: { strokeDashArray: 5, borderColor: '#E2E8F0' },
+    fill: { opacity: 1 }
+  };
+
+
+  const donutOptions: ApexOptions = {
+    chart: { type: 'donut', fontFamily: 'Satoshi, sans-serif' },
+    colors: ['#10b981', '#3b82f6', '#f59e0b', '#f43f5e'],
+    labels: ['กลุ่มปกติ', 'กลุ่มพิเศษ', 'กลุ่มเสี่ยง', 'กลุ่มมีปัญหา'],
+    legend: { position: 'bottom', fontWeight: 700 },
+    plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, label: 'รวมทั้งหมด', fontSize: '14px', fontWeight: '700' } } } } },
+    dataLabels: { enabled: true, formatter: (val: number) => `${Math.round(val)}%` },
+  };
+
   return (
     <div className="relative min-h-screen bg-transparent transition-colors duration-500 overflow-hidden print:min-h-0 print:overflow-visible print:static print:p-0 print:m-0">
       <Toaster position="top-right" />
@@ -1037,7 +1077,7 @@ export default function StudentCarePage() {
                 visibility: visible;
               }
               #print-summary-section {
-                position: relative !important;
+                position: absolute !important;
                 left: 0;
                 top: 0;
                 width: 100% !important;
@@ -1125,98 +1165,170 @@ export default function StudentCarePage() {
               </div>
             )}
 
-            <div id="print-table-wrapper" className="w-full">
-              <table className="w-full border-collapse border border-black">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="border border-black text-center">ที่</th>
-                    <th className="border border-black text-center whitespace-nowrap">ชื่อ-นามสกุล</th>
-                    {viewTab === 'screening' ? (
-                      <>
-                        <th className="border border-black text-center">ด้านอารมณ์</th>
-                        <th className="border border-black text-center">ด้านความประพฤติ</th>
-                        <th className="border border-black text-center">ด้านพฤติกรรม</th>
-                        <th className="border border-black text-center">ด้านสัมพันธ์กับเพื่อน</th>
-                        <th className="border border-black text-center">ด้านทางสังคม</th>
-                        <th className="border border-black text-center">สรุปผลประเมิน</th>
-                      </>
-                    ) : (
-                      <>
-                        <th className="border border-black text-center w-20">แผนก/ชั้น</th>
-                        <th className="border border-black text-center">สภาพที่พักอาศัย</th>
-                        <th className="border border-black text-center">บันทึกเพิ่มเติม</th>
-                      </>
-                    )}
-                  </tr>
-                </thead>
-                <tbody>
-                  {displayedRecords.map((r, i) => (
-                    <tr key={r._id}>
-                      <td className="border border-black text-center">{i + 1}</td>
-                      <td className="border border-black whitespace-nowrap px-2">{formatStudentName(r.studentName, r.gender)}</td>
-                      {viewTab === 'screening' ? (
-                        <>
-                          <td className="border border-black text-center">{getTranslate(r.sdqData?.E_res)}</td>
-                          <td className="border border-black text-center">{getTranslate(r.sdqData?.C_res)}</td>
-                          <td className="border border-black text-center">{getTranslate(r.sdqData?.H_res)}</td>
-                          <td className="border border-black text-center">{getTranslate(r.sdqData?.Pe_res)}</td>
-                          <td className="border border-black text-center">{getTranslate(r.sdqData?.P_res)}</td>
-                          <td className="border border-black text-center font-bold">
-                            {r.sdqType === 'normal' ? 'ปกติ' : r.sdqType === 'special' ? 'พิเศษ' : r.sdqType === 'risk' ? 'เสี่ยง' : 'มีปัญหา'}
-                          </td>
-                        </>
-                      ) : (
-                        <>
-                          <td className="border border-black text-center">{r.department}<br/>{r.classroom}</td>
-                          <td className="border border-black text-left">{r.address || '-'}</td>
-                          <td className="border border-black text-left">{r.notes || '-'}</td>
-                        </>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Signature Section */}
-            <div className="mt-6 pt-4 break-inside-avoid print:break-inside-avoid">
-              <div className="flex justify-between px-8 md:px-16">
-                {/* Left: Advisor */}
-                <div className="flex flex-col items-center justify-center text-center gap-0">
-                  <div className="flex items-baseline">
-                    <span className="mr-2 whitespace-nowrap">ลงชื่อ</span>
-                    <span className="inline-block text-center text-slate-500 leading-none">...................................................</span>
-                    <span className="ml-2 whitespace-nowrap opacity-0 pointer-events-none select-none print:hidden">ลงชื่อ</span>
+            {viewTab === 'screening' && (
+              <div className="grid grid-cols-1 gap-4 mb-4 w-full">
+                {Array.from({ length: Math.ceil(chartByDepartment.labels.length / 18) }).map((_, i) => (
+                  <div key={`dept-chart-print-${i}`} className="border border-black p-4 bg-white flex flex-col items-center justify-center break-inside-avoid w-full">
+                    <h3 className="text-center font-bold mb-2">สถานะสุขภาพจิต แยกตามแผนกวิชา {Math.ceil(chartByDepartment.labels.length / 18) > 1 ? `(ส่วนที่ ${i + 1})` : ''}</h3>
+                    <div className="w-full flex items-center justify-center" style={{ height: Math.max(250, chartByDepartment.labels.slice(i * 18, (i + 1) * 18).length * 30) + 'px' }}>
+                      <ReactApexChart
+                        options={{
+                          ...barDeptOptions, 
+                          chart: { ...barDeptOptions.chart, animations: { enabled: false } },
+                          xaxis: { ...barDeptOptions.xaxis, categories: chartByDepartment.labels.slice(i * 18, (i + 1) * 18) }
+                        }}
+                        series={[
+                          { name: 'ปกติ', data: chartByDepartment.normal.slice(i * 18, (i + 1) * 18) },
+                          { name: 'เสี่ยง', data: chartByDepartment.risk.slice(i * 18, (i + 1) * 18) }
+                        ]}
+                        type="bar"
+                        height={Math.max(250, chartByDepartment.labels.slice(i * 18, (i + 1) * 18).length * 30)}
+                      />
+                    </div>
                   </div>
-                  <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>
-                    {(() => {
-                      const teachers = Array.from(new Set(displayedRecords.map(r => r.teacherName).filter(Boolean)));
-                      return teachers.length === 1 ? `(${teachers[0]})` : '(...................................................)';
-                    })()}
+                ))}
+                <div className="border border-black p-4 bg-white flex flex-col items-center justify-center break-inside-avoid">
+                  <h3 className="text-center font-bold mb-2">ภาพรวม</h3>
+                  <div className="w-full h-[300px] flex items-center justify-center">
+                    <ReactApexChart
+                      options={{...donutOptions, chart: { ...donutOptions.chart, animations: { enabled: false } }}}
+                      series={[sdqCounts.normal, sdqCounts.special, sdqCounts.risk, sdqCounts.problem]}
+                      type="donut"
+                      height={300}
+                    />
                   </div>
-                  <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>ครูที่ปรึกษา</div>
-                  <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>......./......./.......</div>
-                </div>
-
-                {/* Right: Deputy Director */}
-                <div className="flex flex-col items-center justify-center text-center gap-0">
-                  <div className="flex items-baseline">
-                    <span className="mr-2 whitespace-nowrap">ลงชื่อ</span>
-                    <span className="inline-block text-center text-slate-500 leading-none">...................................................</span>
-                    <span className="ml-2 whitespace-nowrap opacity-0 pointer-events-none select-none print:hidden">ลงชื่อ</span>
-                  </div>
-                  <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>{deputyName || '(...................................................)'}</div>
-                  <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนฯ</div>
-                  <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>......./......./.......</div>
                 </div>
               </div>
-            </div>
-            {/* Batch Print Individual Records */}
-            {displayedRecords.map((r) => (
-              <div key={r._id}>
-                {renderStudentPrintView(r)}
+            )}
+
+            {viewTab === 'screening' && chartByClassroom.labels.length > 1 && (
+              <div className="mb-4 w-full">
+                <div className="border border-black p-4 bg-white">
+                  <h3 className="text-center font-bold mb-4">จำนวนนักศึกษาแยกตามห้องเรียน</h3>
+                  <table className="w-full border-collapse border border-black text-sm">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="border border-black py-2 px-4 text-center">ห้องเรียน</th>
+                        <th className="border border-black py-2 px-4 text-center w-24">ทั้งหมด</th>
+                        <th className="border border-black py-2 px-4 text-center w-24 text-emerald-600">ปกติ</th>
+                        <th className="border border-black py-2 px-4 text-center w-24 text-blue-600">พิเศษ</th>
+                        <th className="border border-black py-2 px-4 text-center w-24 text-amber-600">เสี่ยง</th>
+                        <th className="border border-black py-2 px-4 text-center w-24 text-rose-600">มีปัญหา</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {chartByClassroom.labels.map((label, idx) => (
+                        <tr key={`cls-print-${idx}`}>
+                          <td className="border border-black py-1 px-4 text-left">{label}</td>
+                          <td className="border border-black py-1 px-4 text-center">{chartByClassroom.totals[idx]}</td>
+                          <td className="border border-black py-1 px-4 text-center text-emerald-600 font-semibold">{chartByClassroom.normal[idx]}</td>
+                          <td className="border border-black py-1 px-4 text-center text-blue-600 font-semibold">{chartByClassroom.special[idx]}</td>
+                          <td className="border border-black py-1 px-4 text-center text-amber-600 font-semibold">{chartByClassroom.risks[idx]}</td>
+                          <td className="border border-black py-1 px-4 text-center text-rose-600 font-semibold">{chartByClassroom.problems[idx]}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            ))}
+            )}
+
+            {!isPrintingChartsOnly && (
+              <>
+                <div id="print-table-wrapper" className="w-full">
+                  <table className="w-full border-collapse border border-black">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="border border-black text-center">ที่</th>
+                        <th className="border border-black text-center whitespace-nowrap">ชื่อ-นามสกุล</th>
+                        {viewTab === 'screening' ? (
+                          <>
+                            <th className="border border-black text-center">ด้านอารมณ์</th>
+                            <th className="border border-black text-center">ด้านความประพฤติ</th>
+                            <th className="border border-black text-center">ด้านพฤติกรรม</th>
+                            <th className="border border-black text-center">ด้านสัมพันธ์กับเพื่อน</th>
+                            <th className="border border-black text-center">ด้านทางสังคม</th>
+                            <th className="border border-black text-center">สรุปผลประเมิน</th>
+                          </>
+                        ) : (
+                          <>
+                            <th className="border border-black text-center w-20">แผนก/ชั้น</th>
+                            <th className="border border-black text-center">สภาพที่พักอาศัย</th>
+                            <th className="border border-black text-center">บันทึกเพิ่มเติม</th>
+                          </>
+                        )}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {displayedRecords.map((r, i) => (
+                        <tr key={r._id}>
+                          <td className="border border-black text-center">{i + 1}</td>
+                          <td className="border border-black whitespace-nowrap px-2">{formatStudentName(r.studentName, r.gender)}</td>
+                          {viewTab === 'screening' ? (
+                            <>
+                              <td className="border border-black text-center">{getTranslate(r.sdqData?.E_res)}</td>
+                              <td className="border border-black text-center">{getTranslate(r.sdqData?.C_res)}</td>
+                              <td className="border border-black text-center">{getTranslate(r.sdqData?.H_res)}</td>
+                              <td className="border border-black text-center">{getTranslate(r.sdqData?.Pe_res)}</td>
+                              <td className="border border-black text-center">{getTranslate(r.sdqData?.P_res)}</td>
+                              <td className="border border-black text-center font-bold">
+                                {r.sdqType === 'normal' ? 'ปกติ' : r.sdqType === 'special' ? 'พิเศษ' : r.sdqType === 'risk' ? 'เสี่ยง' : 'มีปัญหา'}
+                              </td>
+                            </>
+                          ) : (
+                            <>
+                              <td className="border border-black text-center">{r.department}<br/>{r.classroom}</td>
+                              <td className="border border-black text-left">{r.address || '-'}</td>
+                              <td className="border border-black text-left">{r.notes || '-'}</td>
+                            </>
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Signature Section */}
+                <div className="mt-6 pt-4 break-inside-avoid print:break-inside-avoid">
+                  <div className="flex justify-between px-8 md:px-16">
+                    {/* Left: Advisor */}
+                    <div className="flex flex-col items-center justify-center text-center gap-0">
+                      <div className="flex items-baseline">
+                        <span className="mr-2 whitespace-nowrap">ลงชื่อ</span>
+                        <span className="inline-block text-center text-slate-500 leading-none">...................................................</span>
+                        <span className="ml-2 whitespace-nowrap opacity-0 pointer-events-none select-none print:hidden">ลงชื่อ</span>
+                      </div>
+                      <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>
+                        {(() => {
+                          const teachers = Array.from(new Set(displayedRecords.map(r => r.teacherName).filter(Boolean)));
+                          return teachers.length === 1 ? `(${teachers[0]})` : '(...................................................)';
+                        })()}
+                      </div>
+                      <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>ครูที่ปรึกษา</div>
+                      <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>......./......./.......</div>
+                    </div>
+
+                    {/* Right: Deputy Director */}
+                    <div className="flex flex-col items-center justify-center text-center gap-0">
+                      <div className="flex items-baseline">
+                        <span className="mr-2 whitespace-nowrap">ลงชื่อ</span>
+                        <span className="inline-block text-center text-slate-500 leading-none">...................................................</span>
+                        <span className="ml-2 whitespace-nowrap opacity-0 pointer-events-none select-none print:hidden">ลงชื่อ</span>
+                      </div>
+                      <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>{deputyName || '(...................................................)'}</div>
+                      <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>รองผู้อำนวยการฝ่ายพัฒนากิจการนักเรียนฯ</div>
+                      <div className="leading-none outline-none hover:bg-slate-100 transition-colors px-2 rounded cursor-text" contentEditable suppressContentEditableWarning>......./......./.......</div>
+                    </div>
+                  </div>
+                </div>
+                {/* Batch Print Individual Records */}
+                {displayedRecords.map((r) => (
+                  <div key={r._id}>
+                    {renderStudentPrintView(r)}
+                  </div>
+                ))}
+              </>
+            )}
           </div>
 
         </>
@@ -1350,11 +1462,80 @@ export default function StudentCarePage() {
                       </button>
 
                       <button
-                        onClick={() => {
-                          if (displayedRecords.length === 0) {
+                        onClick={async () => {
+                          if (totalRecords === 0) {
                             toast.error("ไม่มีข้อมูลสำหรับพิมพ์");
                             return;
                           }
+
+                          if (records.length < totalRecords) {
+                            toast.loading("กำลังดึงข้อมูลทั้งหมดสำหรับเตรียมพิมพ์...");
+                            try {
+                              const params = new URLSearchParams({
+                                exportAll: 'true',
+                                search: searchTerm,
+                                department: filterDepartment,
+                                classroom: filterClassroom,
+                                sdqType: filterSdqType || "",
+                                recordType: viewTab
+                              });
+                              const res = await fetch("/api/director/student-care?" + params.toString());
+                              const { data } = await res.json();
+                              setRecords(Array.isArray(data) ? data : []);
+                              toast.dismiss();
+                            } catch (err) {
+                              toast.dismiss();
+                              toast.error("โหลดข้อมูลทั้งหมดล้มเหลว");
+                              return;
+                            }
+                          }
+
+                          setIsPrintingChartsOnly(true);
+                          setIsPrintingSummary(true);
+                          setTimeout(() => {
+                            window.print();
+                            setTimeout(() => {
+                              setIsPrintingSummary(false);
+                              setIsPrintingChartsOnly(false);
+                            }, 500);
+                          }, 500);
+                        }}
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400 rounded-xl text-sm font-bold hover:bg-rose-100 hover:shadow-md hover:shadow-rose-500/10 active:scale-95 transition-all border border-rose-200 dark:border-rose-800/50"
+                        title="พิมพ์เฉพาะกราฟ (PDF)"
+                      >
+                        <Printer size={16} /> <span className="hidden sm:inline">กราฟ (PDF)</span>
+                      </button>
+
+                      <button
+                        onClick={async () => {
+                          if (totalRecords === 0) {
+                            toast.error("ไม่มีข้อมูลสำหรับพิมพ์");
+                            return;
+                          }
+
+                          if (records.length < totalRecords) {
+                            toast.loading("กำลังดึงข้อมูลทั้งหมดสำหรับเตรียมพิมพ์...");
+                            try {
+                              const params = new URLSearchParams({
+                                exportAll: 'true',
+                                search: searchTerm,
+                                department: filterDepartment,
+                                classroom: filterClassroom,
+                                sdqType: filterSdqType || "",
+                                recordType: viewTab
+                              });
+                              const res = await fetch("/api/director/student-care?" + params.toString());
+                              const { data } = await res.json();
+                              setRecords(Array.isArray(data) ? data : []);
+                              toast.dismiss();
+                            } catch (err) {
+                              toast.dismiss();
+                              toast.error("โหลดข้อมูลทั้งหมดล้มเหลว");
+                              return;
+                            }
+                          }
+
+                          setIsPrintingChartsOnly(false);
                           setIsPrintingSummary(true);
                           setTimeout(() => {
                             window.print();
@@ -1362,9 +1543,9 @@ export default function StudentCarePage() {
                           }, 500);
                         }}
                         className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-xl text-sm font-bold hover:bg-indigo-100 hover:shadow-md hover:shadow-indigo-500/10 active:scale-95 transition-all border border-indigo-200 dark:border-indigo-800/50"
-                        title="พิมพ์สรุปเป็น PDF"
+                        title="พิมพ์สรุปเป็น PDF (รวมตารางรายชื่อ)"
                       >
-                        <Printer size={16} /> <span className="hidden sm:inline">PDF</span>
+                        <Printer size={16} /> <span className="hidden sm:inline">PDF แบบเต็ม</span>
                       </button>
                     </div>
 
@@ -1417,6 +1598,19 @@ export default function StudentCarePage() {
                     <p className="text-3xl font-black text-rose-900 dark:text-rose-100">{sdqCounts.problem} <span className="text-sm font-bold text-rose-600/50">คน</span></p>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Charts Button */}
+            {!showAdd && viewTab === 'screening' && records.some(r => (r.recordType || 'screening') === 'screening') && totalSdq > 0 && (
+              <div className="flex justify-end mb-4 print:hidden">
+                <button
+                  onClick={() => setShowChartModal(true)}
+                  className="px-6 py-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white rounded-xl font-bold shadow-md transition-all flex items-center gap-2"
+                >
+                  <BarChart3 size={20} />
+                  ดูกราฟสถิติ
+                </button>
               </div>
             )}
 
@@ -1868,14 +2062,102 @@ export default function StudentCarePage() {
             )}
 
             {/* Load More Button */}
-            {!showAdd && records.length < totalRecords && !loading && (
+            {!showAdd && (renderLimit < records.length || records.length < totalRecords) && !loading && (
               <div className="flex justify-center mt-8 pb-8">
                 <button
                   onClick={loadMore}
                   className="px-8 py-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-full text-sm font-bold text-slate-600 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors shadow-sm"
                 >
-                  โหลดเพิ่มเติม ({records.length} / {totalRecords})
+                  โหลดเพิ่มเติม ({Math.min(renderLimit, records.length)} / {totalRecords})
                 </button>
+              </div>
+            )}
+
+            {/* Charts Modal */}
+            {showChartModal && (
+              <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm print:hidden" onClick={() => setShowChartModal(false)}>
+                <div
+                  className="bg-white dark:bg-zinc-900 rounded-3xl max-w-5xl w-full max-h-[90vh] flex flex-col shadow-2xl relative overflow-hidden"
+                  onClick={e => e.stopPropagation()}
+                >
+                  <div className="p-6 border-b border-slate-100 dark:border-zinc-800 flex items-center justify-between bg-white dark:bg-zinc-900 shrink-0">
+                    <div>
+                      <h3 className="text-xl font-black text-slate-800 dark:text-zinc-100">กราฟสถิติการคัดกรอง</h3>
+                      <p className="text-sm text-slate-500 font-bold mt-1">ข้อมูลสถานะสุขภาพจิตและจำนวนนักศึกษาแยกตามแผนกและห้องเรียน</p>
+                    </div>
+                    <button onClick={() => setShowChartModal(false)} className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-full transition-colors">
+                      <X size={20} />
+                    </button>
+                  </div>
+                  <div className="p-6 overflow-y-auto flex-1 bg-slate-50/50 dark:bg-zinc-950/50">
+                    <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 mb-8">
+                      {/* Bar Chart: แยกตามแผนกวิชา */}
+                      <div className="lg:col-span-8 rounded-3xl bg-white dark:bg-zinc-950 p-8 shadow-sm border border-slate-200 dark:border-zinc-800">
+                        <div className="mb-6">
+                          <h3 className="text-xl font-black text-slate-800 dark:text-zinc-100">สถานะสุขภาพจิต แยกตามแผนกวิชา</h3>
+                          <p className="text-sm text-slate-400">จำนวนนักศึกษากลุ่มปกติ vs กลุ่มเสี่ยง แยกตามแผนกวิชา</p>
+                        </div>
+                        <ReactApexChart
+                          options={barDeptOptions}
+                          series={[
+                            { name: 'ปกติ', data: chartByDepartment.normal },
+                            { name: 'เสี่ยง', data: chartByDepartment.risk }
+                          ]}
+                          type="bar"
+                          height={Math.max(350, chartByDepartment.labels.length * 35)}
+                        />
+                      </div>
+
+                      {/* Donut Chart: ภาพรวม */}
+                      <div className="lg:col-span-4 rounded-3xl bg-white dark:bg-zinc-950 p-8 shadow-sm border border-slate-200 dark:border-zinc-800 flex flex-col items-center justify-center self-start">
+                        <h3 className="mb-2 text-xl font-black text-slate-800 dark:text-zinc-100 text-center">ภาพรวม</h3>
+                        <p className="mb-4 text-sm text-slate-400 text-center">สัดส่วนนักศึกษาทั้งหมด</p>
+                        <ReactApexChart
+                          options={donutOptions}
+                          series={[sdqCounts.normal, sdqCounts.special, sdqCounts.risk, sdqCounts.problem]}
+                          type="donut"
+                          height={320}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Data Table: แยกตามห้องเรียน */}
+                    {chartByClassroom.labels.length > 1 && (
+                      <div className="rounded-3xl bg-white dark:bg-zinc-950 p-8 shadow-sm border border-slate-200 dark:border-zinc-800">
+                        <div className="mb-6">
+                          <h3 className="text-xl font-black text-slate-800 dark:text-zinc-100">จำนวนนักศึกษาแยกตามห้องเรียน</h3>
+                          <p className="text-sm text-slate-400">แสดงจำนวนรวมและจำนวนกลุ่มเสี่ยงแต่ละห้องเรียน</p>
+                        </div>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left border-collapse">
+                            <thead>
+                              <tr className="border-b border-slate-200 dark:border-zinc-800 text-slate-500 text-sm">
+                                <th className="pb-3 font-semibold px-4">ห้องเรียน</th>
+                                <th className="pb-3 font-semibold text-center px-4 w-24">ทั้งหมด</th>
+                                <th className="pb-3 font-semibold text-center text-emerald-600 px-4 w-24">ปกติ</th>
+                                <th className="pb-3 font-semibold text-center text-blue-600 px-4 w-24">พิเศษ</th>
+                                <th className="pb-3 font-semibold text-center text-amber-600 px-4 w-24">เสี่ยง</th>
+                                <th className="pb-3 font-semibold text-center text-rose-600 px-4 w-24">มีปัญหา</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {chartByClassroom.labels.map((label, index) => (
+                                <tr key={index} className="border-b border-slate-100 dark:border-zinc-800/50 hover:bg-slate-50 dark:hover:bg-zinc-800/20 transition-colors">
+                                  <td className="py-3 px-4 text-sm font-medium text-slate-700 dark:text-zinc-200">{label}</td>
+                                  <td className="py-3 px-4 text-sm text-center font-semibold text-slate-600 dark:text-slate-400">{chartByClassroom.totals[index]}</td>
+                                  <td className="py-3 px-4 text-sm text-center font-semibold text-emerald-600 dark:text-emerald-500">{chartByClassroom.normal[index]}</td>
+                                  <td className="py-3 px-4 text-sm text-center font-semibold text-blue-600 dark:text-blue-500">{chartByClassroom.special[index]}</td>
+                                  <td className="py-3 px-4 text-sm text-center font-semibold text-amber-500 dark:text-amber-400">{chartByClassroom.risks[index]}</td>
+                                  <td className="py-3 px-4 text-sm text-center font-semibold text-rose-600 dark:text-rose-500">{chartByClassroom.problems[index]}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
 
@@ -2167,7 +2449,7 @@ export default function StudentCarePage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-300 dark:text-zinc-700">
+                  <div className="w-full h-full flex items-center justify-center text-slate-300 dark:text-zinc-700 print:hidden">
                     {viewRecord.recordType === 'home_visit' ? <Camera size={64} /> : <ShieldCheck size={64} />}
                   </div>
                 )}

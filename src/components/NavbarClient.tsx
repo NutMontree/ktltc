@@ -8,7 +8,7 @@ import MobileMenu from "./MobileMenu";
 import { NavItem } from "@/types/nav";
 import ThemeToggle from "./ThemeToggle";
 import LanguageSwitcher from "./LanguageSwitcher";
-import { logoutAction } from "@/app/actions";
+import { signOut } from "next-auth/react";
 import {
   FileText,
   UserCog,
@@ -352,8 +352,8 @@ export default function NavbarClient({
 
   const handleLogout = async () => {
     try {
-      // เรียกใช้ Server Action
-      await logoutAction();
+      // เรียกใช้ Client-side signOut
+      await signOut({ callbackUrl: "/login" });
     } catch (error) {
       console.error("Logout error:", error);
       // แม้เกิด error ก็บังคับ redirect ไปหน้า login
@@ -401,7 +401,7 @@ export default function NavbarClient({
       >
         <div className="relative z-10 flex items-center justify-between w-full">
           {/* --- 1. LOGO & BRANDING --- */}
-          <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0 group outline-none">
+          <Link prefetch={false} href="/" className="flex items-center gap-2 sm:gap-3 shrink-0 group outline-none">
             <div className="relative w-8 h-8 sm:w-10 sm:h-10 transition-transform duration-300 group-hover:scale-105 group-active:scale-95 drop-shadow-sm">
               <Image
                 src="/images/favicon.ico"
@@ -431,7 +431,7 @@ export default function NavbarClient({
                   onMouseEnter={() => setActiveMenuId(item._id)}
                   onMouseLeave={() => setActiveMenuId(null)}
                 >
-                  <Link
+                  <Link prefetch={false}
                     href={hasChildren ? "#" : ensureAbsolute(item.path) || "#"}
                     className={`px-3 py-2 rounded-full flex items-center gap-1 text-[14px] font-bold transition-all whitespace-nowrap outline-none ${isActiveNode
                       ? "text-blue-700 bg-blue-50/80 dark:text-blue-400 dark:bg-blue-500/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] dark:shadow-none"
@@ -466,7 +466,7 @@ export default function NavbarClient({
                           {item.children!.map((child) => {
                             const ChildIcon = getMenuIcon(child.label);
                             return (
-                              <Link
+                              <Link prefetch={false}
                                 key={child._id}
                                 href={ensureAbsolute(child.path) || "#"}
                                 onClick={() => setActiveMenuId(null)}
@@ -588,7 +588,7 @@ export default function NavbarClient({
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
-                        <Link
+                        <Link prefetch={false}
                           href={userId ? `/dashboard/profile/${userId}` : "/dashboard/profile"}
                           onClick={() => setIsUserDropdownOpen(false)}
                           className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white dark:bg-zinc-800 text-[11px] font-bold text-zinc-600 dark:text-zinc-300 border border-zinc-100 dark:border-zinc-700 shadow-sm hover:shadow transition-all"
@@ -616,7 +616,7 @@ export default function NavbarClient({
 
                         {/* ปุ่มจัดการข่าวสารแบบด่วน (Featured Quick Action) */}
                         {canManageNews && (
-                          <Link
+                          <Link prefetch={false}
                             href="/dashboard/news"
                             onClick={() => setIsUserDropdownOpen(false)}
                             className="group relative flex items-center gap-4 p-4 mb-4 rounded-[22px] bg-linear-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:-translate-y-1 transition-all duration-300 overflow-hidden"
@@ -658,14 +658,14 @@ export default function NavbarClient({
                                   </p>
                                   {isSuperAdmin && (
                                     <>
-                                      <Link
+                                      <Link prefetch={false}
                                         href="/dashboard/super-admin"
                                         onClick={() => setIsUserDropdownOpen(false)}
                                         className="flex items-center gap-3 px-3 py-2 text-[16px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-500/20 rounded-xl transition-all"
                                       >
                                         <Shield size={14} /> ศูนย์ควบคุมจัดการระบบ
                                       </Link>
-                                      <Link
+                                      <Link prefetch={false}
                                         href="/dashboard/permissions"
                                         onClick={() => setIsUserDropdownOpen(false)}
                                         className="flex items-center gap-3 px-3 py-2 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-xl transition-all"
@@ -680,7 +680,7 @@ export default function NavbarClient({
                           )}
 
                         {canAccessDashboard && (
-                          <Link
+                          <Link prefetch={false}
                             href="/dashboard"
                             onClick={() => setIsUserDropdownOpen(false)}
                             className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-2xl transition-all group"
@@ -693,7 +693,7 @@ export default function NavbarClient({
                         )}
 
                         <div className="space-y-0.5">
-                          <Link
+                          <Link prefetch={false}
                             href="/dashboard/chat"
                             onClick={() => setIsUserDropdownOpen(false)}
                             className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-sky-700 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-sky-500/10 rounded-2xl transition-all group"
@@ -705,7 +705,7 @@ export default function NavbarClient({
                           </Link>
 
                           {!["student"].includes(role?.toLowerCase() || "") && (
-                            <Link
+                            <Link prefetch={false}
                               href="/dashboard/drive"
                               onClick={() => setIsUserDropdownOpen(false)}
                               className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded-2xl transition-all group"
@@ -732,7 +732,7 @@ export default function NavbarClient({
               </div>
             ) : (
               /* ปุ่มเข้าสู่ระบบ (Sign In Button) สำหรับ Guest */
-              <Link
+              <Link prefetch={false}
                 href="/login"
                 className="relative overflow-hidden px-6 py-2.5 rounded-full bg-linear-to-b from-blue-500 to-blue-600 text-white text-[15px] font-bold transition-all hover:shadow-[0_4px_20px_-4px_rgba(59,130,246,0.5)] active:scale-95 border border-blue-400/20 shadow-sm"
               >

@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,7 +23,18 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@designcodeio/threeui": [
+        "./threeui/index.ts"
+      ],
+      "@designcodeio/threeui/*": [
+        "./threeui/*"
+      ],
+      "@designcodeio/threeui/style.css": [
+        "./threeui/src/shaders/threeui.css"
+      ]
     }
   },
   "include": [
@@ -31,7 +46,13 @@
     "**/*.mts",
     "next.config.mjs",
     "src/lib/auth.ts",
-    "src/app/api/auth/[...nextauth]/rout"
-, "src/middleware.ts"  ],
-  "exclude": ["node_modules", "mobile-app"]
+    "src/app/api/auth/[...nextauth]/rout",
+    "src/middleware.ts",
+    "threeui/**/*.ts",
+    "threeui/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "mobile-app"
+  ]
 }

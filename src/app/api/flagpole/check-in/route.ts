@@ -44,11 +44,19 @@ export async function POST(req: Request) {
     const inSiteThreshold = flagpoleSetting?.inSiteDistance ?? DEFAULT_IN_SITE_DISTANCE;
 
     // จุดพิกัดหน้าเสาธงแบบไดนามิกจากฐานข้อมูล หรือใช้ค่าเริ่มต้นของวิทยาลัย
-    const targetLat = Number(flagpoleSetting?.lat ?? COLLEGE_LOCATION.lat);
-    const targetLng = Number(flagpoleSetting?.lng ?? COLLEGE_LOCATION.lng);
+    let targetLat = Number(flagpoleSetting?.lat ?? COLLEGE_LOCATION.lat);
+    let targetLng = Number(flagpoleSetting?.lng ?? COLLEGE_LOCATION.lng);
+    let isDveCheckIn = false;
+
+    // ถ้านักเรียนเป็น DVE และมีการตั้งค่าพิกัดสถานประกอบการไว้ ให้ยึดพิกัดสถานประกอบการแทน
+    if (user?.isInternship && user?.dveLat != null && user?.dveLng != null) {
+      targetLat = Number(user.dveLat);
+      targetLng = Number(user.dveLng);
+      isDveCheckIn = true;
+    }
 
     // 3. วิเคราะห์ระยะทางและระบุสถานะพิกัดอย่างแม่นยำ (คำนวณและบันทึกลงฐานข้อมูล)
-    let statusTag = "อยู่ในพื้นที่ (In-Site)";
+    let statusTag = isDveCheckIn ? "มาทำงาน (DVE)" : "อยู่ในพื้นที่ (In-Site)";
     let distance = -1;
 
     // ตรวจสอบและคำนวณระยะห่าง GPS
@@ -58,9 +66,9 @@ export async function POST(req: Request) {
       
       distance = calculateDistance(targetLat, targetLng, studentLat, studentLng);
       if (distance <= inSiteThreshold) {
-        statusTag = "อยู่ในพื้นที่ (In-Site)";
+        statusTag = isDveCheckIn ? "มาทำงาน (DVE)" : "อยู่ในพื้นที่ (In-Site)";
       } else {
-        statusTag = "นอกพื้นที่ (Remote/WFH)";
+        statusTag = isDveCheckIn ? "นอกพื้นที่ (DVE)" : "นอกพื้นที่ (Remote/WFH)";
       }
     }
 

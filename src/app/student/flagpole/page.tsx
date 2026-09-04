@@ -22,6 +22,8 @@ import {
   LogOut,
   AlertTriangle,
   X,
+  QrCode,
+  MonitorPlay,
 } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import imageCompression from "browser-image-compression";
@@ -29,6 +31,8 @@ import { uploadFile } from "@/lib/upload";
 import { getAccurateLocation } from "@/lib/geolocation";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
+import StudentQRModal from "./StudentQRModal";
+import StudentScannerModal from "./StudentScannerModal";
 
 type FaceState = "idle" | "loading" | "detecting" | "no_face" | "unstable" | "ready";
 
@@ -72,6 +76,9 @@ export default function StudentFlagpolePortal() {
     lockMsg: "",
     canProceed: true,
   });
+
+  const [isStudentQRModalOpen, setIsStudentQRModalOpen] = useState(false);
+  const [isStudentScannerModalOpen, setIsStudentScannerModalOpen] = useState(false);
 
   const [flagpoleConfig, setFlagpoleConfig] = useState({
     checkInStart: "07:00",
@@ -511,6 +518,19 @@ export default function StudentFlagpolePortal() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 py-6 px-4 font-sans relative overflow-hidden text-left flex flex-col items-center">
+      <StudentQRModal 
+        isOpen={isStudentQRModalOpen} 
+        onClose={() => setIsStudentQRModalOpen(false)} 
+        userId={user?.id || ""} 
+        name={profileData.name} 
+        studentId={profileData.studentId} 
+      />
+      <StudentScannerModal 
+        isOpen={isStudentScannerModalOpen} 
+        onClose={() => setIsStudentScannerModalOpen(false)} 
+        onSuccess={() => loadStudentData()} 
+      />
+
       {/* Background blobs */}
       <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/5 dark:bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none" />
       <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-500/5 dark:bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
@@ -697,13 +717,33 @@ export default function StudentFlagpolePortal() {
                         <p className="text-xs font-bold leading-relaxed">{timeState.lockMsg}</p>
                       </div>
                     ) : (
-                      <button
-                        onClick={() => setIsCameraOpen(true)}
-                        className="w-full bg-linear-to-r from-indigo-500 to-blue-600 text-white py-4.5 rounded-3xl font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-xl shadow-indigo-500/25"
-                      >
-                        <Camera size={18} />
-                        เริ่มสแกนเช็คชื่อเข้าแถว 🇹🇭
-                      </button>
+                      <div className="w-full space-y-3 flex flex-col items-center">
+                        <button
+                          onClick={() => setIsCameraOpen(true)}
+                          className="w-full bg-linear-to-r from-indigo-500 to-blue-600 text-white py-4 rounded-3xl font-black text-xs uppercase tracking-[0.15em] flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-xl shadow-indigo-500/25"
+                        >
+                          <Camera size={18} />
+                          สแกนใบหน้าและ GPS 🇹🇭
+                        </button>
+                        
+                        <div className="grid grid-cols-2 gap-3 w-full mt-2">
+                          <button
+                            onClick={() => setIsStudentQRModalOpen(true)}
+                            className="w-full bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-slate-200 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest flex flex-col items-center justify-center gap-1.5 transition-all"
+                          >
+                            <QrCode size={18} className="text-indigo-500" />
+                            เปิด QR ให้ครูสแกน
+                          </button>
+                          
+                          <button
+                            onClick={() => setIsStudentScannerModalOpen(true)}
+                            className="w-full bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-slate-200 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest flex flex-col items-center justify-center gap-1.5 transition-all"
+                          >
+                            <MonitorPlay size={18} className="text-emerald-500" />
+                            สแกนจอทีวีครู
+                          </button>
+                        </div>
+                      </div>
                     )}
                   </div>
                 ) : (

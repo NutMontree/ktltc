@@ -682,7 +682,7 @@ export default function FlagpoleDataManagementPage() {
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-4 text-xs">
-                              <div className="flex items-center gap-1.5 text-slate-700 dark:text-zinc-350 font-black">
+                              <div className="flex items-center gap-1.5 text-slate-700 dark:text-zinc-300 font-black">
                                 <Clock size={12} className="text-indigo-500" />
                                 {formatTime(record.checkIn?.time)} น.
                               </div>

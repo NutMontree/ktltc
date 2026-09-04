@@ -199,7 +199,7 @@ export async function GET(req: Request) {
       let catType = "class_work";
       if (title.includes("กลางภาค") || title.includes("midterm")) {
         catType = "midterm";
-      } else if (title.includes("ปลายภาค") || title.includes("final")) {
+      } else if (title.includes("ปลายภาค") || title.includes("final") || title.includes("สอบปลาย")) {
         catType = "final";
       } else if (title.includes("สอบท้ายบท") || title.includes("หลังเรียน") || title.includes("post-test")) {
         catType = "end_chapter";
@@ -262,27 +262,32 @@ export async function GET(req: Request) {
         return studentData.subScores && studentData.subScores[catId] && Object.keys(studentData.subScores[catId]).length > 0;
       };
 
-      // Calculate scaled scores: Math.round((Earned / Max) * CategoryPoints)
-      // Only apply auto-score if there are NO sub-scores explicitly set by the teacher
+      // Calculate scaled scores safely, capping at max points
+      const scaleScore = (s: number, m: number, points: number) => {
+        if (m <= 0) return 0;
+        const scaled = Math.round((s / m) * points);
+        return Math.min(scaled, points);
+      };
+
+      // Apply attendance-based auto-scores if no manual sub-scores exist
       if (classWorkCat && scoresObj.class_work.m > 0 && !hasSubScores(classWorkCat.id)) {
-        const scaled = Math.round((scoresObj.class_work.s / scoresObj.class_work.m) * classWorkCat.points);
-        studentData.scores[classWorkCat.id] = scaled;
+        studentData.scores[classWorkCat.id] = scaleScore(scoresObj.class_work.s, scoresObj.class_work.m, classWorkCat.points);
       }
       
       if (midtermCat && scoresObj.midterm.m > 0 && !hasSubScores(midtermCat.id)) {
-        const scaled = Math.round((scoresObj.midterm.s / scoresObj.midterm.m) * midtermCat.points);
-        studentData.scores[`_dynamic_auto_${midtermCat.id}`] = scaled; // Mark it so it can be combined or override
+        const scaled = scaleScore(scoresObj.midterm.s, scoresObj.midterm.m, midtermCat.points);
+        studentData.scores[`_dynamic_auto_${midtermCat.id}`] = scaled;
         studentData.scores[midtermCat.id] = scaled;
       }
       
       if (finalCat && scoresObj.final.m > 0 && !hasSubScores(finalCat.id)) {
-        const scaled = Math.round((scoresObj.final.s / scoresObj.final.m) * finalCat.points);
+        const scaled = scaleScore(scoresObj.final.s, scoresObj.final.m, finalCat.points);
         studentData.scores[`_dynamic_auto_${finalCat.id}`] = scaled;
         studentData.scores[finalCat.id] = scaled;
       }
 
-      if (endChapterCat && scoresObj.end_chapter.m > 0) {
-        const scaled = Math.round((scoresObj.end_chapter.s / scoresObj.end_chapter.m) * endChapterCat.points);
+      if (endChapterCat && scoresObj.end_chapter.m > 0 && !hasSubScores(endChapterCat.id)) {
+        const scaled = scaleScore(scoresObj.end_chapter.s, scoresObj.end_chapter.m, endChapterCat.points);
         studentData.scores[`_dynamic_auto_${endChapterCat.id}`] = scaled;
         studentData.scores[endChapterCat.id] = scaled;
       }
@@ -333,10 +338,10 @@ export async function GET(req: Request) {
       }
     }
 
-    // 3. Get students who have submitted midterm/final quizzes
+    // 3. Get students who have submitted midterm/final/end chapter quizzes
     const examQuizzes = await db.collection("dve_quizzes").find({ 
       subjectId, 
-      quizType: { $in: ["midterm", "final"] } 
+      quizType: { $in: ["midterm", "final", "posttest", "end_chapter"] } 
     }).toArray();
     
     if (examQuizzes.length > 0) {
@@ -348,37 +353,66 @@ export async function GET(req: Request) {
       
       const midtermCat = config.categories.find((c: any) => c.name.includes("สอบกลางภาค") || c.id === "midterm_exam");
       const finalCat = config.categories.find((c: any) => c.name.includes("สอบปลายภาค") || c.id === "final_exam");
+      const endChapterCat = config.categories.find((c: any) => c.name.includes("สอบท้ายบท") || c.name.includes("หลังเรียน") || c.id === "end_of_chapter_exam");
+      
+      // Group by student and category instead of immediate scaling
+      const quizScoresMap = new Map(); // studentId -> { catId: { earned: 0, max: 0 } }
       
       examSubmissions.forEach((sub: any) => {
         const quiz = examQuizzes.find((q: any) => q._id.toString() === sub.quizId);
         if (!quiz || !sub.studentId) return;
         
-        const cat = quiz.quizType === "midterm" ? midtermCat : finalCat;
+        let cat = null;
+        if (quiz.quizType === "midterm") cat = midtermCat;
+        else if (quiz.quizType === "final") cat = finalCat;
+        else if (quiz.quizType === "posttest" || quiz.quizType === "end_chapter") cat = endChapterCat;
+
         if (!cat) return;
         
         const scoreVal = Number(sub.score) || 0;
         const maxScoreVal = Number(sub.maxScore) || 1;
-        const actualCatScore = Math.round((scoreVal / maxScoreVal) * cat.points);
         
-        let studentData = studentMap.get(sub.studentId);
+        if (!quizScoresMap.has(sub.studentId)) {
+          quizScoresMap.set(sub.studentId, {});
+        }
+        
+        const studentQuizScores = quizScoresMap.get(sub.studentId);
+        if (!studentQuizScores[cat.id]) {
+          studentQuizScores[cat.id] = { earned: 0, max: 0, points: cat.points };
+        }
+        
+        studentQuizScores[cat.id].earned += scoreVal;
+        studentQuizScores[cat.id].max += maxScoreVal;
+      });
+
+      // Apply aggregated and scaled quiz scores
+      quizScoresMap.forEach((catScores, studentId) => {
+        let studentData = studentMap.get(studentId);
         if (!studentData) {
           studentData = {
             _id: new ObjectId(),
             subjectId,
-            studentId: sub.studentId,
-            studentName: sub.studentName || "ไม่ทราบชื่อ",
+            studentId,
+            studentName: "ไม่ทราบชื่อ", // Will be filled if they are in userMap later
             scores: {},
             hasGradeRecord: true,
             updatedAt: new Date().toISOString()
           };
-          studentMap.set(sub.studentId, studentData);
+          studentMap.set(studentId, studentData);
         }
         
-        // Always prefer the dynamically calculated quiz score, overriding manual entry
-        // If there are multiple quizzes of the same type, we accumulate them
-        const existingScore = studentData.scores[`_dynamic_${cat.id}`] || 0;
-        studentData.scores[`_dynamic_${cat.id}`] = existingScore + actualCatScore;
-        studentData.scores[cat.id] = studentData.scores[`_dynamic_${cat.id}`];
+        for (const [catId, scoreInfo] of Object.entries(catScores) as any) {
+          // If the teacher has explicitly added manual sub-scores, do NOT override with auto score
+          const hasSubScores = studentData.subScores && studentData.subScores[catId] && Object.keys(studentData.subScores[catId]).length > 0;
+          if (hasSubScores) continue;
+
+          // Scale score across all quizzes in this category, capping at max points
+          let scaled = Math.round((scoreInfo.earned / scoreInfo.max) * scoreInfo.points);
+          scaled = Math.min(scaled, scoreInfo.points); // Prevent exceeding max points
+          
+          studentData.scores[`_dynamic_${catId}`] = scaled;
+          studentData.scores[catId] = scaled;
+        }
       });
     }
 
@@ -466,7 +500,15 @@ export async function GET(req: Request) {
       };
     });
 
-    calculatedGrades.sort((a, b) => {
+    let finalCalculatedGrades = calculatedGrades;
+    if (subject.allowedClassGroups) {
+      const allowedGroups = parseAllowedClassGroups(subject.allowedClassGroups);
+      if (allowedGroups.length > 0) {
+        finalCalculatedGrades = calculatedGrades.filter(g => allowedGroups.includes(g.classGroupId));
+      }
+    }
+
+    finalCalculatedGrades.sort((a, b) => {
       // 1. Sort by department
       const deptA = a.department || "";
       const deptB = b.department || "";
@@ -477,12 +519,17 @@ export async function GET(req: Request) {
       const classB = b.classGroupId || "";
       if (classA !== classB) return classA.localeCompare(classB, "th");
 
-      // 3. Sort by sequence
-      const seqA = typeof a.sequence === "number" ? a.sequence : 9999;
-      const seqB = typeof b.sequence === "number" ? b.sequence : 9999;
+      // 3. Sort by sequence (เลขที่) if available
+      const seqA = typeof a.sequence === 'number' ? a.sequence : 9999;
+      const seqB = typeof b.sequence === 'number' ? b.sequence : 9999;
       if (seqA !== seqB) return seqA - seqB;
 
-      // 4. Sort by name
+      // 4. Sort by studentCode
+      const codeA = a.studentCode || "";
+      const codeB = b.studentCode || "";
+      if (codeA !== codeB) return codeA.localeCompare(codeB, "th");
+
+      // 5. Sort by name
       return (a.studentName || "").localeCompare(b.studentName || "", "th");
     });
 
@@ -494,7 +541,7 @@ export async function GET(req: Request) {
         passingScore: config.passingScore,
         gradeScale: config.gradeScale,
       },
-      grades: calculatedGrades,
+      grades: finalCalculatedGrades,
     });
   } catch (error: any) {
     console.error("[DVE Student Grades GET API] Error:", error);
@@ -589,7 +636,7 @@ export async function POST(req: Request) {
         updatedAt: new Date(),
       };
       if (body.sequence !== undefined) {
-        updateData.sequence = Number(body.sequence);
+        updateData.sequence = body.sequence === null ? null : Number(body.sequence);
       }
       await db.collection("dve_student_grades").updateOne(
         { subjectId, studentId },
@@ -614,7 +661,7 @@ export async function POST(req: Request) {
       updatedAt: new Date(),
     };
     if (body.sequence !== undefined) {
-      insertData.sequence = Number(body.sequence);
+      insertData.sequence = body.sequence === null ? null : Number(body.sequence);
     }
     const result = await db.collection("dve_student_grades").insertOne(insertData);
 

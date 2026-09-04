@@ -33,13 +33,21 @@ async function checkSystem() {
   // 2. Check HTTP Health
   const checkHttp = () => {
     return new Promise((resolve) => {
-      http.get('http://localhost:3000', (res) => {
-        if (res.statusCode !== 200 && res.statusCode !== 308) {
+      const req = http.get('http://localhost:3000', { timeout: 10000 }, (res) => {
+        // Accept any 2xx, 3xx, and client errors (4xx). Only 5xx or timeout means backend is truly stuck.
+        if (res.statusCode >= 500) {
            resolve(false);
         } else {
            resolve(true);
         }
-      }).on('error', (e) => {
+      });
+      
+      req.on('timeout', () => {
+        req.destroy();
+        resolve(false);
+      });
+
+      req.on('error', (e) => {
         resolve(false);
       });
     });
@@ -67,9 +75,9 @@ async function checkSystem() {
     console.log('Issues found:', issues);
     console.log('Attempting auto-healing...');
     try {
-      execSync('pm2 restart ktltc', { encoding: 'utf-8' });
+      execSync('pm2 reload ktltc', { encoding: 'utf-8' });
       isHealed = true;
-      console.log('Successfully restarted PM2 processes.');
+      console.log('Successfully reloaded PM2 processes (Zero-Downtime).');
     } catch (e) {
       console.error('Auto-healing failed:', e.message);
     }
@@ -92,7 +100,7 @@ async function checkSystem() {
       let title, message, type;
       if (issues.length > 0) {
         title = "⚠️ System Auto-Healing Triggered";
-        message = `พบปัญหา: ${issues.join(', ')}. ระบบ${isHealed ? 'ได้รับการซ่อมแซมเบื้องต้นแล้ว (Restarted PM2)' : 'พยายามซ่อมแซมแต่ไม่สำเร็จ'}`;
+        message = `พบปัญหา: ${issues.join(', ')}. ระบบ${isHealed ? 'ได้รับการซ่อมแซมเบื้องต้นแล้ว (Reloaded PM2)' : 'พยายามซ่อมแซมแต่ไม่สำเร็จ'}`;
         type = "system_alert";
       } else {
         console.log('Skipping daily success notification to avoid spam.');

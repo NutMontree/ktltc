@@ -54,12 +54,35 @@ export async function GET(req: Request) {
       return NextResponse.json({ data: records, total: records.length });
     }
 
-    const [records, total, statsAgg] = await Promise.all([
+    const [records, total, statsAgg, deptAgg, classAgg] = await Promise.all([
       db.collection("student_care_records").find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).toArray(),
       db.collection("student_care_records").countDocuments(query),
       db.collection("student_care_records").aggregate([
         { $match: { ...query, recordType: query.recordType || { $in: ['screening', 'home_visit'] } } },
         { $group: { _id: "$sdqType", count: { $sum: 1 } } }
+      ]).toArray(),
+      db.collection("student_care_records").aggregate([
+        { $match: { ...query, recordType: 'screening' } },
+        { $match: { department: { $type: "string", $not: /^[0-9\s]+$/ } } },
+        { $match: { department: { $ne: "" } } },
+        { $group: {
+            _id: "$department", 
+            total: { $sum: 1 },
+            risk: { $sum: { $cond: [{ $in: ["$sdqResult.totalType", ["risk", "problem"]] }, 1, 0] } }
+        } }
+      ]).toArray(),
+      db.collection("student_care_records").aggregate([
+        { $match: { ...query, recordType: 'screening' } },
+        { $match: { classroom: { $type: "string", $not: /^[0-9\s]+$/ } } },
+        { $match: { classroom: { $ne: "" } } },
+        { $group: {
+            _id: "$classroom", 
+            total: { $sum: 1 },
+            normal: { $sum: { $cond: [{ $eq: ["$sdqType", "normal"] }, 1, 0] } },
+            special: { $sum: { $cond: [{ $eq: ["$sdqType", "special"] }, 1, 0] } },
+            risk: { $sum: { $cond: [{ $eq: ["$sdqType", "risk"] }, 1, 0] } },
+            problem: { $sum: { $cond: [{ $eq: ["$sdqType", "problem"] }, 1, 0] } }
+        } }
       ]).toArray()
     ]);
 
@@ -76,7 +99,35 @@ export async function GET(req: Request) {
       else if (s._id === 'special') sdqCounts.special = s.count;
     });
 
-    return NextResponse.json({ data: records, total, sdqCounts });
+    const chartByDepartment = {
+      labels: [] as string[],
+      normal: [] as number[],
+      risk: [] as number[]
+    };
+    deptAgg.sort((a, b) => a._id.localeCompare(b._id)).forEach(d => {
+      chartByDepartment.labels.push(d._id);
+      chartByDepartment.normal.push(d.total - d.risk);
+      chartByDepartment.risk.push(d.risk);
+    });
+
+    const chartByClassroom = {
+      labels: [] as string[],
+      totals: [] as number[],
+      normal: [] as number[],
+      special: [] as number[],
+      risks: [] as number[],
+      problems: [] as number[]
+    };
+    classAgg.sort((a, b) => a._id.localeCompare(b._id)).forEach(c => {
+      chartByClassroom.labels.push(c._id);
+      chartByClassroom.totals.push(c.total);
+      chartByClassroom.normal.push(c.normal);
+      chartByClassroom.special.push(c.special);
+      chartByClassroom.risks.push(c.risk);
+      chartByClassroom.problems.push(c.problem);
+    });
+
+    return NextResponse.json({ data: records, total, sdqCounts, chartByDepartment, chartByClassroom });
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch student care records" }, { status: 500 });
   }

@@ -156,6 +156,8 @@ export async function GET(req: Request) {
         department: studentDoc.department || ownDept,
         image: studentDoc.image || null,
         isInternship: studentDoc.isInternship ?? false,
+        dveLat: studentDoc.dveLat || null,
+        dveLng: studentDoc.dveLng || null,
       };
 
       return NextResponse.json({
@@ -251,6 +253,8 @@ export async function GET(req: Request) {
         "studentData.department": 1,
         image: 1,
         isInternship: 1,
+        dveLat: 1,
+        dveLng: 1,
       })
       .sort({ studentId: 1, name: 1 })
       .toArray();
@@ -272,6 +276,8 @@ export async function GET(req: Request) {
         department: s.department || s.studentData?.department || department,
         image: s.image || null,
         isInternship: s.isInternship ?? false,
+        dveLat: s.dveLat || null,
+        dveLng: s.dveLng || null,
       })),
       classGroups: distinctClassGroups,
     });
@@ -291,7 +297,7 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
-    const { studentId, isInternship } = body;
+    const { studentId, isInternship, dveLat, dveLng, name, department, studentIdNum, phone, classGroupId } = body;
 
     if (!studentId) {
       return NextResponse.json({ error: "Missing studentId parameter" }, { status: 400 });
@@ -304,16 +310,45 @@ export async function PATCH(req: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
+    // ตรวจสอบสิทธิ์กรณีที่แก้ไขข้อมูลโปรไฟล์ (ไม่ใช่แค่แก้ไขพิกัดหรือสถานะฝึกงาน)
+    if (name !== undefined || department !== undefined || studentIdNum !== undefined || phone !== undefined || classGroupId !== undefined) {
+      if (role !== "super_admin" && role !== "admin") {
+        const student = await db.collection("users").findOne({ _id: new ObjectId(studentId) });
+        const teacherDept = (session?.user as any)?.department || "";
+        const studentDept = student?.department || student?.studentData?.department || "";
+        
+        const tDept = normalizeDept(teacherDept);
+        const sDept = normalizeDept(studentDept) || normalizeDept(getDeptFromClassGroup(resolveStudentClassGroup(student)));
+        
+        if (!tDept || !sDept || (!tDept.includes(sDept) && !sDept.includes(tDept))) {
+            return NextResponse.json({ success: false, error: "ไม่มีสิทธิ์แก้ไขข้อมูลนักเรียนข้ามแผนก" }, { status: 403 });
+        }
+      }
+    }
+
+    const updateFields: any = {};
+    if (isInternship !== undefined) updateFields.isInternship = !!isInternship;
+    if (dveLat !== undefined) updateFields.dveLat = dveLat;
+    if (dveLng !== undefined) updateFields.dveLng = dveLng;
+    if (name !== undefined) updateFields.name = name.trim();
+    if (department !== undefined) updateFields.department = department.trim();
+    if (classGroupId !== undefined) updateFields.classGroupId = classGroupId.trim();
+    if (phone !== undefined) updateFields.phone = phone.trim();
+    if (studentIdNum !== undefined) {
+      updateFields.studentId = studentIdNum.trim();
+      updateFields.studentIdNum = studentIdNum.trim();
+    }
+
     const result = await db.collection("users").updateOne(
       { _id: new ObjectId(studentId), role: "student" },
-      { $set: { isInternship: !!isInternship } },
+      { $set: updateFields },
     );
 
     if (result.matchedCount === 0) {
       return NextResponse.json({ error: "Student not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, message: "อัปเดตสถานะการฝึกงานเรียบร้อยแล้ว" });
+    return NextResponse.json({ success: true, message: "อัปเดตข้อมูลนักเรียนเรียบร้อยแล้ว" });
   } catch (error: any) {
     console.error("[DVE Students Update API] Error:", error);
     return NextResponse.json({ success: false, error: "Database error" }, { status: 500 });

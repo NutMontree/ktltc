@@ -13,7 +13,7 @@ export async function POST(request) {
     );
   } catch (error) {
     console.error("Error POST /api/TeachingRecords:", error);
-    return NextResponse.json({ message: "Error creating record" }, { status: 500 });
+    return NextResponse.json({ message: "Error creating record", error: error.message }, { status: 500 });
   }
 }
 

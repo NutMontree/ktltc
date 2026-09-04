@@ -80,7 +80,7 @@ export async function GET(
     const stream = createReadStream(filePath);
     
     // Determine content type based on extension
-    const ext = filePath.split('.').pop()?.toLowerCase();
+    const ext = filePath.split('/').pop()?.split('.').length! > 1 ? filePath.split('.').pop()?.toLowerCase() : 'blob';
     let contentType = 'application/octet-stream';
     
     const mimeMap: Record<string, string> = {
@@ -91,6 +91,7 @@ export async function GET(
       'webp': 'image/webp',
       'svg': 'image/svg+xml',
       'pdf': 'application/pdf',
+      'ico': 'image/x-icon',
       'blob': 'image/jpeg',
       'mp4': 'video/mp4',
       'webm': 'video/webm',
