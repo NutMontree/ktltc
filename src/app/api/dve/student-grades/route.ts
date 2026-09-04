@@ -519,12 +519,17 @@ export async function GET(req: Request) {
       const classB = b.classGroupId || "";
       if (classA !== classB) return classA.localeCompare(classB, "th");
 
-      // 3. Sort by studentCode
+      // 3. Sort by sequence (เลขที่) if available
+      const seqA = typeof a.sequence === 'number' ? a.sequence : 9999;
+      const seqB = typeof b.sequence === 'number' ? b.sequence : 9999;
+      if (seqA !== seqB) return seqA - seqB;
+
+      // 4. Sort by studentCode
       const codeA = a.studentCode || "";
       const codeB = b.studentCode || "";
       if (codeA !== codeB) return codeA.localeCompare(codeB, "th");
 
-      // 4. Sort by name
+      // 5. Sort by name
       return (a.studentName || "").localeCompare(b.studentName || "", "th");
     });
 
