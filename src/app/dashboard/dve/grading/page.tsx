@@ -690,6 +690,10 @@ export default function DVEGradingPage() {
           margin: 0;
         }
         @media print {
+          /* นำ padding 5rem (pt-20) ของ root layout ออกตอนพิมพ์ เพื่อไม่ให้หน้าแรกเว้นที่ว่างด้านบน */
+          .pt-20 {
+            padding-top: 0 !important;
+          }
           body {
             -webkit-print-color-adjust: exact;
           }
