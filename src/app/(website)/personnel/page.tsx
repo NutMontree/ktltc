@@ -136,12 +136,7 @@ const academicDepartments = [
     icon: <ThunderboltOutlined />,
     colorClass: "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400",
   },
-  {
-    name: "แผนกวิชาการตลาด/โลจิสติก์",
-    code: "Logistics",
-    icon: <AppstoreOutlined />,
-    colorClass: "bg-pink-50 text-pink-600 dark:bg-pink-900/20 dark:text-pink-400",
-  },
+
   {
     name: "การจัดการสำนักงานดิจิทัล",
     code: "Digital Office",

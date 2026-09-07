@@ -1035,6 +1035,12 @@ export default function StudentCarePage() {
     colors: ['#10b981', '#f43f5e'],
     plotOptions: { bar: { horizontal: true, barHeight: '60%', borderRadius: 4 } },
     dataLabels: { enabled: false },
+    yaxis: {
+      labels: {
+        maxWidth: 500,
+        style: { fontFamily: 'Sarabun, sans-serif' }
+      }
+    },
     xaxis: { categories: chartByDepartment.labels, labels: { style: { fontSize: '11px' } } },
     legend: { show: true, position: 'bottom' },
     grid: { strokeDashArray: 5, borderColor: '#E2E8F0' },

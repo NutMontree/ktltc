@@ -60,7 +60,7 @@ export async function GET() {
       { label: "แผนกวิชาการโรงแรม",               path: "/hotel",           order: 12 },
       { label: "แผนกวิชาสามัญสัมพันธ์",            path: "/ordinary",        order: 13 },
       { label: "แผนกวิชายานยนต์ไฟฟ้า",            path: "/ev",              order: 14 },
-      { label: "แผนกวิชาการตลาด/โลจิสติก์",       path: "/logistics",       order: 15 },
+
       { label: "การจัดการสำนักงานดิจิทัล",         path: "/digital-office",  order: 16 },
       { label: "การจัดการโลจิสติกส์และซัพพลายเชน",   path: "/supply-chain",    order: 17 },
     ];

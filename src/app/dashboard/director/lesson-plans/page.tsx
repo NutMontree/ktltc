@@ -158,19 +158,18 @@ export default function LessonPlansPage() {
   const filteredPlans = plans.filter((p: any) => {
     if (filterSemester && p.semester !== filterSemester) return false;
     if (filterYear && p.academicYear !== filterYear) return false;
-    if (isDirector) {
-      if (filterTeacher && p.teacherName !== filterTeacher) return false;
-      if (filterStatus) {
-        const statusVal = p.status || 'pending';
-        if (statusVal !== filterStatus) return false;
-      }
+    if (filterTeacher && p.teacherName !== filterTeacher) return false;
+    if (filterStatus) {
+      const statusVal = p.status || 'pending';
+      if (statusVal !== filterStatus) return false;
     }
     return true;
   });
 
-  const statsPending = plans.filter(p => p.status === 'pending' || !p.status).length;
-  const statsApproved = plans.filter(p => p.status === 'approved').length;
-  const statsRejected = plans.filter(p => p.status === 'rejected').length;
+  const targetPlans = isDirector ? plans : plans.filter(p => p.teacherName === user.username);
+  const statsPending = targetPlans.filter(p => p.status === 'pending' || !p.status).length;
+  const statsApproved = targetPlans.filter(p => p.status === 'approved').length;
+  const statsRejected = targetPlans.filter(p => p.status === 'rejected').length;
 
   return (
     <div className="relative min-h-screen bg-transparent transition-colors duration-500 overflow-hidden">
@@ -221,7 +220,7 @@ export default function LessonPlansPage() {
               <>
                 <div className="bg-white dark:bg-zinc-900 p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
                   <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-1">แผนการสอนของฉัน</p>
-                  <p className="text-2xl font-black text-zinc-800 dark:text-white">{plans.length} <span className="text-xs font-bold text-zinc-500">รายการ</span></p>
+                  <p className="text-2xl font-black text-zinc-800 dark:text-white">{targetPlans.length} <span className="text-xs font-bold text-zinc-500">รายการ</span></p>
                 </div>
                 <div className="bg-white dark:bg-zinc-900 p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
                   <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-1">อนุมัติแล้ว</p>
@@ -267,8 +266,6 @@ export default function LessonPlansPage() {
               <option value="2">เทอม 2</option>
               <option value="3">เทอม 3</option>
             </select>
-            {isDirector && (
-              <>
                 <select className="p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm font-bold text-zinc-600 dark:text-zinc-300 bg-white shadow-sm" value={filterTeacher} onChange={e => setFilterTeacher(e.target.value)}>
                   <option value="">👤 ครูผู้สอนทุกคน</option>
                   {uniqueTeachers.map((t: any) => (
@@ -281,8 +278,6 @@ export default function LessonPlansPage() {
                   <option value="approved">อนุมัติแล้ว</option>
                   <option value="rejected">ไม่อนุมัติ/ส่งกลับแก้ไข</option>
                 </select>
-              </>
-            )}
           </div>
 
           <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-xl border border-zinc-200 dark:border-zinc-800">

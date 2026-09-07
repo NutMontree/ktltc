@@ -102,25 +102,37 @@ export default function DVEGradingPage() {
       subjectNameStr += `_${selectedClassGroup}`;
     }
 
-    const data = filteredGrades.map((g, idx) => {
-      const row: any = {
-        "ลำดับ": idx + 1,
-        "รหัสนักศึกษา": g.studentCode || "",
-        "ชื่อ-นามสกุล": g.studentName || "-",
-        "ห้องเรียน": g.classGroupId || "-",
-      };
+    const aoaData: any[][] = [
+      [`ภาคเรียนที่ ${currentSubject?.semester || "1"}  ปีการศึกษา ${currentSubject?.academicYear || ""}`],
+      [`รหัสวิชา : ${currentSubject?.code || ""} : ${currentSubject?.name || ""}`],
+      [],
+      [
+        "ลำดับ", 
+        "รหัสนักศึกษา", 
+        "ชื่อ-นามสกุล", 
+        "ห้องเรียน", 
+        ...config.categories.map((cat) => `${cat.name} (${cat.points})`),
+        "คะแนนรวม (100)",
+        "เกรด",
+        "ผลการเรียน"
+      ]
+    ];
 
-      config.categories.forEach((cat) => {
-        row[`${cat.name} (${cat.points})`] = g.scores[cat.id] ?? 0;
-      });
-
-      row["คะแนนรวม (100)"] = g.totalScore;
-      row["เกรด"] = g.finalGrade;
-      row["ผลการเรียน"] = g.isPassed ? "ผ่าน" : "ไม่ผ่าน";
-      return row;
+    filteredGrades.forEach((g, idx) => {
+      const row = [
+        idx + 1,
+        g.studentCode || "",
+        g.studentName || "-",
+        g.classGroupId || "-",
+        ...config.categories.map((cat) => g.scores[cat.id] ?? 0),
+        g.totalScore,
+        g.finalGrade,
+        g.isPassed ? "ผ่าน" : "ไม่ผ่าน"
+      ];
+      aoaData.push(row);
     });
 
-    const worksheet = XLSX.utils.json_to_sheet(data);
+    const worksheet = XLSX.utils.aoa_to_sheet(aoaData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Grade Sheet");
 
@@ -140,15 +152,34 @@ export default function DVEGradingPage() {
       subjectNameStr += `_${selectedClassGroup}`;
     }
 
-    const data = filteredGrades.map((g) => ({
-      "รหัสนักศึกษา": g.studentCode || "",
-      "ชื่อ-นามสกุล": g.studentName || "-",
-      "ห้องเรียน": g.classGroupId || "-",
-      "เกรด": g.finalGrade,
-      "คะแนนรวม": g.totalScore,
-    }));
+    const aoaData: any[][] = [
+      [`ภาคเรียนที่ ${currentSubject?.semester || "1"}  ปีการศึกษา ${currentSubject?.academicYear || ""}`],
+      [`รหัสวิชา : ${currentSubject?.code || ""} : ${currentSubject?.name || ""}`],
+      [],
+      [
+        "ลำดับ", 
+        "รหัสนักเรียนนักศึกษา", 
+        "ชื่อ-สกุล", 
+        "กลุ่มเรียน", 
+        ...config.categories.map((cat) => `${cat.name}(${cat.points})`)
+      ]
+    ];
 
-    const worksheet = XLSX.utils.json_to_sheet(data);
+    filteredGrades.forEach((g, idx) => {
+      const row = [
+        idx + 1,
+        g.studentCode || "",
+        g.studentName || "-",
+        g.classGroupId || "-",
+        ...config.categories.map((cat) => {
+          const score = g.scores[cat.id];
+          return (score === undefined || score === null) ? "" : score;
+        })
+      ];
+      aoaData.push(row);
+    });
+
+    const worksheet = XLSX.utils.aoa_to_sheet(aoaData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "ศธ02 Import");
 

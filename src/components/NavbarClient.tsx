@@ -109,7 +109,7 @@ const menuIconMap: Record<string, LucideIcon> = {
   แผนกวิชาการโรงแรม: BedDouble,
   แผนกวิชาสามัญสัมพันธ์: BookOpen,
   แผนกวิชายานยนต์ไฟฟ้า: BatteryCharging,
-  "แผนกวิชาการตลาด/โลจิสติก์": Truck,
+
   โลจิสติก์: Truck,
   การจัดการสำนักงานดิจิทัล: Monitor,
   การจัดการโลจิสติกส์และซัพพลายเชน: Truck,

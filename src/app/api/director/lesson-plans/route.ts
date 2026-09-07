@@ -19,13 +19,8 @@ export async function GET(req: Request) {
     const db = client.db("ktltc_db");
 
     let query: any = {};
-    const isDirector = user.role === "director" || user.role === "super_admin" || user.role === "admin";
     
-    if (!isDirector) {
-      // Teachers can only view their own plans
-      query = { teacherName: user.name || user.username };
-    } else if (teacherParam) {
-      // Directors can filter by teacher query parameter
+    if (teacherParam) {
       query = { teacherName: teacherParam };
     }
 
@@ -118,6 +113,11 @@ export async function POST(req: Request) {
 
 export async function PATCH(req: Request) {
   try {
+    const session = await auth();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const user = session.user as any;
+    const isDirector = user.role === "director" || user.role === "super_admin" || user.role === "admin";
+
     const client = await clientPromise;
     const db = client.db("ktltc_db");
     const body = await req.json();
@@ -125,20 +125,32 @@ export async function PATCH(req: Request) {
     
     if (!_id) return NextResponse.json({ error: "Missing ID" }, { status: 400 });
     
-    const updateData: any = { updatedAt: new Date() };
-    if (status) updateData.status = status;
-    if (feedback !== undefined) updateData.feedback = feedback;
-    
-    // For teacher edits
-    if (subject) updateData.subject = subject;
-    if (title) updateData.title = title;
-    if (fileUrl) updateData.fileUrl = fileUrl;
-    if (fileUrls !== undefined) updateData.fileUrls = fileUrls;
-    if (semester) updateData.semester = semester;
-    if (academicYear) updateData.academicYear = academicYear;
-    if (hasAfterClassNote !== undefined) updateData.hasAfterClassNote = hasAfterClassNote;
-    if (afterClassNoteUrls !== undefined) updateData.afterClassNoteUrls = afterClassNoteUrls;
+    const existingPlan = await db.collection("lesson_plans").findOne({ _id: new ObjectId(_id) });
+    if (!existingPlan) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
+    // Only directors can update status/feedback. Teachers can only edit their own plans.
+    if (!isDirector && existingPlan.teacherName !== (user.name || user.username)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    
+    const updateData: any = { updatedAt: new Date() };
+    
+    if (isDirector) {
+      if (status) updateData.status = status;
+      if (feedback !== undefined) updateData.feedback = feedback;
+    }
+
+    // For teacher edits
+    if (existingPlan.teacherName === (user.name || user.username)) {
+      if (subject) updateData.subject = subject;
+      if (title) updateData.title = title;
+      if (fileUrl) updateData.fileUrl = fileUrl;
+      if (fileUrls !== undefined) updateData.fileUrls = fileUrls;
+      if (semester) updateData.semester = semester;
+      if (academicYear) updateData.academicYear = academicYear;
+      if (hasAfterClassNote !== undefined) updateData.hasAfterClassNote = hasAfterClassNote;
+      if (afterClassNoteUrls !== undefined) updateData.afterClassNoteUrls = afterClassNoteUrls;
+    }
 
     await db.collection("lesson_plans").updateOne(
       { _id: new ObjectId(_id) },
@@ -153,12 +165,23 @@ export async function PATCH(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
+    const session = await auth();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const user = session.user as any;
+    
     const client = await clientPromise;
     const db = client.db("ktltc_db");
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
     
     if (!id) return NextResponse.json({ error: "Missing ID" }, { status: 400 });
+
+    const existingPlan = await db.collection("lesson_plans").findOne({ _id: new ObjectId(id) });
+    if (!existingPlan) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+    if (existingPlan.teacherName !== (user.name || user.username)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
     await db.collection("lesson_plans").deleteOne({ _id: new ObjectId(id) });
     

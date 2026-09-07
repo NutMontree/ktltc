@@ -63,7 +63,7 @@ const getDepartmentFromRoomId = (roomId?: string): string => {
   if (r.startsWith("มคก") || r.startsWith("สบตา") || r.includes("ตลาด")) return "แผนกวิชาการตลาด";
   if (r.startsWith("พค") || r.startsWith("สบบ") || r.includes("ดิจิทัล") || r.includes("คอม")) return "แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล";
   if (r.startsWith("รร") || r.startsWith("สอรร") || r.includes("โรงแรม")) return "แผนกวิชาการโรงแรม";
-  if (r.startsWith("มลจ") || r.includes("โลจิส")) return "แผนกวิชาการตลาด/โลจิสติก์";
+  if (r.startsWith("มลจ") || r.includes("โลจิส")) return "การจัดการโลจิสติกส์และซัพพลายเชน";
   if (r.startsWith("สส") || r.includes("สามัญ")) return "แผนกวิชาสามัญสัมพันธ์";
 
   // Fallback checks
