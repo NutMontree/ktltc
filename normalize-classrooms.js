@@ -20,10 +20,11 @@ async function main() {
       
       let newClassroom = c.trim();
       
-      // Remove specific suffixes
-      newClassroom = newClassroom.replace(/\s*\(ทวิภาคี\)\s*/g, '');
-      newClassroom = newClassroom.replace(/\s*\(ทวิวุฒิ\)\s*/g, '');
+      // Remove specific suffixes in order of length to prevent partial matches
+      newClassroom = newClassroom.replace(/\s*\(?ทวิวุฒิ\)?\s*/g, '');
+      newClassroom = newClassroom.replace(/\s*\(?ทวิภาคี\)?\s*/g, '');
       newClassroom = newClassroom.replace(/\s*\(?ทวิฯ\)?\s*/g, '');
+      newClassroom = newClassroom.replace(/\s*\(?ทวิ\)?\s*/g, '');
       
       // Remove '/' 
       newClassroom = newClassroom.replace(/\//g, '');
