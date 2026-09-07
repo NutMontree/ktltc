@@ -19,7 +19,7 @@ export async function GET(req: Request) {
     const db = client.db("ktltc_db");
 
     let query: any = {};
-    const isDirector = user.role === "director" || user.role === "super_admin";
+    const isDirector = user.role === "director" || user.role === "super_admin" || user.role === "admin";
     
     if (!isDirector) {
       // Teachers can only view their own plans

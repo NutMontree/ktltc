@@ -51,7 +51,7 @@ export default function LessonPlansPage() {
     image: session?.user?.image,
   };
 
-  const isDirector = user.role === 'director' || user.role === 'super_admin';
+  const isDirector = user.role === 'director' || user.role === 'super_admin' || user.role === 'admin';
 
   useEffect(() => {
     fetchPlans();
