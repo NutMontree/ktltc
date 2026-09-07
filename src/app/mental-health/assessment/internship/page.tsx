@@ -218,7 +218,7 @@ export default function InternshipAssessmentPage() {
         st5Total: st5Scores.reduce((a, b) => a + Math.max(0, b), 0),
         twoQTotal: twoQScores.reduce((a, b) => a + Math.max(0, b), 0),
         q9Total: q9Scores.includes(-1) ? 0 : q9Scores.reduce((a, b) => a + Math.max(0, b), 0),
-        q8Total: eightQScores.includes(-1) ? 0 : eightQScores.reduce((a, b) => a + Math.max(0, b), 0),
+        q8Total: (eightQScores.includes(-1) ? 0 : eightQScores.reduce((a, b) => a + Math.max(0, b), 0)) + (eightQSubScore > 0 ? eightQSubScore : 0),
         softSkillsScore,
         softSkillsTotal: organizationQuiz.length
       },
@@ -548,7 +548,7 @@ export default function InternshipAssessmentPage() {
                     const isQuestion3 = index === 2;
                     const valueObj = [
                       { val: "0", label: "ไม่มี", points: 0 },
-                      { val: isQuestion3 ? "6" : "8", label: "มี", points: isQuestion3 ? 6 : (index === 0 ? 1 : index === 1 ? 2 : index === 3 ? 8 : index === 4 ? 9 : index === 5 ? 4 : index === 6 ? 10 : 4) },
+                      { val: isQuestion3 ? "6" : (index === 0 ? "1" : index === 1 ? "2" : index === 3 ? "8" : index === 4 ? "9" : index === 5 ? "4" : index === 6 ? "10" : "4"), label: "มี" },
                     ];
 
                     const isSubscoreSection = isQuestion3 && eightQScores[2] === 6;

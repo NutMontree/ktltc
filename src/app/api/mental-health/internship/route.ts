@@ -21,10 +21,10 @@ export async function POST(req: Request) {
 
     // Check Mental Risk Logic
     const mhResults = [
-      { color: scores.st5Total >= 8 ? "text-orange-500" : (scores.st5Total >= 10 ? "text-red-500" : "text-emerald-500") },
+      { color: scores.st5Total >= 10 ? "text-red-500" : (scores.st5Total >= 8 ? "text-orange-500" : "text-emerald-500") },
       { color: scores.twoQTotal > 0 ? "text-orange-500" : "text-emerald-500" },
-      { color: scores.q9Total >= 13 ? "text-orange-500" : (scores.q9Total >= 19 ? "text-red-500" : "text-emerald-500") },
-      { color: scores.q8Total >= 9 ? "text-orange-500" : (scores.q8Total >= 17 ? "text-red-500" : "text-emerald-500") },
+      { color: scores.q9Total >= 19 ? "text-red-500" : (scores.q9Total >= 13 ? "text-orange-500" : "text-emerald-500") },
+      { color: scores.q8Total >= 17 ? "text-red-500" : (scores.q8Total >= 9 ? "text-orange-500" : "text-emerald-500") },
     ];
 
     // Note: q9Total and q8Total might be 0/undefined if they skipped it via early exit.

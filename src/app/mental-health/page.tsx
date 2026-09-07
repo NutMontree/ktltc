@@ -14,6 +14,13 @@ export default function MentalHealthCheckInPage() {
       disabled: false
     },
     {
+      title: 'ผลการคัดกรองก่อนออกฝึกประสบการณ์วิชาชีพ',
+      url: '/internship-screening',
+      icon: <FileText className="w-8 h-8 text-indigo-500" />,
+      description: 'ดูผลคะแนนการประเมินสุขภาพจิตและทักษะความพร้อมในการทำงานของนักเรียน',
+      disabled: false
+    },
+    {
       title: 'ประเมินตัวเอง',
       url: '/mental-health/assessment/self',
       icon: <Activity className="w-8 h-8 text-blue-500" />,
