@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Activity, Server, ShieldCheck, Wifi, AlertTriangle, RefreshCcw, Download, CheckCircle, Globe, ArrowDown, ArrowUp, RotateCw } from 'lucide-react';
+import { networkDevices } from '@/lib/networkDevices';
 
 interface DeviceStatus {
   id: string;
@@ -18,7 +19,14 @@ interface DeviceStatus {
 
 export default function NetworkMonitorPage() {
   // ================= State: Topology Scanner =================
-  const [devices, setDevices] = useState<DeviceStatus[]>([]);
+  const [devices, setDevices] = useState<DeviceStatus[]>(() =>
+    networkDevices.map(d => ({
+      ...d,
+      status: 'loading' as const,
+      rx: 0,
+      tx: 0
+    }))
+  );
   const [isScanning, setIsScanning] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<string>('--:--:--');
 
@@ -81,6 +89,10 @@ export default function NetworkMonitorPage() {
 
   useEffect(() => {
     scanNetwork();
+    const interval = setInterval(() => {
+      scanNetwork(true);
+    }, 20000);
+    return () => clearInterval(interval);
   }, []);
 
   // ================= Functions: Reboot Device =================
@@ -414,6 +426,19 @@ export default function NetworkMonitorPage() {
                           <span className="font-semibold text-gray-700">UL</span>
                         </div>
                         <span className="font-mono font-bold text-gray-800">{device.tx?.toFixed(1) || '0.0'} <span className="text-xs text-gray-500 font-normal">Mbps</span></span>
+                      </div>
+                    </div>
+                  )}
+
+                  {device.status === 'loading' && (
+                    <div className="mt-2 p-3 bg-gray-50/70 rounded-xl border border-gray-100 animate-pulse space-y-2">
+                      <div className="flex justify-between items-center">
+                        <div className="h-4 bg-gray-200 rounded w-16"></div>
+                        <div className="h-4 bg-gray-200 rounded w-12"></div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div className="h-4 bg-gray-200 rounded w-16"></div>
+                        <div className="h-4 bg-gray-200 rounded w-12"></div>
                       </div>
                     </div>
                   )}
