@@ -6,9 +6,12 @@ import { NodeSSH } from 'node-ssh';
 
 const execPromise = util.promisify(exec);
 
+const isWin = process.platform === 'win32';
+
 const pingDevice = async (ip: string): Promise<'online' | 'offline'> => {
   try {
-    await execPromise(`ping -n 1 -w 800 ${ip}`);
+    const cmd = isWin ? `ping -n 1 -w 800 ${ip}` : `ping -c 1 -W 1 ${ip}`;
+    await execPromise(cmd);
     return 'online';
   } catch (error) {
     return 'offline';

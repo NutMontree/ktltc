@@ -1,4 +1,4 @@
-﻿import { execFile } from 'child_process';
+import { execFile } from 'child_process';
 import util from 'util';
 import crypto from 'crypto';
 
@@ -8,8 +8,10 @@ export async function getRuijieReyeePorts(ip: string): Promise<any[]> {
   const pwd = 'Ktltc@33110';
   const md5Hash = crypto.createHash('md5').update(pwd).digest('hex');
 
-  // 1. Authenticate and extract cookie directly using curl.exe
-  const loginResult = await execFilePromise('curl.exe', [
+  const curlBin = process.platform === 'win32' ? 'curl.exe' : 'curl';
+
+  // 1. Authenticate and extract cookie directly using curl
+  const loginResult = await execFilePromise(curlBin, [
     '-s',
     '-i',
     '-X', 'POST',
@@ -22,7 +24,7 @@ export async function getRuijieReyeePorts(ip: string): Promise<any[]> {
   const cookieStr = cookieMatches.map(m => m.replace(/set-cookie:\s*/i, '').trim()).join('; ');
 
   // 2. Fetch panel.cgi using session cookies
-  const panelResult = await execFilePromise('curl.exe', [
+  const panelResult = await execFilePromise(curlBin, [
     '-s',
     '-H', `Cookie: ${cookieStr}`,
     `http://${ip}/panel.cgi`
