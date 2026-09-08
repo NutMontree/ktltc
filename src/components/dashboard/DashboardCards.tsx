@@ -192,9 +192,9 @@ export function ActionCard({ href, title, icon: Icon, desc, external, badge, var
         target={external ? "_blank" : "_self"}
         className="group relative flex flex-col h-full rounded-[2.5rem] transition-all duration-500 hover:-translate-y-2 shadow-xl shadow-black/5 dark:shadow-black/40 hover:shadow-2xl hover:shadow-blue-500/20"
       >
-        <div className="relative flex flex-col h-full bg-white/40 dark:bg-white/5 backdrop-blur-2xl p-7 rounded-[2.5rem] overflow-hidden transition-all duration-500 border border-white/60 dark:border-white/10 group-hover:bg-white/60 dark:group-hover:bg-white/10 group-hover:border-white/80 dark:group-hover:border-white/20">
+        <div className="relative flex flex-col h-full bg-white/40 dark:bg-white/5 backdrop-blur-2xl p-5 md:p-7 rounded-[2rem] md:rounded-[2.5rem] overflow-hidden transition-all duration-500 border border-white/60 dark:border-white/10 group-hover:bg-white/60 dark:group-hover:bg-white/10 group-hover:border-white/80 dark:group-hover:border-white/20">
           {badge && (
-            <div className="absolute top-5 right-5 px-2.5 py-1 bg-rose-500 text-white text-[10px] font-black rounded-lg shadow-lg shadow-rose-500/30 z-10 animate-bounce">
+            <div className="absolute top-4 right-4 md:top-5 md:right-5 px-2.5 py-1 bg-rose-500 text-white text-[9px] md:text-[10px] font-black rounded-lg shadow-lg shadow-rose-500/30 z-10 animate-bounce">
               {badge}
             </div>
           )}
@@ -204,20 +204,23 @@ export function ActionCard({ href, title, icon: Icon, desc, external, badge, var
           </div>
 
           <div
-            className={`w-14 h-14 rounded-2xl ${lightBgs[colorIdx]} ${textColors[colorIdx]} backdrop-blur-sm flex items-center justify-center mb-6 group-hover:bg-linear-to-br ${gradients[colorIdx]} group-hover:text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-inner`}
+            className={`w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl ${lightBgs[colorIdx]} ${textColors[colorIdx]} backdrop-blur-sm flex items-center justify-center mb-4 md:mb-6 group-hover:bg-linear-to-br ${gradients[colorIdx]} group-hover:text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-inner`}
           >
-            <Icon size={24} />
+            <Icon className="w-5 h-5 md:w-6 md:h-6" />
           </div>
 
-          <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight mb-2 truncate">
+          <h3 className="text-[13px] sm:text-sm md:text-[15px] font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight mb-1 md:mb-2 line-clamp-2 md:line-clamp-3 leading-tight">
             {title}
           </h3>
-          <p className="text-zinc-500 dark:text-zinc-500 text-[10px] font-bold uppercase tracking-widest leading-snug mb-6">
-            {desc}
-          </p>
+          
+          <div className="md:h-0 md:group-hover:h-auto md:opacity-0 md:group-hover:opacity-100 overflow-hidden transition-all duration-500 md:mb-0 md:group-hover:mb-6 mb-4">
+            <p className="text-zinc-500 dark:text-zinc-500 text-[9px] md:text-[10px] font-bold uppercase tracking-widest leading-snug line-clamp-2 md:line-clamp-none">
+              {desc}
+            </p>
+          </div>
 
-          <div className="mt-auto flex items-center gap-2 text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0">
-            เข้าสู่ระบบจัดการ <ArrowUpRight size={14} strokeWidth={3} />
+          <div className="mt-auto flex items-center gap-2 text-[9px] md:text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.2em] md:opacity-0 md:group-hover:opacity-100 transition-all md:translate-x-[-10px] md:group-hover:translate-x-0">
+            เข้าสู่ระบบ <ArrowUpRight size={12} strokeWidth={3} className="md:w-[14px] md:h-[14px]" />
           </div>
         </div>
       </Link>

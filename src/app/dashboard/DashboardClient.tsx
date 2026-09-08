@@ -46,7 +46,6 @@ import StaffMenus from "@/components/dashboard/menus/StaffMenus";
 import ExecutiveMenus from "@/components/dashboard/menus/ExecutiveMenus";
 import SuperAdminMenus from "@/components/dashboard/menus/SuperAdminMenus";
 import { DashboardContext } from "@/components/dashboard/DashboardContext";
-import LogoutOtherDevicesBtn from "@/components/dashboard/LogoutOtherDevicesBtn";
 import GooeyNav from "@/components/ui/GooeyNav";
 
 // Framer Motion Variants
@@ -286,109 +285,174 @@ export default function DashboardClient({ initialStats, initialPermissions, init
           {/* --- Header Section --- */}
           <DashboardHeader user={user} />
 
-          <motion.div variants={container} initial="hidden" animate="show" className="space-y-12">
-            {/* --- Hero Search & Actions --- */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 w-full mb-8">
-              <motion.div variants={item} className="relative w-full md:max-w-xl shrink-0">
-                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                  <Search className="h-5 w-5 text-blue-500" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="🔍 ค้นหาเมนูการใช้งาน (เช่น เช็คชื่อ, ลางาน, สิทธิ์)..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-13 pr-12 py-3.5 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl border border-blue-500/20 dark:border-white/10 rounded-full text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-blue-500/20 shadow-lg shadow-black/5 transition-all placeholder:text-zinc-400"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                )}
-              </motion.div>
-
-              <motion.div variants={item} className="shrink-0 w-full md:w-auto flex justify-end">
-                <LogoutOtherDevicesBtn />
-              </motion.div>
+          <motion.div variants={container} initial="hidden" animate="show" className="space-y-8">
+            {/* --- Sticky Header (Search & Actions) --- */}
+            <div className="sticky top-0 z-50 bg-[#fafafa]/90 dark:bg-zinc-950/90 backdrop-blur-xl border-b border-zinc-200/50 dark:border-zinc-800/50 -mx-4 px-4 py-4 md:bg-transparent md:border-none md:backdrop-blur-none md:mx-0 md:px-0 md:static md:py-0 mb-4 md:mb-8">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4 w-full">
+                <motion.div variants={item} className="relative w-full md:max-w-xl shrink-0">
+                  <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                    <Search className="h-5 w-5 text-blue-500" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="🔍 ค้นหาเมนูการใช้งาน (เช่น เช็คชื่อ, ลางาน, สิทธิ์)..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-13 pr-12 py-3.5 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl border border-blue-500/20 dark:border-white/10 rounded-full text-sm font-semibold focus:outline-none focus:ring-4 focus:ring-blue-500/20 shadow-lg shadow-black/5 transition-all placeholder:text-zinc-400"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </motion.div>
+              </div>
             </div>
 
-            {/* --- Quick Actions Tabs (Floating Dock) --- */}
-            <div className="sticky top-16 md:top-20 z-40 flex justify-center w-full pointer-events-none pt-2 pb-6 -mx-4 px-4 md:mx-0 md:px-0">
-              <motion.div variants={item} className="p-1.5 w-full md:w-auto max-w-full pointer-events-auto bg-white/40 dark:bg-zinc-950/40 backdrop-blur-3xl border border-white/60 dark:border-white/10 rounded-[2.5rem] shadow-2xl shadow-black/5 dark:shadow-black/40">
-                <div className="flex flex-nowrap overflow-x-auto gap-2 p-1 w-full max-w-full [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-zinc-300/80 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-700/80 [&::-webkit-scrollbar-thumb]:rounded-full pb-1.5">
+            <div className="flex flex-col md:flex-row gap-8">
+              {/* --- Sidebar (Desktop) / Top Tabs (Mobile) --- */}
+              <div className="w-full md:w-64 shrink-0 md:sticky md:top-24 h-fit z-40">
+                {/* Mobile Tabs */}
+                <div className="md:hidden sticky top-[4.5rem] z-40 flex justify-center w-full pt-2 pb-4 -mx-4 px-4">
+                  <motion.div variants={item} className="p-1.5 w-full max-w-full bg-white/60 dark:bg-zinc-950/60 backdrop-blur-3xl border border-white/60 dark:border-white/10 rounded-[2.5rem] shadow-xl shadow-black/5">
+                    <div className="flex flex-nowrap overflow-x-auto gap-2 p-1 w-full max-w-full [&::-webkit-scrollbar]:hidden pb-1.5">
+                      <button
+                        onClick={() => setActiveTab("all")}
+                        className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shrink-0 ${activeTab === "all" ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-md" : "bg-transparent text-zinc-600 hover:bg-white/50 dark:text-zinc-400 dark:hover:bg-zinc-800/50"}`}
+                      >
+                        <Layers size={18} />
+                        <span>ทั้งหมด</span>
+                      </button>
+                      {hasStudentAccess && (
+                        <button
+                          onClick={() => setActiveTab("student")}
+                          className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shrink-0 ${activeTab === "student" ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20" : "bg-transparent text-zinc-600 hover:bg-white/50 dark:text-zinc-400 dark:hover:bg-zinc-800/50"}`}
+                        >
+                          <Users size={18} />
+                          <span>นักเรียน</span>
+                        </button>
+                      )}
+                      {hasTeacherAccess && (
+                        <button
+                          onClick={() => setActiveTab("teacher")}
+                          className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shrink-0 ${activeTab === "teacher" ? "bg-violet-600 text-white shadow-md shadow-violet-500/20" : "bg-transparent text-zinc-600 hover:bg-white/50 dark:text-zinc-400 dark:hover:bg-zinc-800/50"}`}
+                        >
+                          <BookOpen size={18} />
+                          <span>ครูผู้สอน</span>
+                        </button>
+                      )}
+                      {hasStaffAccess && (
+                        <button
+                          onClick={() => setActiveTab("staff")}
+                          className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shrink-0 ${activeTab === "staff" ? "bg-teal-600 text-white shadow-md shadow-teal-500/20" : "bg-transparent text-zinc-600 hover:bg-white/50 dark:text-zinc-400 dark:hover:bg-zinc-800/50"}`}
+                        >
+                          <UserCog size={18} />
+                          <span>บุคลากร / HR</span>
+                        </button>
+                      )}
+                      {hasExecAccess && (
+                        <button
+                          onClick={() => setActiveTab("executive")}
+                          className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shrink-0 ${activeTab === "executive" ? "bg-rose-600 text-white shadow-md shadow-rose-500/20" : "bg-transparent text-zinc-600 hover:bg-white/50 dark:text-zinc-400 dark:hover:bg-zinc-800/50"}`}
+                        >
+                          <ShieldCheck size={18} />
+                          <span>ผู้บริหาร</span>
+                        </button>
+                      )}
+                      {hasSuperAdminAccess && (
+                        <button
+                          onClick={() => setActiveTab("superadmin")}
+                          className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shrink-0 ${activeTab === "superadmin" ? "bg-sky-600 text-white shadow-md shadow-sky-500/20" : "bg-transparent text-zinc-600 hover:bg-white/50 dark:text-zinc-400 dark:hover:bg-zinc-800/50"}`}
+                        >
+                          <Shield size={18} />
+                          <span>ผู้ดูแลระบบ</span>
+                        </button>
+                      )}
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* Desktop Sidebar */}
+                <div className="hidden md:flex flex-col gap-2 p-3 bg-white/40 dark:bg-zinc-950/40 backdrop-blur-3xl border border-white/60 dark:border-white/10 rounded-3xl shadow-2xl shadow-black/5 dark:shadow-black/40">
+                  <div className="px-4 py-2 mb-2">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">กลุ่มเมนูระบบ</p>
+                  </div>
                   <button
                     onClick={() => setActiveTab("all")}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shrink-0 ${activeTab === "all" ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-md" : "bg-transparent text-zinc-600 hover:bg-white/50 dark:text-zinc-400 dark:hover:bg-zinc-800/50 hover:text-zinc-900 dark:hover:text-white"}`}
+                    className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl font-black text-sm transition-all ${activeTab === "all" ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-md" : "bg-transparent text-zinc-600 hover:bg-white/70 dark:text-zinc-400 dark:hover:bg-zinc-800/50"}`}
                   >
-                    <Layers size={18} />
-                    <span>ทั้งหมด</span>
+                    <Layers size={20} />
+                    <span>แสดงทั้งหมด</span>
                   </button>
                   {hasStudentAccess && (
                     <button
                       onClick={() => setActiveTab("student")}
-                      className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shrink-0 ${activeTab === "student" ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20" : "bg-transparent text-zinc-600 hover:bg-white/50 hover:text-indigo-600 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-indigo-400"}`}
+                      className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl font-black text-sm transition-all ${activeTab === "student" ? "bg-indigo-600 text-white shadow-md shadow-indigo-500/20" : "bg-transparent text-zinc-600 hover:bg-white/70 hover:text-indigo-600 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-indigo-400"}`}
                     >
-                      <Users size={18} />
-                      <span>นักเรียน</span>
+                      <Users size={20} />
+                      <span>นักเรียน นักศึกษา</span>
                     </button>
                   )}
-                {hasTeacherAccess && (
-                  <button
-                    onClick={() => setActiveTab("teacher")}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shrink-0 ${activeTab === "teacher" ? "bg-violet-600 text-white shadow-md shadow-violet-500/20" : "bg-transparent text-zinc-600 hover:bg-white/50 hover:text-violet-600 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-violet-400"}`}
-                  >
-                    <BookOpen size={18} />
-                    <span>ครูผู้สอน</span>
-                  </button>
-                )}
-                {hasStaffAccess && (
-                  <button
-                    onClick={() => setActiveTab("staff")}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shrink-0 ${activeTab === "staff" ? "bg-teal-600 text-white shadow-md shadow-teal-500/20" : "bg-transparent text-zinc-600 hover:bg-white/50 hover:text-teal-600 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-teal-400"}`}
-                  >
-                    <UserCog size={18} />
-                    <span>บุคลากร / HR</span>
-                  </button>
-                )}
-                {hasExecAccess && (
-                  <button
-                    onClick={() => setActiveTab("executive")}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shrink-0 ${activeTab === "executive" ? "bg-rose-600 text-white shadow-md shadow-rose-500/20" : "bg-transparent text-zinc-600 hover:bg-white/50 hover:text-rose-600 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-rose-400"}`}
-                  >
-                    <ShieldCheck size={18} />
-                    <span>ผู้บริหาร</span>
-                  </button>
-                )}
-                {hasSuperAdminAccess && (
-                  <button
-                    onClick={() => setActiveTab("superadmin")}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-sm transition-all shrink-0 ${activeTab === "superadmin" ? "bg-sky-600 text-white shadow-md shadow-sky-500/20" : "bg-transparent text-zinc-600 hover:bg-white/50 hover:text-sky-600 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-sky-400"}`}
-                  >
-                    <Shield size={18} />
-                    <span>ผู้ดูแลระบบ</span>
-                  </button>
-                )}
+                  {hasTeacherAccess && (
+                    <button
+                      onClick={() => setActiveTab("teacher")}
+                      className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl font-black text-sm transition-all ${activeTab === "teacher" ? "bg-violet-600 text-white shadow-md shadow-violet-500/20" : "bg-transparent text-zinc-600 hover:bg-white/70 hover:text-violet-600 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-violet-400"}`}
+                    >
+                      <BookOpen size={20} />
+                      <span>ครูผู้สอน</span>
+                    </button>
+                  )}
+                  {hasStaffAccess && (
+                    <button
+                      onClick={() => setActiveTab("staff")}
+                      className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl font-black text-sm transition-all ${activeTab === "staff" ? "bg-teal-600 text-white shadow-md shadow-teal-500/20" : "bg-transparent text-zinc-600 hover:bg-white/70 hover:text-teal-600 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-teal-400"}`}
+                    >
+                      <UserCog size={20} />
+                      <span>บุคลากร / HR</span>
+                    </button>
+                  )}
+                  {hasExecAccess && (
+                    <button
+                      onClick={() => setActiveTab("executive")}
+                      className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl font-black text-sm transition-all ${activeTab === "executive" ? "bg-rose-600 text-white shadow-md shadow-rose-500/20" : "bg-transparent text-zinc-600 hover:bg-white/70 hover:text-rose-600 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-rose-400"}`}
+                    >
+                      <ShieldCheck size={20} />
+                      <span>ผู้บริหาร</span>
+                    </button>
+                  )}
+                  {hasSuperAdminAccess && (
+                    <button
+                      onClick={() => setActiveTab("superadmin")}
+                      className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl font-black text-sm transition-all ${activeTab === "superadmin" ? "bg-sky-600 text-white shadow-md shadow-sky-500/20" : "bg-transparent text-zinc-600 hover:bg-white/70 hover:text-sky-600 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-sky-400"}`}
+                    >
+                      <Shield size={20} />
+                      <span>ผู้ดูแลระบบ</span>
+                    </button>
+                  )}
                 </div>
-              </motion.div>
+              </div>
+
+              {/* --- Main Content (Menus) --- */}
+              <div className="flex-1 space-y-12">
+                {/* StudentMenus */}
+                <StudentMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasStudentAccess} activeTab={activeTab} stats={stats} />
+
+                {/* TeacherMenus */}
+                <TeacherMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasTeacherAccess} activeTab={activeTab} stats={stats} />
+
+                {/* StaffMenus */}
+                <StaffMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasStaffAccess} activeTab={activeTab} stats={stats} />
+
+                {/* ExecutiveMenus */}
+                <ExecutiveMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasExecAccess} activeTab={activeTab} stats={stats} />
+
+                {/* SuperAdminMenus */}
+                <SuperAdminMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasSuperAdminAccess} activeTab={activeTab} stats={stats} />
+              </div>
             </div>
-
-            {/* StudentMenus */}
-            <StudentMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasStudentAccess} activeTab={activeTab} stats={stats} />
-
-            {/* TeacherMenus */}
-            <TeacherMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasTeacherAccess} activeTab={activeTab} stats={stats} />
-
-            {/* StaffMenus */}
-            <StaffMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasStaffAccess} activeTab={activeTab} stats={stats} />
-
-            {/* ExecutiveMenus */}
-            <ExecutiveMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasExecAccess} activeTab={activeTab} stats={stats} />
-
-            {/* SuperAdminMenus */}
-            <SuperAdminMenus permissions={permissions} customMenus={customMenus} item={item} userRole={userRole} hasAccess={hasSuperAdminAccess} activeTab={activeTab} stats={stats} />
 
 
           </motion.div>

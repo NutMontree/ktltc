@@ -9,6 +9,7 @@ import { NavItem } from "@/types/nav";
 import ThemeToggle from "./ThemeToggle";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { signOut } from "next-auth/react";
+import LogoutOtherDevicesBtn from "@/components/dashboard/LogoutOtherDevicesBtn";
 import {
   FileText,
   UserCog,
@@ -604,6 +605,9 @@ export default function NavbarClient({
                         >
                           <LogOut className="w-3.5 h-3.5" /> ออกจากระบบ
                         </button>
+                      </div>
+                      <div className="mt-2" onClick={() => setIsUserDropdownOpen(false)}>
+                        <LogoutOtherDevicesBtn />
                       </div>
                     </div>
 

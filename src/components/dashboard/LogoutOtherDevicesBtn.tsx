@@ -29,7 +29,7 @@ export default function LogoutOtherDevicesBtn() {
       onClick={handleLogoutOthers}
       disabled={isLoading || success}
       className={`
-        group flex items-center justify-center gap-2 px-6 h-[42px] rounded-full font-bold text-xs uppercase tracking-widest transition-all shadow-lg whitespace-nowrap
+        group flex items-center justify-center w-full gap-2 px-4 h-[42px] rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all shadow-lg whitespace-nowrap
         ${success 
           ? "bg-emerald-600 text-white shadow-emerald-500/20" 
           : "bg-orange-600 text-white shadow-orange-500/20 hover:bg-orange-700 active:scale-95"}

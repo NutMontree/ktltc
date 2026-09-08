@@ -127,13 +127,7 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
                 </div>
               </div>
 
-              {/* ปุ่มทางลัดไปหน้าโปรไฟล์ */}
-              <Link
-                href="/dashboard/profile"
-                className="ml-4 p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all"
-              >
-                <ExternalLink className="w-5 h-5" />
-              </Link>
+
             </div>
           </GlassSurface>
         </motion.div>
