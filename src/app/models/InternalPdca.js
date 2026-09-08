@@ -43,5 +43,4 @@ const InternalPdcaSchema = new mongoose.Schema(
 delete mongoose.models.InternalPdca;
 const InternalPdca = mongoose.model("InternalPdca", InternalPdcaSchema);
 
-export { connectDB };
 export default InternalPdca;
