@@ -27,7 +27,7 @@ export async function connectMongoose() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: true,
-      maxPoolSize: 50,         // 50 ต่อ instance x 4 = 200 รวม
+      maxPoolSize: parseInt(process.env.MAX_POOL_SIZE || "50", 10), // 50 ต่อ instance, แต่ตอน build จะโดนบีบเหลือ 2
     };
 
     console.log("🔌 [Mongoose] Initializing unified connection...");
