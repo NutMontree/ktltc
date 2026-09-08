@@ -14,13 +14,6 @@ export default function MentalHealthCheckInPage() {
       disabled: false
     },
     {
-      title: 'ผลการคัดกรองก่อนออกฝึกประสบการณ์วิชาชีพ',
-      url: '/internship-screening',
-      icon: <FileText className="w-8 h-8 text-indigo-500" />,
-      description: 'ดูผลคะแนนการประเมินสุขภาพจิตและทักษะความพร้อมในการทำงานของนักเรียน',
-      disabled: false
-    },
-    {
       title: 'ประเมินตัวเอง',
       url: '/mental-health/assessment/self',
       icon: <Activity className="w-8 h-8 text-blue-500" />,
@@ -104,7 +97,33 @@ export default function MentalHealthCheckInPage() {
         </div>
 
         {/* Assessment Links Section */}
-        <div className="space-y-6">
+        <div className="space-y-12">
+          
+          {/* Result Link - Top Priority */}
+          <Link href="/internship-screening" className="block w-full group">
+            <Card className="hover:-translate-y-1 transition-all duration-400 border border-indigo-200/50 dark:border-indigo-800/30 bg-linear-to-r from-indigo-50/90 to-purple-50/90 dark:from-indigo-950/40 dark:to-purple-950/40 backdrop-blur-2xl shadow-lg hover:shadow-xl hover:shadow-indigo-500/20 rounded-3xl overflow-hidden group">
+              <CardBody className="p-6 md:p-8 flex flex-col md:flex-row items-center text-center md:text-left gap-6 md:gap-8">
+                <div className="p-5 bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-indigo-100 dark:border-indigo-800 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                  <FileText className="w-10 h-10 text-indigo-600 dark:text-indigo-400" />
+                </div>
+                <div className="flex-1 space-y-2">
+                  <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white">
+                    ผลการคัดกรองก่อนออกฝึกประสบการณ์วิชาชีพ
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm md:text-base leading-relaxed">
+                    สำหรับครู/ผู้บริหาร ดูผลคะแนนการประเมินสุขภาพจิตและทักษะความพร้อมในการทำงานของนักเรียน
+                  </p>
+                </div>
+                <Button
+                  as="div"
+                  className="w-full md:w-auto font-bold bg-linear-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30 rounded-xl py-6 px-8 text-md pointer-events-none uppercase tracking-wide"
+                >
+                  เข้าดูผลการประเมิน
+                </Button>
+              </CardBody>
+            </Card>
+          </Link>
+
           <div className="space-y-8">
             <h2 className="text-3xl font-extrabold text-slate-900 text-center tracking-tight">เริ่มทำแบบประเมิน</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
