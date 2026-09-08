@@ -128,17 +128,15 @@ if (!globalWithMongo._mongoClientPromise) {
   // console.log("🔌 [MongoDB] Initializing new connection...");
   client = new MongoClient(uri, options);
   
-  // ฟังก์ชันช่วยเชื่อมต่อซ้ำอัตโนมัติ (Retry Mechanism) 
-  // แก้ปัญหาเวลา PM2 เริ่มทำงานก่อน MongoDB ตอนเปิดเครื่อง
   const connectWithRetry = async (): Promise<MongoClient> => {
     while (true) {
       try {
         await client.connect();
         console.log("✅ [MongoDB] Connected successfully");
         return client;
-      } catch (err) {
-        console.error("❌ [MongoDB] Connection failed, retrying in 5 seconds...", err);
-        await new Promise(resolve => setTimeout(resolve, 5000));
+      } catch (err: any) {
+        console.error(`⏳ [MongoDB] Database offline (waiting 30s before retry): ${err.message || err.code || "ECONNRESET"}`);
+        await new Promise(resolve => setTimeout(resolve, 30000));
       }
     }
   };

@@ -21,15 +21,8 @@ export default function Error({
     console.error("Application Error:", error);
   }, [error]);
 
-  useEffect(() => {
-    // นับถอยหลัง แล้ว redirect กลับ
-    if (countdown <= 0) {
-      router.back();
-      return;
-    }
-    const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
-    return () => clearTimeout(timer);
-  }, [countdown, router]);
+  // ปิดการนับถอยหลังรีเฟรชอัตโนมัติ เพื่อไม่ให้เกิดลูปการโหลดซ้ำรัวๆ
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 text-center">
@@ -75,40 +68,7 @@ export default function Error({
           อาจเกิดจากเครือข่ายหรือเซิร์ฟเวอร์ไม่พร้อม
         </p>
 
-        {/* Countdown ring */}
-        <div className="flex flex-col items-center gap-5">
-          <div className="relative w-16 h-16">
-            <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
-              <circle
-                cx="32"
-                cy="32"
-                r="28"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="4"
-                className="text-slate-100"
-              />
-              <circle
-                cx="32"
-                cy="32"
-                r="28"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="4"
-                strokeLinecap="round"
-                className="text-teal-500 transition-all duration-1000"
-                strokeDasharray={`${2 * Math.PI * 28}`}
-                strokeDashoffset={`${2 * Math.PI * 28 * (1 - countdown / AUTO_REFRESH_SECONDS)}`}
-              />
-            </svg>
-            <span className="absolute inset-0 flex items-center justify-center text-2xl font-bold text-teal-600">
-              {countdown}
-            </span>
-          </div>
-          <p className="text-xs text-slate-400">
-            กำลังรีเฟรชอัตโนมัติใน {countdown} วินาที...
-          </p>
-
+        <div className="pt-4">
           <button
             onClick={() => {
               reset();
