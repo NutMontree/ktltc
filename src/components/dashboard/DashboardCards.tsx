@@ -220,7 +220,7 @@ export function ActionCard({ href, title, icon: Icon, desc, external, badge, var
           </div>
 
           <div className="mt-auto flex items-center gap-2 text-[9px] md:text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.2em] md:opacity-0 md:group-hover:opacity-100 transition-all md:translate-x-[-10px] md:group-hover:translate-x-0">
-            เข้าสู่ระบบ <ArrowUpRight size={12} strokeWidth={3} className="md:w-[14px] md:h-[14px]" />
+            ไปยังหน้า <ArrowUpRight size={12} strokeWidth={3} className="md:w-[14px] md:h-[14px]" />
           </div>
         </div>
       </Link>

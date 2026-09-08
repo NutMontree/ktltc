@@ -60,12 +60,6 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
               <span className="absolute w-4 h-4 rounded-full bg-emerald-500/20 animate-ping" />
               <span className="relative w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
             </div>
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-              <Activity className="w-3 h-3 text-emerald-500" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
-                System Live
-              </span>
-            </div>
           </motion.div>
 
           <motion.div variants={itemVariants} className="space-y-1">
@@ -80,57 +74,6 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
             </p>
           </motion.div>
         </div>
-
-        {/* ส่วนขวา: การ์ดโปรไฟล์ผู้ใช้ */}
-        <motion.div variants={itemVariants} className="w-full lg:w-auto flex items-center gap-4">
-          <GlassSurface
-            width="100%"
-            height="100%"
-            borderRadius={32}
-            className="group relative"
-            backgroundOpacity={0.05}
-          >
-            <div className="relative flex items-center gap-5 p-5 rounded-[1.95rem] bg-white/60 dark:bg-zinc-950/60 group-hover:bg-white/80 dark:group-hover:bg-zinc-950/80 transition-colors backdrop-blur-md">
-              
-              {/* รูปโปรไฟล์ */}
-              <div className="relative shrink-0">
-                <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-zinc-100 dark:border-zinc-800 shadow-inner group-hover:scale-105 transition-transform duration-500">
-                  {user.image ? (
-                    <img
-                      src={user.image}
-                      alt={user.username}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-xl font-black uppercase">
-                      {user.username?.charAt(0) || "U"}
-                    </div>
-                  )}
-                </div>
-                {/* จุดสีเขียวแสดงสถานะ Online */}
-                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 border-4 border-white dark:border-zinc-950 rounded-full shadow-sm" />
-              </div>
-
-              {/* รายละเอียดผู้ใช้ */}
-              <div className="flex flex-col min-w-[140px]">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-900/20 text-[9px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">
-                    {user.role || "MEMBER"}
-                  </span>
-                </div>
-                <p className="text-xl font-black text-zinc-900 dark:text-white leading-tight group-hover:text-blue-600 transition-colors">
-                  {user.username}
-                </p>
-                <div className="flex items-center gap-2 mt-1 text-zinc-400 dark:text-zinc-500">
-                  <User className="w-3 h-3" />
-                  <span className="text-[10px] font-bold uppercase tracking-tight">Active Session</span>
-                </div>
-              </div>
-
-
-            </div>
-          </GlassSurface>
-        </motion.div>
       </div>
     </motion.div>
   );
