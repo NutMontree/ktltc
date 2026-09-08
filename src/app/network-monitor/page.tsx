@@ -242,7 +242,7 @@ export default function NetworkMonitorPage() {
             <Activity className="w-8 h-8" />
           </div>
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">ศูนย์บัญชาการเครือข่าย (NMS)</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">งานศูนย์ดิจิทัลและสื่อสารองค์กร</h1>
             <p className="text-gray-500 mt-1">ตรวจสอบสถานะอินเทอร์เน็ตและอุปกรณ์ภายในวิทยาลัยเทคนิคกันทรลักษ์</p>
           </div>
         </div>
