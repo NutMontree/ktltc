@@ -20,7 +20,7 @@ export default function LessonPlansPage() {
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [previewDoc, setPreviewDoc] = useState<string | null>(null);
-  const [newPlan, setNewPlan] = useState<any>({ subject: "", title: "", fileUrls: [], semester: "1", academicYear: String(currentBuddhistYear), hasAfterClassNote: false, afterClassNoteUrl: "" });
+  const [newPlan, setNewPlan] = useState<any>({ subject: "", title: "", fileUrls: [], semester: "1", academicYear: String(currentBuddhistYear) });
 
   const handleEditClick = (plan: any) => {
     setNewPlan({
@@ -29,9 +29,7 @@ export default function LessonPlansPage() {
       title: plan.title,
       fileUrls: plan.fileUrls || (plan.fileUrl ? [plan.fileUrl] : []),
       semester: plan.semester || "1",
-      academicYear: plan.academicYear || String(currentBuddhistYear),
-      hasAfterClassNote: plan.hasAfterClassNote || false,
-      afterClassNoteUrl: plan.afterClassNoteUrl || (plan.afterClassNoteUrls && plan.afterClassNoteUrls.length > 0 ? plan.afterClassNoteUrls[0] : "")
+      academicYear: plan.academicYear || String(currentBuddhistYear)
     });
     setSelectedFiles([]);
     setSelectedAfterClassFile(null);
@@ -73,7 +71,7 @@ export default function LessonPlansPage() {
   };
 
   const handleAdd = async () => {
-    if (!newPlan.subject || !newPlan.title) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+    if (!newPlan.subject) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
 
     let uploadedUrls = [...(newPlan.fileUrls || [])];
 
@@ -96,22 +94,10 @@ export default function LessonPlansPage() {
       }
     }
 
-    let uploadedAfterClassUrl = newPlan.afterClassNoteUrl;
-    if (newPlan.hasAfterClassNote && selectedAfterClassFile) {
-      const formData = new FormData();
-      formData.append("file", selectedAfterClassFile);
-      const res = await fetch("/api/upload", { method: "POST", body: formData });
-      const uploadData = await res.json();
-      if (uploadData.success) {
-        uploadedAfterClassUrl = uploadData.url;
-      }
-    }
-
     try {
       const payload = {
         ...newPlan,
         fileUrls: uploadedUrls,
-        afterClassNoteUrl: uploadedAfterClassUrl,
         teacherName: user.username || "Unknown"
       };
 
@@ -123,7 +109,7 @@ export default function LessonPlansPage() {
       });
       if (res.ok) {
         setShowAdd(false);
-        setNewPlan({ subject: "", title: "", fileUrls: [], semester: "1", academicYear: String(currentBuddhistYear), hasAfterClassNote: false, afterClassNoteUrl: "" });
+        setNewPlan({ subject: "", title: "", fileUrls: [], semester: "1", academicYear: String(currentBuddhistYear) });
         setSelectedFiles([]);
         setSelectedAfterClassFile(null);
         fetchPlans();
@@ -292,10 +278,6 @@ export default function LessonPlansPage() {
                     <input type="text" placeholder="เช่น ภาษาไทย, คณิตศาสตร์" className="w-full p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white" value={newPlan.subject} onChange={e => setNewPlan({ ...newPlan, subject: e.target.value })} />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-zinc-500 mb-1">หัวข้อ/เรื่องที่สอน</label>
-                    <input type="text" placeholder="เช่น บทที่ 1 การอ่านออกเสียง" className="w-full p-2 border rounded-xl dark:bg-zinc-900 dark:border-zinc-700 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white" value={newPlan.title} onChange={e => setNewPlan({ ...newPlan, title: e.target.value })} />
-                  </div>
-                  <div>
                     <label className="block text-xs font-bold text-zinc-500 mb-1">ภาคเรียน</label>
                     <select className="w-full p-2 border rounded-xl dark:border-zinc-700 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-zinc-900" value={newPlan.semester} onChange={e => setNewPlan({ ...newPlan, semester: e.target.value })}>
                       <option value="1">ภาคเรียนที่ 1</option>
@@ -345,53 +327,9 @@ export default function LessonPlansPage() {
                       ))}
                     </div>
                   </div>
-
-                  <div className="md:col-span-2 lg:col-span-3">
-                    <label className="flex items-center gap-2 cursor-pointer p-3 border rounded-xl dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
-                      <input
-                        type="checkbox"
-                        className="w-4 h-4 text-emerald-600 rounded-sm focus:ring-emerald-500"
-                        checked={!!newPlan.hasAfterClassNote}
-                        onChange={e => setNewPlan({ ...newPlan, hasAfterClassNote: e.target.checked })}
-                      />
-                      <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300">แนบบันทึกหลังสอนแล้ว (has After Class Note)</span>
-                    </label>
-
-                    {newPlan.hasAfterClassNote && (
-                      <div className="mt-3 ml-6">
-                        <label className="block text-xs font-bold text-zinc-500 mb-1">อัปโหลดไฟล์บันทึกหลังสอน</label>
-                        <input
-                          type="file"
-                          accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.png"
-                          className="w-full p-1.5 border rounded-xl dark:border-zinc-700 text-sm file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-amber-50 file:text-amber-700 dark:file:bg-amber-950/40 dark:file:text-amber-400 hover:file:bg-amber-100 bg-white dark:bg-zinc-900"
-                          onChange={e => {
-                            if (e.target.files && e.target.files.length > 0) {
-                              setSelectedAfterClassFile(e.target.files[0]);
-                            } else {
-                              setSelectedAfterClassFile(null);
-                            }
-                          }}
-                        />
-                        <div className="mt-2 space-y-1">
-                          {newPlan.afterClassNoteUrl && !selectedAfterClassFile && (
-                            <div className="flex items-center justify-between bg-zinc-50 dark:bg-zinc-800 p-2 rounded-lg text-xs">
-                              <span className="truncate max-w-[80%] text-amber-600 dark:text-amber-400">{newPlan.afterClassNoteUrl.split('/').pop()}</span>
-                              <button onClick={() => setNewPlan({ ...newPlan, afterClassNoteUrl: "" })} className="text-red-500 hover:text-red-700 font-bold"><X size={14} /></button>
-                            </div>
-                          )}
-                          {selectedAfterClassFile && (
-                            <div className="flex items-center justify-between bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg text-xs border border-amber-100 dark:border-amber-800/50">
-                              <span className="truncate max-w-[80%] font-bold text-amber-700 dark:text-amber-400">{selectedAfterClassFile.name}</span>
-                              <button onClick={() => setSelectedAfterClassFile(null)} className="text-red-500 hover:text-red-700 font-bold"><X size={14} /></button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
                   </div>
-                </div>
                 <div className="flex justify-end gap-2 mt-4">
-                  <button onClick={() => { setShowAdd(false); setNewPlan({ subject: "", title: "", fileUrls: [], semester: "1", academicYear: String(currentBuddhistYear), hasAfterClassNote: false, afterClassNoteUrl: "" }); setSelectedFiles([]); setSelectedAfterClassFile(null); }} className="bg-zinc-200 hover:bg-zinc-300 text-zinc-700 px-4 py-2 rounded-xl text-sm font-bold transition-colors">ยกเลิก</button>
+                  <button onClick={() => { setShowAdd(false); setNewPlan({ subject: "", title: "", fileUrls: [], semester: "1", academicYear: String(currentBuddhistYear) }); setSelectedFiles([]); setSelectedAfterClassFile(null); }} className="bg-zinc-200 hover:bg-zinc-300 text-zinc-700 px-4 py-2 rounded-xl text-sm font-bold transition-colors">ยกเลิก</button>
                   <button onClick={handleAdd} className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-xl text-sm font-bold transition-colors">บันทึกข้อมูล</button>
                 </div>
               </div>
@@ -416,7 +354,6 @@ export default function LessonPlansPage() {
                         <th className="px-5 py-4 rounded-l-xl">ครูผู้สอน</th>
                         <th className="px-5 py-4">เทอม/ปีการศึกษา</th>
                         <th className="px-5 py-4">วิชา</th>
-                        <th className="px-5 py-4">หัวข้อ / เรื่องที่สอน</th>
                         <th className="px-5 py-4 text-center">ไฟล์เอกสาร</th>
                         <th className="px-5 py-4 text-center">สถานะ</th>
                         <th className="px-5 py-4 rounded-r-xl text-center">จัดการ</th>
@@ -443,7 +380,6 @@ export default function LessonPlansPage() {
                             </span>
                           </td>
                           <td className="px-5 py-5 text-sm font-medium text-zinc-900 dark:text-zinc-100">{p.subject}</td>
-                          <td className="px-5 py-5 text-sm text-zinc-600 dark:text-zinc-300">{p.title}</td>
                           <td className="px-5 py-5 text-center">
                             <div className="flex flex-col gap-1.5 items-center">
                               {/* Legacy single file */}
@@ -458,14 +394,8 @@ export default function LessonPlansPage() {
                                   <FileText size={14} /> เอกสารแผน {p.fileUrls.length > 1 ? idx + 1 : ""}
                                 </button>
                               ))}
-                              {/* After class note file */}
-                              {p.hasAfterClassNote && (p.afterClassNoteUrl || (p.afterClassNoteUrls && p.afterClassNoteUrls.length > 0)) && (
-                                <button onClick={() => setPreviewDoc(p.afterClassNoteUrl || p.afterClassNoteUrls[0])} className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-3 py-1.5 rounded-xl hover:bg-amber-100 dark:hover:bg-amber-950/60 transition-colors">
-                                  <FileText size={14} /> บันทึกหลังสอน
-                                </button>
-                              )}
                               {/* Fallback */}
-                              {!p.fileUrl && (!p.fileUrls || p.fileUrls.length === 0) && (!p.hasAfterClassNote || (!p.afterClassNoteUrl && (!p.afterClassNoteUrls || p.afterClassNoteUrls.length === 0))) && (
+                              {!p.fileUrl && (!p.fileUrls || p.fileUrls.length === 0) && (
                                 <span className="text-xs text-zinc-400">-</span>
                               )}
                             </div>
@@ -577,8 +507,6 @@ export default function LessonPlansPage() {
                       <div className="bg-white dark:bg-zinc-900/40 p-3 rounded-xl border border-zinc-100 dark:border-zinc-800/60">
                         <div className="text-[10px] font-bold text-zinc-400 uppercase mb-0.5">วิชา</div>
                         <div className="text-sm font-bold text-zinc-800 dark:text-zinc-200 mb-2">{p.subject}</div>
-                        <div className="text-[10px] font-bold text-zinc-400 uppercase mb-0.5">หัวข้อ / เรื่องที่สอน</div>
-                        <div className="text-sm text-zinc-600 dark:text-zinc-300">{p.title}</div>
                       </div>
 
                       {/* Feedback */}
@@ -603,14 +531,8 @@ export default function LessonPlansPage() {
                               <FileText size={13} /> เอกสารแผน {p.fileUrls.length > 1 ? idx + 1 : ""}
                             </button>
                           ))}
-                          {/* After class note file */}
-                          {p.hasAfterClassNote && (p.afterClassNoteUrl || (p.afterClassNoteUrls && p.afterClassNoteUrls.length > 0)) && (
-                            <button onClick={() => setPreviewDoc(p.afterClassNoteUrl || p.afterClassNoteUrls[0])} className="inline-flex items-center justify-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-3 py-1.5 rounded-xl hover:bg-amber-100 dark:hover:bg-amber-950/60 transition-colors uppercase tracking-wider">
-                              <FileText size={13} /> บันทึกหลังสอน
-                            </button>
-                          )}
                           {/* Fallback */}
-                          {!p.fileUrl && (!p.fileUrls || p.fileUrls.length === 0) && (!p.hasAfterClassNote || (!p.afterClassNoteUrl && (!p.afterClassNoteUrls || p.afterClassNoteUrls.length === 0))) && (
+                          {!p.fileUrl && (!p.fileUrls || p.fileUrls.length === 0) && (
                             <span className="text-xs text-zinc-400">ไม่มีไฟล์</span>
                           )}
                         </div>
