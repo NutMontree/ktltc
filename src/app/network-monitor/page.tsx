@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Activity, Server, ShieldCheck, Wifi, AlertTriangle, RefreshCcw, Download, CheckCircle, Globe, ArrowDown, ArrowUp, RotateCw } from 'lucide-react';
+import { Activity, Server, ShieldCheck, Wifi, AlertTriangle, RefreshCcw, Download, CheckCircle, Globe, ArrowDown, ArrowUp, RotateCw, BarChart2 } from 'lucide-react';
 import { networkDevices } from '@/lib/networkDevices';
+import TrafficGraphModal, { TrafficHistoryPoint } from './components/TrafficGraphModal';
 
 interface DeviceStatus {
   id: string;
@@ -29,6 +30,11 @@ export default function NetworkMonitorPage() {
   );
   const [isScanning, setIsScanning] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<string>('--:--:--');
+
+  // ================= State: Traffic Graph Modal =================
+  const [isGraphModalOpen, setIsGraphModalOpen] = useState(false);
+  const [graphInitialDeviceId, setGraphInitialDeviceId] = useState<string>('all');
+  const [trafficHistory, setTrafficHistory] = useState<TrafficHistoryPoint[]>([]);
 
   // ================= State: Speedtest =================
   const [isTesting, setIsTesting] = useState(false);
@@ -71,7 +77,46 @@ export default function NetworkMonitorPage() {
           });
         });
         const now = new Date();
-        setLastUpdate(`${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`);
+        const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+        setLastUpdate(timeStr);
+
+        // Record traffic snapshot into history (up to 30 snapshots)
+        let totalDl = 0;
+        let totalUl = 0;
+        const deviceMap: Record<string, { rx: number; tx: number; name: string; location: string }> = {};
+
+        json.data.forEach((d: DeviceStatus) => {
+          if (d.status === 'online') {
+            if (d.id !== 'fw-1' && d.id !== 'core-1') {
+              totalDl += d.rx || 0;
+              totalUl += d.tx || 0;
+            }
+            deviceMap[d.id] = {
+              rx: d.rx || 0,
+              tx: d.tx || 0,
+              name: d.name,
+              location: d.location
+            };
+          }
+        });
+
+        const coreDev = json.data.find((d: DeviceStatus) => d.id === 'core-1');
+        const campusDl = coreDev?.rx !== undefined && coreDev.rx > 0 ? coreDev.rx : Number(totalDl.toFixed(1));
+        const campusUl = coreDev?.tx !== undefined && coreDev.tx > 0 ? coreDev.tx : Number(totalUl.toFixed(1));
+
+        setTrafficHistory(prev => {
+          const next = [
+            ...prev,
+            {
+              time: timeStr,
+              timestamp: now.getTime(),
+              totalDl: campusDl,
+              totalUl: campusUl,
+              devices: deviceMap
+            }
+          ];
+          return next.slice(-30);
+        });
       }
 
       // Fetch labels in background
@@ -336,10 +381,23 @@ export default function NetworkMonitorPage() {
               <Server className="w-6 h-6 text-indigo-500" />
               สถานะทราฟฟิกแต่ละอาคาร (Bandwidth Usage)
             </h2>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <div className="text-sm text-gray-500 text-right hidden lg:block">
                 <p>อัปเดตล่าสุด: <span className="font-semibold text-gray-700">{lastUpdate}</span></p>
               </div>
+
+              {/* Graph Modal Button */}
+              <button 
+                onClick={() => {
+                  setGraphInitialDeviceId('all');
+                  setIsGraphModalOpen(true);
+                }}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-sm hover:shadow transition-all active:scale-95"
+              >
+                <BarChart2 className="w-4 h-4" />
+                ดูกราฟทราฟฟิก (Chart)
+              </button>
+
               <button 
                 onClick={() => scanNetwork(false)}
                 disabled={isScanning}
@@ -392,6 +450,19 @@ export default function NetworkMonitorPage() {
                           {device.status === 'loading' ? 'SCANNING' : device.status.toUpperCase()}
                         </span>
                         
+                        {/* Graph Button for this device */}
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setGraphInitialDeviceId(device.id);
+                            setIsGraphModalOpen(true);
+                          }}
+                          title="ดูกราฟของอาคารนี้"
+                          className="p-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-700 rounded-lg transition-colors border border-blue-100"
+                        >
+                          <BarChart2 className="w-4 h-4" />
+                        </button>
+
                         {/* Reboot Button */}
                         {device.status === 'online' && (
                           <button 
@@ -641,6 +712,15 @@ export default function NetworkMonitorPage() {
             </div>
           </div>
         )}
+
+        {/* MODAL FOR TRAFFIC GRAPH & EXPORT */}
+        <TrafficGraphModal
+          isOpen={isGraphModalOpen}
+          onClose={() => setIsGraphModalOpen(false)}
+          devices={devices}
+          history={trafficHistory}
+          initialDeviceId={graphInitialDeviceId}
+        />
 
       </div>
     </div>
