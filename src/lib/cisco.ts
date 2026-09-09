@@ -10,7 +10,7 @@ export async function getCiscoPorts(ip: string): Promise<any[]> {
       password: 'Ktltc@33110',
       readyTimeout: 8000,
       tryKeyboard: true,
-      onKeyboardInteractive: (_name, _instructions, _instructionsLang, prompts, finish) => {
+      onKeyboardInteractive: (_name: any, _instructions: any, _instructionsLang: any, prompts: any, finish: any) => {
         if (prompts.length > 0) {
           finish(['Ktltc@33110']);
         }

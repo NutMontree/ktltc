@@ -38,7 +38,7 @@ export async function POST(request: Request) {
         password: isFirewall ? 'Nut29122539' : 'Ktltc@33110',
         readyTimeout: 10000,
         tryKeyboard: true,
-        onKeyboardInteractive: (name, instructions, instructionsLang, prompts, finish) => {
+        onKeyboardInteractive: (name: any, instructions: any, instructionsLang: any, prompts: any, finish: any) => {
           if (prompts.length > 0 && prompts[0].prompt.toLowerCase().includes('password')) {
             finish([isFirewall ? 'Nut29122539' : 'Ktltc@33110']);
           }

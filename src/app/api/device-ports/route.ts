@@ -79,7 +79,7 @@ export async function GET(request: Request) {
       password,
       readyTimeout: 10000, // เพิ่มเวลาให้รออุปกรณ์นานขึ้น
       tryKeyboard: true,
-      onKeyboardInteractive: (name, instructions, instructionsLang, prompts, finish) => {
+      onKeyboardInteractive: (name: any, instructions: any, instructionsLang: any, prompts: any, finish: any) => {
         if (prompts.length > 0 && prompts[0].prompt.toLowerCase().includes('password')) {
           finish([password]);
         }

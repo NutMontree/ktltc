@@ -84,7 +84,7 @@ export async function getSNMPPorts(ip: string): Promise<any[]> {
     // 1. Fetch Interface Table (Name, Speed, Status)
     const fetchColumns = [2, 5, 8].map((colIndex) => {
       return new Promise<void>((res) => {
-        session.subtree(`1.3.6.1.2.1.2.2.1.${colIndex}`, 20, (varbinds) => {
+        session.subtree(`1.3.6.1.2.1.2.2.1.${colIndex}`, 20, (varbinds: any) => {
           for (const vb of varbinds) {
             const oidStr = vb.oid.toString();
             const parts = oidStr.split('.');
@@ -102,7 +102,7 @@ export async function getSNMPPorts(ip: string): Promise<any[]> {
 
     // 2. Fetch LLDP System Names (1.0.8802.1.1.2.1.4.1.1.9)
     const fetchLldpNames = new Promise<void>((res) => {
-      session.subtree('1.0.8802.1.1.2.1.4.1.1.9', 20, (vbs) => {
+      session.subtree('1.0.8802.1.1.2.1.4.1.1.9', 20, (vbs: any) => {
         for (const vb of vbs) {
           const parts = vb.oid.split('.');
           const portNum = parseInt(parts[parts.length - 2], 10);
@@ -114,7 +114,7 @@ export async function getSNMPPorts(ip: string): Promise<any[]> {
 
     // 3. Fetch LLDP Management IPs (1.0.8802.1.1.2.1.4.2.1.3)
     const fetchLldpIps = new Promise<void>((res) => {
-      session.subtree('1.0.8802.1.1.2.1.4.2.1.3', 20, (vbs) => {
+      session.subtree('1.0.8802.1.1.2.1.4.2.1.3', 20, (vbs: any) => {
         for (const vb of vbs) {
           const parts = vb.oid.split('.');
           const neighborIp = parts.slice(parts.length - 4).join('.');
@@ -126,7 +126,7 @@ export async function getSNMPPorts(ip: string): Promise<any[]> {
 
     // 4. Fetch Bridge FDB MAC Address Table (1.3.6.1.2.1.17.4.3.1.2)
     const fetchMacTable = new Promise<void>((res) => {
-      session.subtree('1.3.6.1.2.1.17.4.3.1.2', 20, (vbs) => {
+      session.subtree('1.3.6.1.2.1.17.4.3.1.2', 20, (vbs: any) => {
         for (const vb of vbs) {
           const portNum = vb.value;
           const parts = vb.oid.split('.');
