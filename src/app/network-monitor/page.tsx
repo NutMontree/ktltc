@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useSession } from 'next-auth/react';
 import { Activity, Server, ShieldCheck, Wifi, AlertTriangle, RefreshCcw, Download, CheckCircle, Globe, ArrowDown, ArrowUp, RotateCw, BarChart2 } from 'lucide-react';
 import { networkDevices } from '@/lib/networkDevices';
 import TrafficGraphModal, { TrafficHistoryPoint } from './components/TrafficGraphModal';
@@ -19,6 +20,9 @@ interface DeviceStatus {
 }
 
 export default function NetworkMonitorPage() {
+  const { data: session } = useSession();
+  const isSuperAdmin = ((session?.user as any)?.role || '').toLowerCase() === 'super_admin';
+
   // ================= State: Topology Scanner =================
   const [devices, setDevices] = useState<DeviceStatus[]>(() =>
     networkDevices.map(d => ({
@@ -153,6 +157,11 @@ export default function NetworkMonitorPage() {
   const handleReboot = async (e: React.MouseEvent, device: DeviceStatus) => {
     e.stopPropagation(); // Prevent opening the port details modal
     
+    if (!isSuperAdmin) {
+      alert('⚠️ สิทธิ์ไม่เพียงพอ: เฉพาะผู้ดูแลระบบระดับ super_admin เท่านั้นที่มีสิทธิ์สั่งรีสตาร์ทอุปกรณ์');
+      return;
+    }
+
     const confirmReboot = window.confirm(
       `⚠️ คำเตือน!\n\nคุณแน่ใจหรือไม่ที่จะสั่งรีสตาร์ทอุปกรณ์ "${device.location}"?\nการกระทำนี้จะทำให้อินเทอร์เน็ตของตึกนี้ถูกตัดขาดประมาณ 3-5 นาที`
     );
@@ -507,11 +516,11 @@ export default function NetworkMonitorPage() {
                           <BarChart2 className="w-4 h-4" />
                         </button>
 
-                        {/* Reboot Button */}
-                        {device.status === 'online' && (
+                        {/* Reboot Button (Only visible to super_admin) */}
+                        {isSuperAdmin && device.status === 'online' && (
                           <button 
                             onClick={(e) => handleReboot(e, device)}
-                            title="เริ่มต้นการทำงานใหม่ (Restart)"
+                            title="เริ่มต้นการทำงานใหม่ (Restart) - เฉพาะ Super Admin"
                             className="p-1.5 bg-orange-50 hover:bg-orange-100 text-orange-500 hover:text-orange-600 rounded-lg transition-colors border border-orange-100"
                           >
                             <RotateCw className="w-4 h-4" />

@@ -1,8 +1,25 @@
 import { NextResponse } from 'next/server';
-// import { NodeSSH } from 'node-ssh';
+import { NodeSSH } from 'node-ssh';
+import { auth } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'กรุณาเข้าสู่ระบบก่อนดำเนินการ (Unauthorized)' 
+      }, { status: 401 });
+    }
+
+    const userRole = ((session.user as any)?.role || '').toLowerCase();
+    if (userRole !== 'super_admin') {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'คุณไม่มีสิทธิ์ในการสั่งรีสตาร์ทอุปกรณ์ (เฉพาะ super_admin เท่านั้น)' 
+      }, { status: 403 });
+    }
+
     const body = await request.json();
     const { ip, type, name } = body;
 
