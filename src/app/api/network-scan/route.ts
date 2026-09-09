@@ -34,8 +34,29 @@ const corePortMapping: Record<string, string> = {
   '192.168.6.35': '1/1/11', // บ้านพักครู (Home-Techer)
 };
 
-// Cache previous counters to calculate exact Mbps delta
-let prevCounters: Record<string, { rx: number; tx: number; time: number }> = {};
+// Cache previous counters to calculate exact Mbps delta (shared via Redis with memory fallback)
+let memoryCounters: Record<string, { rx: number; tx: number; time: number }> = {};
+
+async function getPrevCounters(): Promise<Record<string, { rx: number; tx: number; time: number }>> {
+  try {
+    const { redis } = await import('@/lib/redis');
+    const data = await redis.get('nms:counters');
+    if (data) return JSON.parse(data);
+  } catch (err) {
+    // Fallback to memory
+  }
+  return memoryCounters;
+}
+
+async function setPrevCounters(counters: Record<string, { rx: number; tx: number; time: number }>) {
+  memoryCounters = counters;
+  try {
+    const { redis } = await import('@/lib/redis');
+    await redis.set('nms:counters', JSON.stringify(counters), 'EX', 300);
+  } catch (err) {
+    // Fallback to memory
+  }
+}
 
 async function fetchCoreSwitchBandwidth(): Promise<Record<string, { rx: number; tx: number }>> {
   const result: Record<string, { rx: number; tx: number }> = {};
@@ -98,6 +119,9 @@ async function fetchCoreSwitchBandwidth(): Promise<Record<string, { rx: number; 
       }
     }
 
+    const prevCounters = await getPrevCounters();
+    const nextCounters: Record<string, { rx: number; tx: number; time: number }> = { ...prevCounters };
+
     for (const [ip, port] of Object.entries(corePortMapping)) {
       const curr = currentCounters[port];
       const prev = prevCounters[port];
@@ -116,24 +140,35 @@ async function fetchCoreSwitchBandwidth(): Promise<Record<string, { rx: number; 
         let dlMbps = Number((dlBytes * 8 / (dt * 1000000)).toFixed(1));
         let ulMbps = Number((ulBytes * 8 / (dt * 1000000)).toFixed(1));
 
-        // If traffic is very light during idle hours, display baseline heartbeat rate
-        if (curr.rx > 0 && dlMbps === 0 && ulMbps === 0) {
-          dlMbps = 0.2;
-          ulMbps = 0.1;
-        }
-
         result[ip] = { rx: dlMbps, tx: ulMbps };
       } else if (curr && curr.rx > 0) {
-        // Initial sample baseline
-        result[ip] = { rx: 0.4, tx: 0.2 };
+        // Initial sample baseline before first delta
+        result[ip] = { rx: 0.1, tx: 0.1 };
       } else {
         result[ip] = { rx: 0, tx: 0 };
       }
 
       if (curr) {
-        prevCounters[port] = { rx: curr.rx, tx: curr.tx, time: now };
+        nextCounters[port] = { rx: curr.rx, tx: curr.tx, time: now };
       }
     }
+
+    // Save updated counters to shared cache
+    await setPrevCounters(nextCounters);
+
+    // Calculate aggregate traffic for Core Switch (sum of all buildings)
+    let totalBuildingDl = 0;
+    let totalBuildingUl = 0;
+    for (const [devIp, val] of Object.entries(result)) {
+      if (devIp !== '192.168.6.1' && devIp !== '192.168.6.3') {
+        totalBuildingDl += val.rx;
+        totalBuildingUl += val.tx;
+      }
+    }
+    result['192.168.6.3'] = {
+      rx: Number(totalBuildingDl.toFixed(1)),
+      tx: Number(totalBuildingUl.toFixed(1))
+    };
   } catch (err) {
     // Graceful fallback on SSH error
   }
