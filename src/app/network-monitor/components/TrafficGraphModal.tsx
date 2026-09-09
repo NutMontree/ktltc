@@ -520,7 +520,10 @@ export default function TrafficGraphModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-md animate-fadeIn">
+    <div 
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6 bg-slate-900/75 backdrop-blur-md animate-fadeIn"
+      onClick={onClose}
+    >
       <div 
         className="bg-white rounded-3xl shadow-2xl w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden border border-slate-100 transition-all"
         onClick={e => e.stopPropagation()}

@@ -533,7 +533,7 @@ export default function NetworkMonitorPage() {
 
         {/* MODAL FOR PORT DETAILS */}
         {selectedDevice && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm" onClick={closeDeviceDetails}>
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm" onClick={closeDeviceDetails}>
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-5xl max-h-[95vh] flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
               
               {/* Modal Header */}
