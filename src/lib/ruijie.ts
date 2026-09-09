@@ -41,7 +41,7 @@ export async function getRuijieReyeePorts(ip: string): Promise<any[]> {
     const speedRaw = m[2].trim();
     const portNum = parseInt(m[3], 10);
     const isUp = statusRaw.toLowerCase() === 'connected';
-    const isSFP = portNum >= 27;
+    const isSFP = portNum >= 25;
 
     let speed = '--';
     if (isUp) {
@@ -51,15 +51,28 @@ export async function getRuijieReyeePorts(ip: string): Promise<any[]> {
       else speed = speedRaw || '1Gbps';
     }
 
+    let lldpName = '';
+    let deviceType = isSFP ? 'Uplink' : 'LAN';
+    let resolvedIp = '';
+
+    if (isSFP) {
+      lldpName = isUp ? '🔌 Core Switch (Uplink)' : 'SFP Uplink Port';
+      resolvedIp = isUp ? '192.168.6.3' : '';
+    } else if (isUp) {
+      lldpName = '📶 Wi-Fi AP / อุปกรณ์ LAN';
+      deviceType = 'Wi-Fi AP';
+    }
+
     ports.push({
       portNum,
       port: isSFP ? `Port ${portNum} (SFP)` : `Port ${portNum}`,
       status: isUp ? 'UP' : 'DOWN',
       speed,
-      type: isSFP ? 'WAN/Uplink' : 'LAN',
-      deviceType: isSFP ? 'Uplink' : 'LAN',
-      lldpName: isSFP && isUp ? '🔌 Core Switch (Uplink)' : '',
-      ip: isSFP && isUp ? '192.168.6.3' : '',
+      type: isSFP ? 'WAN/Uplink' : deviceType === 'Wi-Fi AP' ? 'Wi-Fi AP' : 'LAN',
+      deviceType,
+      lldpName,
+      deviceName: lldpName,
+      ip: resolvedIp,
       mac: ''
     });
   }

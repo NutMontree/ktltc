@@ -6,6 +6,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const ip = searchParams.get('ip');
   const type = searchParams.get('type') || 'Unknown';
+  const brand = searchParams.get('brand') || '';
 
   if (!ip) {
     return NextResponse.json({ success: false, error: 'Missing IP address' }, { status: 400 });
@@ -14,7 +15,7 @@ export async function GET(request: Request) {
   // ==========================================
   // 🟢 Ruijie Reyee Easy-Smart Switch (Web API)
   // ==========================================
-  if (ip === '192.168.6.32' || type.includes('Reyee')) {
+  if (ip === '192.168.6.32' || ip === '192.168.6.31' || brand === 'Reyee' || type.includes('Reyee')) {
     try {
       const { getRuijieReyeePorts } = await import('@/lib/ruijie');
       const ports = await getRuijieReyeePorts(ip);

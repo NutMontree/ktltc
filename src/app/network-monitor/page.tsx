@@ -54,6 +54,12 @@ export default function NetworkMonitorPage() {
   const [editingLabel, setEditingLabel] = useState('');
   const [isSavingLabel, setIsSavingLabel] = useState(false);
 
+  // ================= State: WAN Circuits =================
+  const [wanCircuits, setWanCircuits] = useState<Array<{ id: string; name: string; ip: string; status: 'online' | 'offline' | 'loading' }>>([
+    { id: 'uninet', name: 'UNINET', ip: '202.29.224.34', status: 'online' },
+    { id: 'cat', name: 'วงจร CAT (NT)', ip: '122.154.155.45', status: 'offline' }
+  ]);
+
   // ================= Functions: Topology Scanner =================
   const scanNetwork = async (isBackground = false) => {
     if (!isBackground) setIsScanning(true);
@@ -66,6 +72,9 @@ export default function NetworkMonitorPage() {
       const json = await res.json();
       
       if (json.success) {
+        if (json.wanCircuits) {
+          setWanCircuits(json.wanCircuits);
+        }
         // Keep rebooting state if it exists
         setDevices(prev => {
           return json.data.map((newDev: DeviceStatus) => {
@@ -185,7 +194,7 @@ export default function NetworkMonitorPage() {
     setDevicePorts([]);
 
     try {
-      const res = await fetch(`/api/device-ports?ip=${device.ip}&type=${device.type}`, { cache: 'no-store' });
+      const res = await fetch(`/api/device-ports?ip=${device.ip}&type=${device.type}&brand=${device.brand || ''}`, { cache: 'no-store' });
       const json = await res.json();
       if (json.success) {
         setDevicePorts(json.data);
@@ -337,40 +346,75 @@ export default function NetworkMonitorPage() {
             </div>
 
             {/* UNINET Card */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-800">วงจร UNINET</h3>
-                <Wifi className="text-blue-500 w-6 h-6" />
-              </div>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center border-b border-gray-50 pb-2">
-                  <span className="text-gray-500">สถานะ</span>
-                  <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">ONLINE</span>
+            {(() => {
+              const uninet = wanCircuits.find(w => w.id === 'uninet') || { status: 'online', ip: '202.29.224.34' };
+              const isUp = uninet.status === 'online';
+              return (
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-800">วงจร UNINET</h3>
+                    <Wifi className={isUp ? "text-blue-500 w-6 h-6" : "text-gray-400 w-6 h-6"} />
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center border-b border-gray-50 pb-2">
+                      <span className="text-gray-500">สถานะ</span>
+                      {isUp ? (
+                        <span className="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                          ONLINE
+                        </span>
+                      ) : (
+                        <span className="px-2.5 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                          OFFLINE
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-500">IP Address</span>
+                      <span className="font-mono text-gray-700">{uninet.ip}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-500">IP Address</span>
-                  <span className="font-mono text-gray-700">202.29.224.34</span>
-                </div>
-              </div>
-            </div>
+              );
+            })()}
 
             {/* CAT Card */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-800">วงจร CAT (NT)</h3>
-                <Wifi className="text-orange-500 w-6 h-6" />
-              </div>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center border-b border-gray-50 pb-2">
-                  <span className="text-gray-500">สถานะ</span>
-                  <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">ONLINE</span>
+            {(() => {
+              const cat = wanCircuits.find(w => w.id === 'cat') || { status: 'offline', ip: '122.154.155.45' };
+              const isUp = cat.status === 'online';
+              return (
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-800">วงจร CAT (NT)</h3>
+                    <Wifi className={isUp ? "text-orange-500 w-6 h-6" : "text-gray-400 w-6 h-6"} />
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center border-b border-gray-50 pb-2">
+                      <span className="text-gray-500">สถานะ</span>
+                      {isUp ? (
+                        <span className="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                          ONLINE
+                        </span>
+                      ) : (
+                        <div className="flex items-center gap-1.5">
+                          <span className="px-2.5 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                            OFFLINE
+                          </span>
+                          <span className="text-[11px] text-red-500 font-medium hidden sm:inline">(สัญญาณขาด)</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-500">IP Address</span>
+                      <span className="font-mono text-gray-700">{cat.ip}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-500">IP Address</span>
-                  <span className="font-mono text-gray-700">122.154.155.45</span>
-                </div>
-              </div>
-            </div>
+              );
+            })()}
           </div>
         </div>
 

@@ -30,7 +30,7 @@ const corePortMapping: Record<string, string> = {
   '192.168.6.17': '1/1/6',  // อาคารอิเล็กทรอนิกส์ (Chalermphakiat)
   '192.168.6.10': '1/1/7',  // ตึกอำนวยการ (Aumnuygan)
   '192.168.6.32': '1/1/9',  // ป้อมยาม (UPlink-To-YAM)
-  '192.168.6.16': '1/1/10', // ตึกโดม (Uplink-To-DOME)
+  '192.168.6.31': '1/1/10', // ตึกโดม (Uplink-To-DOME)
   '192.168.6.35': '1/1/11', // บ้านพักครู (Home-Techer)
 };
 
@@ -178,12 +178,22 @@ async function fetchCoreSwitchBandwidth(): Promise<Record<string, { rx: number; 
 
 export async function GET() {
   try {
-    // Run ping scan and Core Switch bandwidth fetch in parallel
-    const [bandwidthMap, pingStatuses] = await Promise.all([
+    // WAN Circuits to monitor
+    const wanTargets = [
+      { id: 'uninet', name: 'UNINET', ip: '202.29.224.34' },
+      { id: 'cat', name: 'วงจร CAT (NT)', ip: '122.154.155.45' }
+    ];
+
+    // Run ping scan, WAN check, and Core Switch bandwidth fetch in parallel
+    const [bandwidthMap, pingStatuses, wanStatuses] = await Promise.all([
       fetchCoreSwitchBandwidth(),
       Promise.all(networkDevices.map(async (device) => ({
         id: device.id,
         status: await pingDevice(device.ip)
+      }))),
+      Promise.all(wanTargets.map(async (wan) => ({
+        ...wan,
+        status: await pingDevice(wan.ip)
       })))
     ]);
 
@@ -201,7 +211,7 @@ export async function GET() {
       };
     });
 
-    return NextResponse.json({ success: true, data: results });
+    return NextResponse.json({ success: true, data: results, wanCircuits: wanStatuses });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
