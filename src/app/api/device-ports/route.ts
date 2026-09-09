@@ -30,6 +30,23 @@ export async function GET(request: Request) {
   }
 
   // ==========================================
+  // 🟢 Cisco Managed Switch (SSH API)
+  // ==========================================
+  if (ip === '192.168.6.190' || brand === 'Cisco') {
+    try {
+      const { getCiscoPorts } = await import('@/lib/cisco');
+      const ports = await getCiscoPorts(ip);
+      return NextResponse.json({ success: true, data: ports });
+    } catch (ciscoErr: any) {
+      console.error(`Cisco Error on ${ip}:`, ciscoErr);
+      return NextResponse.json({
+        success: false,
+        error: `เชื่อมต่อ Cisco Switch ล้มเหลว: ${ciscoErr.message || ciscoErr.toString()}`
+      }, { status: 500 });
+    }
+  }
+
+  // ==========================================
   // 🟢 SNMP Fallback for Smart Switches
   // ==========================================
   if (type === 'Edge Switch' || ip === '192.168.6.14') {
