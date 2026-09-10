@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import clientPromise from "@/lib/db";
 import fs from "fs/promises";
 import path from "path";
 import { spawn } from "child_process";
@@ -96,7 +97,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { action, filePath, code, target, replacement, andRebuild } = await req.json();
+    const { action, filePath, code, target, replacement, andRebuild, sessionId } = await req.json();
 
     if (!action) {
       return NextResponse.json({ error: "Action is required" }, { status: 400 });
@@ -223,6 +224,19 @@ export async function POST(req: NextRequest) {
       // Write new code
       await fs.writeFile(targetFullPath, code, "utf-8");
 
+      if (sessionId && filePath) {
+        try {
+          const client = await clientPromise;
+          const db = client.db("ktltc_db");
+          await db.collection("m1_chat_messages").updateMany(
+            { sessionId, "codeProposal.filePath": filePath },
+            { $set: { "codeProposal.applied": true, "codeProposal.hasBackup": fileExists } }
+          );
+        } catch (dbErr) {
+          console.error("DB apply update error:", dbErr);
+        }
+      }
+
       return NextResponse.json({
         success: true,
         message: `✅ บันทึกไฟล์ ${filePath} สำเร็จเรียบร้อยแล้ว`,
@@ -258,6 +272,19 @@ export async function POST(req: NextRequest) {
       const newContent = currentContent.replace(target, replacement);
       await fs.writeFile(targetFullPath, newContent, "utf-8");
 
+      if (sessionId && filePath) {
+        try {
+          const client = await clientPromise;
+          const db = client.db("ktltc_db");
+          await db.collection("m1_chat_messages").updateMany(
+            { sessionId, "codeProposal.filePath": filePath },
+            { $set: { "codeProposal.applied": true, "codeProposal.hasBackup": true } }
+          );
+        } catch (dbErr) {
+          console.error("DB patch update error:", dbErr);
+        }
+      }
+
       return NextResponse.json({
         success: true,
         message: `✅ Patch ไฟล์ ${filePath} สำเร็จเรียบร้อยแล้ว`,
@@ -277,6 +304,19 @@ export async function POST(req: NextRequest) {
 
       const backupContent = await fs.readFile(backupFile, "utf-8");
       await fs.writeFile(targetFullPath, backupContent, "utf-8");
+
+      if (sessionId && filePath) {
+        try {
+          const client = await clientPromise;
+          const db = client.db("ktltc_db");
+          await db.collection("m1_chat_messages").updateMany(
+            { sessionId, "codeProposal.filePath": filePath },
+            { $set: { "codeProposal.applied": false } }
+          );
+        } catch (dbErr) {
+          console.error("DB rollback update error:", dbErr);
+        }
+      }
 
       return NextResponse.json({
         success: true,

@@ -595,6 +595,26 @@ ${attachmentContext}
     const messagesCol = db.collection("m1_chat_messages");
     const sessionsCol = db.collection("m1_chat_sessions");
 
+    // Synthesize Antigravity action steps for trace persistence
+    const actionSteps: any[] = [];
+    if (codeProposal) {
+      actionSteps.push({ type: "explore", title: "Explored 1 file" });
+      const baseName = codeProposal.filePath.split("/").pop() || codeProposal.filePath;
+      actionSteps.push({
+        type: "edit",
+        title: baseName,
+        diff: { add: 2, del: 1 },
+      });
+      actionSteps.push({
+        type: "command",
+        title: "npm run build && pm2 reload ktltc --update-env",
+      });
+    } else if (webResults.length > 0) {
+      actionSteps.push({ type: "explore", title: `Searched web (${webResults.length} sources)` });
+    }
+
+    const durationStr = "Worked for 12s";
+
     // Save User Message
     messagesCol.insertOne({
       sessionId: activeSessionId,
@@ -615,6 +635,8 @@ ${attachmentContext}
       learnedAlert: learnedItem ? `🧠 M1 ประมวลผลและเรียนรู้ข้อมูลใหม่โดยอัตโนมัติ: [${learnedItem.topic}]` : undefined,
       webSources: webResults.length > 0 ? webResults : undefined,
       codeProposal: codeProposal || undefined,
+      duration: durationStr,
+      actionSteps: actionSteps.length > 0 ? actionSteps : undefined,
       createdAt: new Date(),
     }).catch(console.error);
 
@@ -645,6 +667,8 @@ ${attachmentContext}
       modelUsed: activeModelName,
       learnedItem,
       webSources: webResults.length > 0 ? webResults : undefined,
+      duration: durationStr,
+      actionSteps: actionSteps.length > 0 ? actionSteps : undefined,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

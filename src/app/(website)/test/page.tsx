@@ -11,8 +11,9 @@ export default function TestPage() {
         <h1 className="text-xl font-semibold text-white">
           หน้าทดสอบระบบ (Test Page)
         </h1>
-        <div className="text-sm text-cyan-400 font-medium bg-cyan-950/40 border border-cyan-800/50 py-3 px-4 rounded-xl shadow-inner">
-          ทดสอบการแก้ไขข้อมูลหน้าเว็บผ่าน M1 AI
+        <div className="text-sm text-cyan-400 font-medium bg-cyan-950/40 border border-cyan-800/50 py-3 px-4 rounded-xl shadow-inner space-y-1.5">
+          <div>ทดสอบการแก้ไขข้อมูลหน้าเว็บผ่าน M1 AI</div>
+          <div className="text-xs text-cyan-300/80 border-t border-cyan-800/40 pt-1.5">ทดสอบการทำงาน เทรน M1</div>
         </div>
         <p className="text-xs text-slate-500">
           KTLTC Cognitive Agent Engine — Verified & Applied

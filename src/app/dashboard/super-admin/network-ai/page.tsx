@@ -547,6 +547,7 @@ export default function NetworkAiPage() {
       const payload: any = {
         action: proposal.action === "patch" ? "patch" : "apply",
         filePath: proposal.filePath,
+        sessionId: currentSessionId,
       };
 
       if (proposal.action === "patch") {
@@ -595,6 +596,7 @@ export default function NetworkAiPage() {
         body: JSON.stringify({
           action: "rollback",
           filePath,
+          sessionId: currentSessionId,
         }),
       });
 
@@ -1512,20 +1514,22 @@ export default function NetworkAiPage() {
 
           {activeTab === "chat" ? (
             <>
-              {/* Quick Prompt Chips */}
-              <div className="p-2.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-950/20 flex gap-2 overflow-x-auto scrollbar-none shrink-0">
-                {QUICK_PROMPTS.map((prompt, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleSendMessage(prompt)}
-                    disabled={isSending}
-                    className="shrink-0 px-2.5 py-1 text-[11px] bg-white dark:bg-slate-800 hover:bg-amber-50 dark:hover:bg-amber-950/40 border border-slate-200 dark:border-slate-700 hover:border-amber-500/40 text-slate-700 dark:text-slate-300 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
-                  >
-                    <Zap className="w-3 h-3 text-amber-500 shrink-0" />
-                    <span className="truncate max-w-[240px]">{prompt}</span>
-                  </button>
-                ))}
-              </div>
+              {/* Quick Prompt Chips (แสดงเฉพาะตอนห้องสนทนาใหม่เพื่อไม่ให้บังแชตบนมือถือ) */}
+              {messages.length === 0 && (
+                <div className="p-2.5 border-b border-white/5 bg-[#14141b] flex gap-2 overflow-x-auto scrollbar-none shrink-0">
+                  {QUICK_PROMPTS.map((prompt, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleSendMessage(prompt)}
+                      disabled={isSending}
+                      className="shrink-0 px-2.5 py-1 text-[11px] bg-[#1a1a24] hover:bg-[#252533] border border-white/10 hover:border-amber-500/40 text-slate-300 hover:text-white rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                    >
+                      <Zap className="w-3 h-3 text-amber-500 shrink-0" />
+                      <span className="truncate max-w-[240px]">{prompt}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {/* Chat Body: Gemini Left Navbar + Chat Messages Area */}
               <div className="flex-1 flex overflow-hidden min-h-0 relative">
@@ -1948,7 +1952,7 @@ export default function NetworkAiPage() {
             </div>
 
             {/* Antigravity Floating Input Bar Area */}
-            <div className="p-3 sm:p-4 bg-[#0f0f14] border-t border-white/5 shrink-0">
+            <div className="p-3 sm:p-4 pb-6 sm:pb-4 bg-[#0f0f14] border-t border-white/5 shrink-0">
               <div className="max-w-4xl mx-auto space-y-2">
                 {/* Message Queue Tray (คิวคำถามรอส่ง) */}
                 {messageQueue.length > 0 && (
@@ -2103,12 +2107,12 @@ export default function NetworkAiPage() {
                         title="คลิกเพื่อเลือกเปลี่ยนโมเดล"
                       >
                         <Sparkles className="w-3 h-3 text-amber-400" />
-                        <span className="truncate max-w-[130px] sm:max-w-[200px]">
+                        <span className="truncate max-w-[120px] sm:max-w-[200px]">
                           {engineMode === "gemini-3.6-flash"
-                            ? "Gemini 3.8 Flash Medium"
+                            ? "Gemini 3.8 Flash"
                             : engineMode === "gemini-3.7-flash"
-                            ? "Gemini 3.7 Pro Thinking"
-                            : "Agent M1 Pro (Local)"}
+                            ? "Gemini 3.7 Pro"
+                            : "Agent M1 Pro"}
                         </span>
                         <ChevronDown className="w-3 h-3 text-slate-400 opacity-70 ml-0.5" />
                       </button>

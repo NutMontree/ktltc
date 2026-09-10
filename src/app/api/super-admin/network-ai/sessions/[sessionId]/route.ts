@@ -40,6 +40,8 @@ export async function GET(
         webSources: m.webSources,
         codeProposal: m.codeProposal,
         attachments: m.attachments,
+        duration: m.duration,
+        actionSteps: m.actionSteps,
       })),
     });
   } catch (error: any) {
