@@ -78,6 +78,33 @@ async function main() {
     }
   }
 
+  // Clean environment so Next.js doesn't inherit polluted server/PM2 vars
+  const cleanEnv = { ...process.env };
+  const keysToDelete = [
+    'NODE_APP_INSTANCE',
+    'PM2_USAGE',
+    'PM2_JSON_PROCESSING',
+    'PM2_HOME',
+    'script',
+    'cwd',
+    'NODE_ENV',
+    'NEXT_PHASE',
+    'NEXT_RUNTIME',
+    '__NEXT_PROCESSED_ENV',
+    '__NEXT_PRIVATE_PREBUNDLED_REACT'
+  ];
+  for (const k of Object.keys(cleanEnv)) {
+    if (keysToDelete.includes(k) || k.startsWith('__NEXT') || k.startsWith('NEXT_')) {
+      delete cleanEnv[k];
+    }
+  }
+  cleanEnv.PATH = `${process.env.PATH || ''}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin`;
+
+  // Periodic 1-second ticker to sync durationSeconds live to DB/file even when stdout is quiet
+  const ticker = setInterval(() => {
+    syncState().catch(() => {});
+  }, 1000);
+
   // Initial sync
   await syncState();
 
@@ -86,11 +113,7 @@ async function main() {
     return new Promise((resolve) => {
       const child = spawn('npm', ['run', 'build'], {
         cwd: PROJECT_ROOT,
-        env: {
-          ...process.env,
-          PATH: `${process.env.PATH}:/usr/local/bin:/usr/bin:/bin`,
-          NODE_ENV: 'production'
-        }
+        env: cleanEnv
       });
 
       let buffer = '';
@@ -132,6 +155,7 @@ async function main() {
   const buildResult = await runBuild();
 
   if (buildResult.code !== 0) {
+    clearInterval(ticker);
     taskState.status = 'error';
     taskState.step = 'failed';
     taskState.stepMessage = `❌ การคอมไพล์โค้ดล้มเหลว (Exit code: ${buildResult.code})`;
@@ -176,6 +200,7 @@ async function main() {
   };
 
   const pm2Result = await runPm2();
+  clearInterval(ticker);
 
   const finalDuration = Math.round((Date.now() - startTime.getTime()) / 1000);
   taskState.durationSeconds = finalDuration;

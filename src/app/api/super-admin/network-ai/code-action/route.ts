@@ -175,16 +175,27 @@ export async function POST(req: NextRequest) {
         await fs.writeFile(statusFile, JSON.stringify(initialTask, null, 2), "utf-8");
       } catch {}
 
+      // Sanitize environment so Next.js internal server state doesn't pollute the runner
+      const cleanRunnerEnv: Record<string, string> = {};
+      for (const [k, v] of Object.entries(process.env)) {
+        if (
+          v !== undefined &&
+          !k.startsWith("__NEXT") &&
+          !k.startsWith("NEXT_") &&
+          !["NODE_APP_INSTANCE", "PM2_USAGE", "PM2_JSON_PROCESSING", "script", "cwd", "NODE_ENV"].includes(k)
+        ) {
+          cleanRunnerEnv[k] = v;
+        }
+      }
+      cleanRunnerEnv.PATH = `${process.env.PATH || ""}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin`;
+
       // Spawn detached background worker so PM2 reload won't terminate it
       const runnerScript = path.join(PROJECT_ROOT, "scripts", "run_m1_build.js");
       const child = spawn("node", [runnerScript, taskId], {
         cwd: PROJECT_ROOT,
         detached: true,
         stdio: "ignore",
-        env: {
-          ...process.env,
-          PATH: `${process.env.PATH}:/usr/local/bin:/usr/bin:/bin`,
-        },
+        env: cleanRunnerEnv,
       });
 
       child.unref();

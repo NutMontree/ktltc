@@ -2011,10 +2011,67 @@ export default function NetworkAiPage() {
                                     </a>
 
                                     {/* Live Step Status Message inside Card */}
-                                    {activeTask && activeTask.status === "running" && (
-                                      <div className="w-full text-[11px] text-amber-300/90 font-mono bg-amber-500/10 border border-amber-500/20 rounded-lg px-2.5 py-1.5 flex items-center gap-2 mt-1">
-                                        <RefreshCw className="w-3 h-3 animate-spin text-amber-400 shrink-0" />
-                                        <span>{activeTask.stepMessage || "กำลังคอมไพล์ Next.js Turbopack..."}</span>
+                                    {(rebuildingCode || (activeTask && activeTask.status === "running")) && (
+                                      <div className="w-full text-[11px] text-amber-300/90 font-mono bg-amber-500/10 border border-amber-500/30 rounded-xl p-2.5 space-y-1.5 mt-2 animate-in fade-in">
+                                        <div className="flex items-center justify-between">
+                                          <span className="flex items-center gap-1.5 font-bold text-amber-300">
+                                            <RefreshCw className="w-3.5 h-3.5 animate-spin text-amber-400 shrink-0" />
+                                            {activeTask?.stepMessage || "กำลังเริ่มต้น Rebuild & PM2 Reload..."}
+                                          </span>
+                                          <span className="font-mono bg-amber-500/20 px-1.5 py-0.5 rounded text-[10px] text-amber-200">
+                                            {activeTask?.durationSeconds || 0}s
+                                          </span>
+                                        </div>
+                                        <div className="w-full bg-slate-800 rounded-full h-1 overflow-hidden">
+                                          <div
+                                            className={`h-full bg-amber-400 transition-all duration-300 ${
+                                              activeTask?.step === "reloading" ? "w-4/5" : "w-2/5 animate-pulse"
+                                            }`}
+                                          />
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* Live Success Banner inside Card */}
+                                    {activeTask && activeTask.status === "success" && (
+                                      <div className="w-full text-[11px] text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-2.5 space-y-1 mt-2 animate-in fade-in">
+                                        <div className="flex items-center justify-between">
+                                          <span className="flex items-center gap-1.5 font-bold text-emerald-300">
+                                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                            Rebuild สำเร็จสมบูรณ์! ({activeTask.durationSeconds}s)
+                                          </span>
+                                          <a
+                                            href={m.codeProposal.filePath.replace("src/app/(website)", "").replace("/page.tsx", "") || "/"}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] font-bold inline-flex items-center gap-1 shadow-sm"
+                                          >
+                                            <Globe className="w-3 h-3" />
+                                            <span>เปิดหน้าเว็บจริง ↗</span>
+                                          </a>
+                                        </div>
+                                        <p className="text-[10px] text-emerald-200/70">
+                                          อัปเดตเซิร์ฟเวอร์เรียบร้อยแล้ว หน้าเว็บแสดงผลโค้ดเวอร์ชันใหม่ทันที
+                                        </p>
+                                      </div>
+                                    )}
+
+                                    {/* Live Error Banner inside Card */}
+                                    {activeTask && activeTask.status === "error" && (
+                                      <div className="w-full text-[11px] text-rose-300 bg-rose-500/10 border border-rose-500/30 rounded-xl p-2.5 space-y-1.5 mt-2 animate-in fade-in">
+                                        <div className="flex items-center justify-between">
+                                          <span className="flex items-center gap-1.5 font-bold text-rose-300">
+                                            <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                                            {activeTask.stepMessage || "การ Rebuild ไม่สำเร็จ"}
+                                          </span>
+                                          <button
+                                            type="button"
+                                            onClick={handleTriggerRebuild}
+                                            className="px-2 py-0.5 bg-rose-600/30 hover:bg-rose-600/50 text-rose-200 border border-rose-500/40 rounded text-[10px] font-bold cursor-pointer"
+                                          >
+                                            ลองใหม่อีกครั้ง
+                                          </button>
+                                        </div>
                                       </div>
                                     )}
                                   </div>
@@ -2080,6 +2137,97 @@ export default function NetworkAiPage() {
             {/* Antigravity Floating Input Bar Area */}
             <div className="p-3 sm:p-4 pb-6 sm:pb-4 bg-[#0f0f14] border-t border-white/5 shrink-0">
               <div className="max-w-4xl mx-auto space-y-2">
+                {/* Mobile-Friendly Pinned Task Bar (Always visible at bottom above input) */}
+                {(rebuildingCode || (activeTask && activeTask.status === "running")) && (
+                  <div className="px-3 py-2 bg-[#1c160c] border border-amber-500/40 rounded-xl flex items-center justify-between gap-2 text-xs shadow-lg animate-in fade-in">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <RefreshCw className="w-4 h-4 text-amber-400 animate-spin shrink-0" />
+                      <div className="min-w-0">
+                        <p className="font-bold text-amber-300 truncate text-[11px]">
+                          ⚙️ กำลัง Rebuild & PM2 Reload ({activeTask?.durationSeconds || 0}s)
+                        </p>
+                        <p className="text-[10px] text-amber-200/70 truncate">
+                          {activeTask?.stepMessage || "กำลังคอมไพล์ Next.js Turbopack..."}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowTaskTerminal(true)}
+                      className="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/30 rounded-lg text-[10px] font-bold shrink-0 flex items-center gap-1 cursor-pointer"
+                    >
+                      <Terminal className="w-3 h-3" />
+                      <span>Console Logs</span>
+                    </button>
+                  </div>
+                )}
+
+                {/* Mobile-Friendly Pinned Success Alert */}
+                {activeTask && activeTask.status === "success" && !rebuildingCode && (
+                  <div className="px-3 py-2 bg-emerald-950/50 border border-emerald-500/40 rounded-xl flex items-center justify-between gap-2 text-xs shadow-lg animate-in fade-in">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span className="font-bold text-emerald-300 truncate text-[11px]">
+                        ✅ Rebuild สำเร็จ ({activeTask.durationSeconds}s)! หน้าเว็บอัปเดตแล้ว
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <a
+                        href="/test"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[10px] font-bold flex items-center gap-1 shadow-sm"
+                      >
+                        <Globe className="w-3 h-3" />
+                        <span>เปิดหน้าเว็บ ↗</span>
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => setActiveTask(null)}
+                        className="w-5 h-5 rounded-full hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center text-xs"
+                        title="ปิดการแจ้งเตือน"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Mobile-Friendly Pinned Error Alert */}
+                {activeTask && activeTask.status === "error" && !rebuildingCode && (
+                  <div className="px-3 py-2 bg-rose-950/50 border border-rose-500/40 rounded-xl flex items-center justify-between gap-2 text-xs shadow-lg animate-in fade-in">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+                      <span className="font-bold text-rose-300 truncate text-[11px]">
+                        {activeTask.stepMessage || "❌ การ Rebuild ล้มเหลว"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={handleTriggerRebuild}
+                        className="px-2 py-0.5 bg-rose-600 hover:bg-rose-500 text-white rounded text-[10px] font-bold cursor-pointer"
+                      >
+                        ลองใหม่
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowTaskTerminal(true)}
+                        className="px-2 py-0.5 bg-rose-500/20 text-rose-200 border border-rose-500/30 rounded text-[10px] font-bold cursor-pointer"
+                      >
+                        Logs
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setActiveTask(null)}
+                        className="w-5 h-5 rounded-full hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center text-xs"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Message Queue Tray (คิวคำถามรอส่ง) */}
                 {messageQueue.length > 0 && (
                   <div className="px-3 py-2 bg-[#1a1a24] border border-amber-500/30 rounded-xl flex items-center justify-between gap-2 text-xs">
