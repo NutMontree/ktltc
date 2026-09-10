@@ -237,8 +237,8 @@ export default function NetworkAiPage() {
   const [newContent, setNewContent] = useState("");
   const [isSavingKnowledge, setIsSavingKnowledge] = useState(false);
 
-  // Engine selection: "gemini-3.7-flash" | "gemini-3.6-flash" | "gemini-flash-latest" | "m1"
-  const [engineMode, setEngineMode] = useState<"gemini-3.7-flash" | "gemini-3.6-flash" | "gemini-flash-latest" | "m1">("gemini-3.6-flash");
+  // Engine selection: "m1" | "gemini-3.5-flash" | "gemini-3.7-flash" | "m1-local"
+  const [engineMode, setEngineMode] = useState<"gemini-3.7-flash" | "gemini-3.5-flash" | "gemini-3.8-flash" | "m1" | "m1-local">("m1");
 
   // Chat State
   const [messages, setMessages] = useState<Message[]>([
@@ -1195,11 +1195,12 @@ export default function NetworkAiPage() {
             className="flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-amber-500/10 dark:hover:bg-amber-500/10 text-slate-800 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 border border-slate-200 dark:border-slate-700 hover:border-amber-500/40 transition-all cursor-pointer shadow-xs"
             title="คลิกเพื่อเลือกหรือสลับโมเดล AI (Modal)"
           >
-            {engineMode === "gemini-3.6-flash" && <Zap className="w-3.5 h-3.5 text-amber-500" />}
-            {engineMode === "gemini-3.7-flash" && <Sparkles className="w-3.5 h-3.5 text-amber-500" />}
-            {engineMode === "m1" && <Brain className="w-3.5 h-3.5 text-amber-500" />}
+            {engineMode === "m1" && <Sparkles className="w-3.5 h-3.5 text-amber-500" />}
+            {engineMode === "gemini-3.5-flash" && <Zap className="w-3.5 h-3.5 text-amber-500" />}
+            {engineMode === "gemini-3.7-flash" && <Sparkles className="w-3.5 h-3.5 text-purple-500" />}
+            {engineMode === "m1-local" && <Brain className="w-3.5 h-3.5 text-emerald-500" />}
             <span>
-              โมเดล: {engineMode === "gemini-3.6-flash" ? "Gemini 3.6 Flash" : engineMode === "gemini-3.7-flash" ? "Gemini 3.7 Pro (Thinking)" : "Agent M1 Local"}
+              โมเดล: {engineMode === "m1" ? "Agent M1 Pro" : engineMode === "gemini-3.5-flash" ? "Gemini 3.5 Flash" : engineMode === "gemini-3.7-flash" ? "Gemini 3.7 Pro (Thinking)" : "Agent M1 Local"}
             </span>
             <ChevronDown className="w-3.5 h-3.5 opacity-60 ml-0.5" />
           </button>
@@ -2497,11 +2498,13 @@ export default function NetworkAiPage() {
                       >
                         <Sparkles className="w-3 h-3 text-amber-400" />
                         <span className="truncate max-w-[120px] sm:max-w-[200px]">
-                          {engineMode === "gemini-3.6-flash"
-                            ? "Gemini 3.8 Flash"
+                          {engineMode === "m1"
+                            ? "Agent M1 Pro"
+                            : engineMode === "gemini-3.5-flash"
+                            ? "Gemini 3.5 Flash"
                             : engineMode === "gemini-3.7-flash"
                             ? "Gemini 3.7 Pro"
-                            : "Agent M1 Pro"}
+                            : "Agent M1 Local"}
                         </span>
                         <ChevronDown className="w-3 h-3 text-slate-400 opacity-70 ml-0.5" />
                       </button>
@@ -2827,36 +2830,36 @@ export default function NetworkAiPage() {
             </div>
 
             <div className="space-y-3">
-              {/* Model 1: Gemini 3.6 Flash */}
+              {/* Model 1: Agent M1 Pro (Default & Recommended) */}
               <button
                 type="button"
                 onClick={() => {
-                  setEngineMode("gemini-3.6-flash");
+                  setEngineMode("m1");
                   setIsModelModalOpen(false);
-                  toast.success("สลับใช้โมเดล Google AI (Gemini 3.6 Flash)");
+                  toast.success("สลับใช้โมเดล Agent M1 Pro (สมองกลอัจฉริยะ M1)");
                 }}
                 className={`w-full p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-start gap-3.5 group ${
-                  engineMode === "gemini-3.6-flash"
+                  engineMode === "m1"
                     ? "bg-amber-500/10 border-amber-500/70 shadow-md shadow-amber-500/10 ring-1 ring-amber-500/30"
                     : "bg-slate-50/80 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700/80 hover:border-amber-500/40 hover:bg-amber-50/30 dark:hover:bg-amber-950/20"
                 }`}
               >
                 <div
                   className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-xs transition-transform group-hover:scale-105 ${
-                    engineMode === "gemini-3.6-flash"
+                    engineMode === "m1"
                       ? "bg-gradient-to-br from-amber-500 to-yellow-500 text-slate-950 font-bold"
                       : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
                   }`}
                 >
-                  <Zap className="w-5 h-5" />
+                  <Sparkles className="w-5 h-5" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                      <span>Gemini 3.6 Flash</span>
-                      <span className="text-[10px] text-slate-400 font-normal">(Google AI)</span>
+                      <span>Agent M1 Pro</span>
+                      <span className="text-[10px] text-amber-500 font-semibold">(แนะนำ)</span>
                     </span>
-                    {engineMode === "gemini-3.6-flash" ? (
+                    {engineMode === "m1" ? (
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/50 font-bold flex items-center gap-1">
                         <Check className="w-3 h-3" /> กำลังใช้งาน
                       </span>
@@ -2867,23 +2870,76 @@ export default function NetworkAiPage() {
                     )}
                   </div>
                   <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
-                    ความเร็วสูง โควต้าฟรี 1,000,000 Tokens เหมาะสำหรับสนทนา ถามตอบปัญหา และตรวจเครือข่ายทั่วไป
+                    สุดยอดสมองกลอัจฉริยะ KTLTC ปรับแต่งโค้ด เขียนไฟล์ คอมไพล์ Rebuild และวิเคราะห์เครือข่ายสดแบบอัตโนมัติ รวดเร็วและเสถียรที่สุด
+                  </p>
+                  <div className="flex items-center gap-1.5 mt-2 flex-wrap text-[10px]">
+                    <span className="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 font-medium">
+                      Agent M1 Engine
+                    </span>
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium">
+                      ตอบไวมาก (Ultra-Fast)
+                    </span>
+                    <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 font-medium">
+                      รองรับภาพ & โค้ด
+                    </span>
+                  </div>
+                </div>
+              </button>
+
+              {/* Model 2: Gemini 3.5 Flash */}
+              <button
+                type="button"
+                onClick={() => {
+                  setEngineMode("gemini-3.5-flash");
+                  setIsModelModalOpen(false);
+                  toast.success("สลับใช้โมเดล Google AI (Gemini 3.5 Flash)");
+                }}
+                className={`w-full p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-start gap-3.5 group ${
+                  engineMode === "gemini-3.5-flash"
+                    ? "bg-amber-500/10 border-amber-500/70 shadow-md shadow-amber-500/10 ring-1 ring-amber-500/30"
+                    : "bg-slate-50/80 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700/80 hover:border-amber-500/40 hover:bg-amber-50/30 dark:hover:bg-amber-950/20"
+                }`}
+              >
+                <div
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-xs transition-transform group-hover:scale-105 ${
+                    engineMode === "gemini-3.5-flash"
+                      ? "bg-gradient-to-br from-blue-500 to-cyan-500 text-white font-bold"
+                      : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                  }`}
+                >
+                  <Zap className="w-5 h-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                      <span>Gemini 3.5 Flash</span>
+                      <span className="text-[10px] text-slate-400 font-normal">(Google AI)</span>
+                    </span>
+                    {engineMode === "gemini-3.5-flash" ? (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/50 font-bold flex items-center gap-1">
+                        <Check className="w-3 h-3" /> กำลังใช้งาน
+                      </span>
+                    ) : (
+                      <span className="text-[10px] text-slate-400 group-hover:text-amber-500 transition-colors">
+                        คลิกเพื่อเลือก
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+                    ความเร็วสูง เสถียร ตอบไวใน 1-2 วินาที เหมาะสำหรับสนทนา ถามตอบปัญหา และตรวจเครือข่ายทั่วไป
                   </p>
                   <div className="flex items-center gap-1.5 mt-2 flex-wrap text-[10px]">
                     <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 font-medium">
                       Google Cloud
                     </span>
                     <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium">
-                      ตอบไวมาก (Ultra-Fast)
-                    </span>
-                    <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">
-                      1M Context
+                      ตอบไวมาก (Fast)
                     </span>
                   </div>
                 </div>
               </button>
 
-              {/* Model 2: Gemini 3.7 Pro Thinking */}
+              {/* Model 3: Gemini 3.7 Pro Thinking */}
               <button
                 type="button"
                 onClick={() => {
@@ -2900,7 +2956,7 @@ export default function NetworkAiPage() {
                 <div
                   className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-xs transition-transform group-hover:scale-105 ${
                     engineMode === "gemini-3.7-flash"
-                      ? "bg-gradient-to-r from-amber-600 to-yellow-600 text-white font-bold"
+                      ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold"
                       : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
                   }`}
                 >
@@ -2910,7 +2966,7 @@ export default function NetworkAiPage() {
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                       <span>Gemini 3.7 Pro</span>
-                      <span className="text-[10px] text-amber-500 font-semibold">(Thinking Engine)</span>
+                      <span className="text-[10px] text-purple-500 font-semibold">(Thinking Engine)</span>
                     </span>
                     {engineMode === "gemini-3.7-flash" ? (
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/50 font-bold flex items-center gap-1">
@@ -2932,31 +2988,28 @@ export default function NetworkAiPage() {
                     <span className="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 font-medium">
                       คิดวิเคราะห์เชิงลึก
                     </span>
-                    <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">
-                      1M Context
-                    </span>
                   </div>
                 </div>
               </button>
 
-              {/* Model 3: Agent M1 Local */}
+              {/* Model 4: Agent M1 Local */}
               <button
                 type="button"
                 onClick={() => {
-                  setEngineMode("m1");
+                  setEngineMode("m1-local");
                   setIsModelModalOpen(false);
                   toast.success("สลับใช้โมเดล Agent M1 (Local Engine ใน Server)");
                 }}
                 className={`w-full p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-start gap-3.5 group ${
-                  engineMode === "m1"
+                  engineMode === "m1-local"
                     ? "bg-amber-500/10 border-amber-500/70 shadow-md shadow-amber-500/10 ring-1 ring-amber-500/30"
                     : "bg-slate-50/80 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700/80 hover:border-amber-500/40 hover:bg-amber-50/30 dark:hover:bg-amber-950/20"
                 }`}
               >
                 <div
                   className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-xs transition-transform group-hover:scale-105 ${
-                    engineMode === "m1"
-                      ? "bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-bold"
+                    engineMode === "m1-local"
+                      ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold"
                       : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
                   }`}
                 >
@@ -2965,10 +3018,10 @@ export default function NetworkAiPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                      <span>Agent M1</span>
-                      <span className="text-[10px] text-emerald-500 font-semibold">(Local Engine)</span>
+                      <span>Agent M1 Local</span>
+                      <span className="text-[10px] text-emerald-500 font-semibold">(Ollama Server)</span>
                     </span>
-                    {engineMode === "m1" ? (
+                    {engineMode === "m1-local" ? (
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/50 font-bold flex items-center gap-1">
                         <Check className="w-3 h-3" /> กำลังใช้งาน
                       </span>
@@ -2983,9 +3036,12 @@ export default function NetworkAiPage() {
                   </p>
                   <div className="flex items-center gap-1.5 mt-2 flex-wrap text-[10px]">
                     <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium">
-                      On-Premise LAN
+                      Server Local
                     </span>
-                    <span className="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 font-medium">
+                    <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono">
+                      Llama 3 (8B)
+                    </span>
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium">
                       ออฟไลน์ 100%
                     </span>
                     <span className="px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-600 dark:text-purple-400 font-medium">

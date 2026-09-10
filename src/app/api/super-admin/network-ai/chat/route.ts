@@ -76,7 +76,7 @@ M1: "${aiReply.slice(0, 500)}"
   if (process.env.GEMINI_API_KEY) {
     try {
       const geminiRes = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${process.env.GEMINI_API_KEY}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -449,11 +449,11 @@ ${attachmentContext}
       (a: any) => a.base64 && (a.type?.startsWith("image/") || a.type === "application/pdf")
     );
 
-    // 1. If Local M1 requested and NO visual attachments (m1 is text-only Llama 3)
-    if (useModel === "m1" && !hasVisualAttachments) {
+    // 1. If Local M1 explicitly requested and NO visual attachments
+    if (useModel === "m1-local" && !hasVisualAttachments) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 25000);
+        const timeoutId = setTimeout(() => controller.abort(), 45000);
 
         const ollamaRes = await fetch("http://127.0.0.1:11434/api/generate", {
           method: "POST",
@@ -472,7 +472,7 @@ ${attachmentContext}
           const candidateText = data.response || "";
           // If code modification is expected but local M1 did not generate a proposal, fallback to Gemini
           if (targetFilePath && !candidateText.includes("[CODE_PROPOSAL]")) {
-            console.warn("Local M1 did not generate [CODE_PROPOSAL], falling back to Gemini");
+            console.warn("Local M1 did not generate [CODE_PROPOSAL], falling back to Agent M1 Pro");
           } else {
             aiResponseText = candidateText;
             activeModelName = "Agent M1 (Local Engine)";
@@ -483,20 +483,25 @@ ${attachmentContext}
       }
     }
 
-    // 2. Cloud Gemini (Multimodal Vision for attachments, or text fallback)
+    // 2. Cloud Engine (Agent M1 Pro / Google AI)
     if (!aiResponseText && process.env.GEMINI_API_KEY) {
       try {
         const geminiKey = process.env.GEMINI_API_KEY;
         const requestedModel =
-          useModel && useModel.startsWith("gemini") ? useModel : "gemini-3.6-flash";
+          useModel && useModel.startsWith("gemini") ? useModel : "gemini-3.5-flash-lite";
+
+        // Prioritize ultra-fast stable models with active quota
         const candidateModels = Array.from(
-          new Set([
-            requestedModel,
-            "gemini-3.6-flash",
-            "gemini-3.7-flash",
-            "gemini-3.8-flash",
-            "gemini-2.0-flash",
-          ])
+          new Set(
+            [
+              requestedModel,
+              "gemini-3.5-flash-lite",
+              "gemini-3.5-flash",
+              "gemini-3.8-flash",
+              "gemini-3.7-flash",
+              "gemini-3.6-flash",
+            ].filter((m) => m && m.startsWith("gemini"))
+          )
         );
 
         const contents: any[] = [];
@@ -546,24 +551,29 @@ ${attachmentContext}
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ contents }),
+              signal: AbortSignal.timeout(15000),
             });
 
             if (res.ok) {
               const data = await res.json();
               aiResponseText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
               if (aiResponseText) {
-                if (useModel === "m1" && hasVisualAttachments) {
-                  activeModelName = `Agent M1 Multimodal Vision (${targetModel})`;
+                if (!useModel || useModel === "m1" || useModel === "m1-pro") {
+                  activeModelName = hasVisualAttachments
+                    ? "Agent M1 Pro (Vision)"
+                    : "Agent M1 Pro";
+                } else if (useModel === "m1-local") {
+                  activeModelName = "Agent M1 (Local Engine)";
                 } else if (targetModel === "gemini-3.7-flash") {
-                  activeModelName = "Google AI Pro (Gemini 3.7 Flash)";
+                  activeModelName = "Google AI Pro (Gemini 3.7 Thinking)";
+                } else if (targetModel === "gemini-3.8-flash") {
+                  activeModelName = "Google AI (Gemini 3.8 Flash)";
                 } else if (targetModel === "gemini-3.5-flash") {
                   activeModelName = "Google AI (Gemini 3.5 Flash)";
                 } else if (targetModel === "gemini-3.5-flash-lite") {
-                  activeModelName = "Google AI Lite (Gemini 3.5 Flash)";
-                } else if (targetModel === "gemini-3.6-flash") {
-                  activeModelName = "Google AI (Gemini 3.6 Flash)";
+                  activeModelName = "Google AI (Gemini 3.5 Flash Lite)";
                 } else {
-                  activeModelName = targetModel;
+                  activeModelName = "Agent M1 Pro";
                 }
                 break;
               }
