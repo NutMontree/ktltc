@@ -323,6 +323,21 @@ ${telemetrySnapshots.join("\n")}
       targetFilePath = `src/app/${routePath}/page.tsx`;
     }
 
+    // Inherit targetFilePath from recent session history if follow-up edit
+    if (!targetFilePath && sessionId) {
+      try {
+        const lastProposalMsg = await db.collection("m1_chat_messages").findOne(
+          { sessionId, "codeProposal.filePath": { $exists: true } },
+          { sort: { createdAt: -1 } }
+        );
+        if (lastProposalMsg?.codeProposal?.filePath) {
+          targetFilePath = lastProposalMsg.codeProposal.filePath;
+        }
+      } catch (e) {
+        console.error("Failed to inherit targetFilePath from session:", e);
+      }
+    }
+
     if (targetFilePath) {
       const candidatePaths = [
         targetFilePath,
@@ -438,7 +453,7 @@ ${attachmentContext}
     if (useModel === "m1" && !hasVisualAttachments) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 60000);
+        const timeoutId = setTimeout(() => controller.abort(), 25000);
 
         const ollamaRes = await fetch("http://127.0.0.1:11434/api/generate", {
           method: "POST",
@@ -454,8 +469,14 @@ ${attachmentContext}
 
         if (ollamaRes.ok) {
           const data = await ollamaRes.json();
-          aiResponseText = data.response || "";
-          activeModelName = "Agent M1 (Local Engine)";
+          const candidateText = data.response || "";
+          // If code modification is expected but local M1 did not generate a proposal, fallback to Gemini
+          if (targetFilePath && !candidateText.includes("[CODE_PROPOSAL]")) {
+            console.warn("Local M1 did not generate [CODE_PROPOSAL], falling back to Gemini");
+          } else {
+            aiResponseText = candidateText;
+            activeModelName = "Agent M1 (Local Engine)";
+          }
         }
       } catch (err) {
         console.warn("Local M1 error or timeout, trying cloud fallback:", err);
