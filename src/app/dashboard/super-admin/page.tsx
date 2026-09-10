@@ -657,6 +657,13 @@ export default function SuperAdminPage() {
                 <span className="hidden sm:inline">จัดการรายบุคคล</span>
               </Link>
               <Link
+                href="/dashboard/super-admin/network-ai"
+                className="flex items-center gap-2 px-6 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-3xl transition-all shadow-xl shadow-emerald-500/20 font-bold text-xs uppercase tracking-widest"
+              >
+                <Terminal size={16} />
+                <span className="hidden sm:inline">Server Room AI</span>
+              </Link>
+              <Link
                 href="/dashboard/permissions"
                 className="flex items-center gap-2 px-6 py-4 bg-rose-600 text-white rounded-3xl hover:bg-rose-700 transition-all shadow-xl shadow-rose-500/20 font-bold text-xs uppercase tracking-widest"
               >

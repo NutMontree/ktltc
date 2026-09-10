@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "node scripts/dev.js",
-    "build": "next build && ln -sf ../../public .next/standalone/public && ln -sf ../../static .next/standalone/.next/static",
+    "build": "next build && node scripts/sync-standalone-public.js",
     "start": "next start",
     "lint": "eslint",
     "db:setup": "node scripts/ensure-indexes.js",

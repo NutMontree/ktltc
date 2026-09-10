@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Button, Input, ScrollShadow, Spinner, Tooltip } from "@heroui/react";
 import { MessageCircle, X, Send, Bot, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,6 +13,7 @@ interface Message {
 }
 
 export default function FloatingChatWidget() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([
@@ -105,6 +107,11 @@ export default function FloatingChatWidget() {
       ]);
     }
   };
+
+  // ไม่แสดง Widget บนหน้า Network AI Dashboard เพราะมี AI Console อยู่แล้ว
+  if (pathname?.startsWith("/dashboard/super-admin/network-ai")) {
+    return null;
+  }
 
   return (
     <div className="print:hidden fixed bottom-16 right-4 md:bottom-20 md:right-6 z-50">

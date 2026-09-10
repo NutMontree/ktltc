@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
   HomeIcon,
@@ -18,6 +19,12 @@ const iconClass = "h-full w-full text-neutral-600 dark:text-neutral-300";
 
 export function AppleStyleDock() {
   const { data: session } = useSession();
+  const pathname = usePathname();
+
+  // ไม่แสดง Dock บนหน้า Network AI Dashboard เพื่อไม่ให้บังช่องพิมพ์และแถบควบคุม
+  if (pathname?.startsWith("/dashboard/super-admin/network-ai")) {
+    return null;
+  }
   
   // ตรวจสอบ role โดยถ้าไม่มี session หรือไม่มี role จะถือว่าเป็นผู้ใช้งานทั่วไป ("user" หรือ "")
   const role = (session?.user as any)?.role || "";
