@@ -7,7 +7,7 @@ export interface NetworkDevice {
   brand: string;
 }
 
-// ฐานข้อมูลจำลอง อ้างอิงจากแผนผัง Kantharalak Technical College Network
+// รายการอุปกรณ์เครือข่าย วิทยาลัยเทคนิคกันทรลักษ์ (Kantharalak Technical College Network Devices)
 export const networkDevices: NetworkDevice[] = [
   { id: 'fw-1', ip: '192.168.6.1', name: 'HUAWEI USG6525E', location: 'Server Room', type: 'Firewall', brand: 'Huawei' },
   { id: 'core-1', ip: '192.168.6.3', name: 'Aruba 8320 (48Port)', location: 'Server Room', type: 'Core Switch', brand: 'Aruba' },

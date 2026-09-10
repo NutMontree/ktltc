@@ -10,7 +10,7 @@ export async function getCiscoPorts(ip: string): Promise<any[]> {
       password: 'Ktltc@33110',
       readyTimeout: 8000,
       tryKeyboard: true,
-      onKeyboardInteractive: (_name: any, _instructions: any, _instructionsLang: any, prompts: any, finish: any) => {
+      onKeyboardInteractive: (_name, _instructions, _instructionsLang, prompts, finish) => {
         if (prompts.length > 0) {
           finish(['Ktltc@33110']);
         }
@@ -71,19 +71,22 @@ export async function getCiscoPorts(ip: string): Promise<any[]> {
         setTimeout(() => {
           shell.write('show interfaces status\n');
           setTimeout(() => {
-            shell.write('show mac address-table\n');
+            shell.write('show interfaces description\n');
             setTimeout(() => {
-              shell.write('exit\n');
+              shell.write('show mac address-table\n');
               setTimeout(() => {
-                clearTimeout(timer);
-                try {
-                  shell.end();
-                  ssh.dispose();
-                } catch (e) {}
-                resolve();
-              }, 800);
+                shell.write('exit\n');
+                setTimeout(() => {
+                  clearTimeout(timer);
+                  try {
+                    shell.end();
+                    ssh.dispose();
+                  } catch (e) {}
+                  resolve();
+                }, 800);
+              }, 1000);
             }, 1000);
-          }, 1200);
+          }, 1000);
         }, 400);
       }, 1000);
     });
@@ -105,8 +108,9 @@ function parseSG500Output(raw: string) {
   const ports: any[] = [];
   const lines = raw.split('\n');
   const macMap: Record<string, string[]> = {};
+  const descMap: Record<string, string> = {};
 
-  // Extract MAC addresses from show mac address-table
+  // 1. Extract MAC addresses from real show mac address-table
   for (const line of lines) {
     const m = line.match(/\s*(\d+)\s+([0-9a-fA-F:]{17})\s+(gi\d+\/\d+\/\d+)/i);
     if (m) {
@@ -117,7 +121,17 @@ function parseSG500Output(raw: string) {
     }
   }
 
-  // Parse interfaces status
+  // 2. Extract real port descriptions from show interfaces description
+  for (const line of lines) {
+    const m = line.match(/^(gi\d+\/\d+\/\d+)\s+(.+)$/i);
+    if (m) {
+      const portKey = m[1].toLowerCase();
+      const desc = m[2].trim();
+      if (desc) descMap[portKey] = desc;
+    }
+  }
+
+  // 3. Parse real interfaces status
   for (const line of lines) {
     const trimmed = line.trim();
     const m = trimmed.match(/^(gi1\/1\/(\d+))\s+([\w-]+)\s+([\w-]+|\-\-)\s+([\w-]+|\-\-)\s+([\w-]+|\-\-)\s+([\w-]+|\-\-)\s+(Up|Down)/i);
@@ -137,31 +151,19 @@ function parseSG500Output(raw: string) {
 
       const portMacs = macMap[fullPort] || [];
       const primaryMac = portMacs[0] || '';
+      const switchDesc = descMap[fullPort] || '';
 
-      let type = 'LAN';
-      let deviceType = 'LAN';
-      let defaultLabel = '';
+      const isUplink = portNum >= 24 || switchDesc.toLowerCase().includes('uplink') || switchDesc.toLowerCase().includes('fiber');
+      const type = isUplink ? 'WAN/Uplink' : 'LAN';
+      const deviceType = isUplink ? 'Uplink' : 'LAN';
 
-      if (portNum >= 1 && portNum <= 20) {
-        type = 'LAN';
-        deviceType = 'LAN';
-        defaultLabel = isUp ? (primaryMac ? `💻 PC (${primaryMac})` : '💻 LAN (VLAN 10)') : '💻 พอร์ต LAN (VLAN 10)';
-      } else if (portNum >= 21 && portNum <= 23) {
-        type = 'WAN/Uplink';
-        deviceType = 'Uplink';
-        defaultLabel = portNum === 22 ? '🔌 Link ชั้น 3 (การบัญชี)' : portNum === 23 ? '🔌 Link ชั้น 1' : '🔌 Link Inter-Switch';
-      } else if (portNum === 24) {
-        type = 'WAN/Uplink';
-        deviceType = 'Uplink';
-        defaultLabel = '🔌 Core Switch Uplink (Trunk)';
-      } else if (portNum >= 25 && portNum <= 26) {
-        type = 'WAN/Uplink';
-        deviceType = 'Uplink';
-        defaultLabel = isUp ? '⚡ Fiber Optic Uplink (SFP)' : '⚡ ช่อง Fiber SFP (พร้อมใช้งาน)';
+      let displayLabel = '';
+      if (isUplink) {
+        displayLabel = switchDesc ? `🔌 ${switchDesc}` : '🔌 Uplink';
+      } else if (isUp) {
+        displayLabel = primaryMac ? `💻 ${switchDesc || 'LAN'} (${primaryMac})` : `💻 ${switchDesc || 'LAN'}`;
       } else {
-        type = 'WAN/Uplink';
-        deviceType = 'Uplink';
-        defaultLabel = '🔌 Stacking Port (1G/5G)';
+        displayLabel = switchDesc ? `💻 ${switchDesc}` : '💻 LAN Port';
       }
 
       ports.push({
@@ -171,15 +173,15 @@ function parseSG500Output(raw: string) {
         speed: speedStr,
         type,
         deviceType,
-        lldpName: defaultLabel,
-        deviceName: isUp ? defaultLabel : '',
+        lldpName: displayLabel,
+        deviceName: isUp ? displayLabel : '',
         mac: primaryMac,
         allMacs: portMacs
       });
     }
   }
 
-  // Ensure SFP 27 & 28 exist for complete 28-port visual
+  // Ensure SFP 27 & 28 exist for complete 28-port physical visual
   if (!ports.some((p) => p.portNum === 27)) {
     ports.push({
       portNum: 27,
