@@ -71,11 +71,14 @@ export async function GET() {
 
   let currentTask: any = null;
 
-  // 1. Try reading from MongoDB m1_tasks
+  // 1. Try reading from MongoDB m1_tasks (ignore dismissed tasks)
   try {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    currentTask = await db.collection("m1_tasks").findOne({}, { sort: { updatedAt: -1 } });
+    currentTask = await db.collection("m1_tasks").findOne(
+      { dismissed: { $ne: true } },
+      { sort: { updatedAt: -1 } }
+    );
   } catch (err) {
     console.error("Failed to read task from MongoDB:", err);
   }
@@ -87,7 +90,8 @@ export async function GET() {
       const stat = await fs.stat(statusFile).catch(() => null);
       if (stat) {
         const raw = await fs.readFile(statusFile, "utf-8");
-        currentTask = JSON.parse(raw);
+        const parsed = JSON.parse(raw);
+        if (!parsed.dismissed) currentTask = parsed;
       }
     } catch {}
   }
@@ -103,12 +107,28 @@ export async function GET() {
     };
   }
 
+  // If completed more than 2 minutes ago, reset to idle so banner doesn't linger forever
+  if ((currentTask.status === "success" || currentTask.status === "error") && currentTask.completedAt) {
+    const ageSeconds = (Date.now() - new Date(currentTask.completedAt).getTime()) / 1000;
+    if (ageSeconds > 120) {
+      currentTask.status = "idle";
+    }
+  }
+
   // If running for more than 5 minutes without update, mark as error
   if (currentTask.status === "running" && currentTask.updatedAt) {
     const ageSeconds = (Date.now() - new Date(currentTask.updatedAt).getTime()) / 1000;
     if (ageSeconds > 300) {
       currentTask.status = "error";
       currentTask.stepMessage = "❌ Task timeout (หมดเวลาการประมวลผล)";
+      try {
+        const client = await clientPromise;
+        const db = client.db("ktltc_db");
+        await db.collection("m1_tasks").updateOne(
+          { id: currentTask.id },
+          { $set: { status: "error", stepMessage: currentTask.stepMessage, updatedAt: new Date().toISOString() } }
+        );
+      } catch {}
     }
   }
 
@@ -125,10 +145,25 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { action, filePath, code, target, replacement, andRebuild, sessionId } = await req.json();
+    const body = await req.json();
+    const { action, filePath, code, target, replacement, andRebuild, sessionId, taskId } = body;
 
     if (!action) {
       return NextResponse.json({ error: "Action is required" }, { status: 400 });
+    }
+
+    // Dismiss active banner so it never reappears
+    if (action === "dismiss") {
+      try {
+        const client = await clientPromise;
+        const db = client.db("ktltc_db");
+        if (taskId) {
+          await db.collection("m1_tasks").updateOne({ id: taskId }, { $set: { dismissed: true, status: "idle" } });
+        } else {
+          await db.collection("m1_tasks").updateMany({ status: { $ne: "running" } }, { $set: { dismissed: true, status: "idle" } });
+        }
+      } catch {}
+      return NextResponse.json({ success: true, message: "Task dismissed" });
     }
 
     // 1. Rebuild and PM2 Reload Action via Detached Runner (Rock-solid & persistent)

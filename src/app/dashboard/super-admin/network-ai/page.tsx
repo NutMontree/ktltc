@@ -117,6 +117,7 @@ interface Message {
   webSources?: Array<{ title: string; snippet: string; link: string }>;
   codeProposal?: CodeProposal;
   attachments?: ChatAttachment[];
+  isTyping?: boolean;
 }
 
 interface QueuedMessage {
@@ -266,6 +267,22 @@ export default function NetworkAiPage() {
   const [previewCodeIndex, setPreviewCodeIndex] = useState<number | null>(null);
   const [activeTask, setActiveTask] = useState<M1Task | null>(null);
   const [showTaskTerminal, setShowTaskTerminal] = useState(true);
+  const [dismissedTaskIds, setDismissedTaskIds] = useState<Record<string, boolean>>({});
+
+  const handleDismissTask = async (taskId?: string) => {
+    if (taskId) {
+      setDismissedTaskIds((prev) => ({ ...prev, [taskId]: true }));
+      try {
+        sessionStorage.setItem(`m1_dismissed_${taskId}`, "true");
+      } catch {}
+      fetch("/api/super-admin/network-ai/code-action", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "dismiss", taskId }),
+      }).catch(() => {});
+    }
+    setActiveTask(null);
+  };
 
   // Antigravity Agent Action Trace State
   const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
@@ -473,6 +490,12 @@ export default function NetworkAiPage() {
         if (res.ok) {
           const data = await res.json();
           if (data.task && data.task.status !== "idle") {
+            const isDismissed =
+              dismissedTaskIds[data.task.id] ||
+              (typeof window !== "undefined" && sessionStorage.getItem(`m1_dismissed_${data.task.id}`));
+            if (isDismissed && data.task.status !== "running") {
+              return;
+            }
             setActiveTask(data.task);
             if (data.task.status === "running") {
               setRebuildingCode(true);
@@ -497,7 +520,7 @@ export default function NetworkAiPage() {
     return () => {
       if (timer) clearInterval(timer);
     };
-  }, [activeTask?.status, rebuildingCode]);
+  }, [activeTask?.status, rebuildingCode, dismissedTaskIds]);
 
   // Add Manual Knowledge
   const handleAddKnowledge = async (e: React.FormEvent) => {
@@ -923,9 +946,19 @@ export default function NetworkAiPage() {
         });
       }
 
+      const replyFullText = replyContent;
+
+      // Stop the "Working..." spinner immediately so user sees the message start streaming
+      setIsSending(false);
+
+      if (data.sessionId && (!currentSessionId || currentSessionId !== data.sessionId)) {
+        setCurrentSessionId(data.sessionId);
+      }
+      fetchSessions();
+
       const aiReply: Message = {
         role: "model",
-        content: replyContent,
+        content: "",
         timestamp: new Date().toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" }),
         modelUsed: data.modelUsed,
         duration: durationStr,
@@ -933,12 +966,46 @@ export default function NetworkAiPage() {
         learnedAlert,
         webSources: data.webSources,
         codeProposal,
+        isTyping: true,
       };
+
       setMessages((prev) => [...prev, aiReply]);
-      if (data.sessionId && (!currentSessionId || currentSessionId !== data.sessionId)) {
-        setCurrentSessionId(data.sessionId);
-      }
-      fetchSessions();
+
+      // Progressive Typewriter Streaming Animation (ค่อยๆ ป้อนข้อความมาแบบนุ่มนวล)
+      await new Promise<void>((resolve) => {
+        let charIndex = 0;
+        const totalLen = replyFullText.length;
+        const step = totalLen > 800 ? 8 : totalLen > 400 ? 5 : 3;
+        const intervalMs = 15;
+
+        const timer = setInterval(() => {
+          charIndex += step;
+          if (charIndex >= totalLen) {
+            clearInterval(timer);
+            setMessages((prev) =>
+              prev.map((msg, idx) =>
+                idx === prev.length - 1
+                  ? { ...msg, content: replyFullText, isTyping: false }
+                  : msg
+              )
+            );
+            chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+            resolve();
+          } else {
+            const currentSlice = replyFullText.slice(0, charIndex);
+            setMessages((prev) =>
+              prev.map((msg, idx) =>
+                idx === prev.length - 1
+                  ? { ...msg, content: currentSlice, isTyping: true }
+                  : msg
+              )
+            );
+            if (charIndex % 30 < step) {
+              chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+            }
+          }
+        }, intervalMs);
+      });
     } catch (err: any) {
       if (err.name === "AbortError") {
         setMessages((prev) => [
@@ -1183,7 +1250,7 @@ export default function NetworkAiPage() {
               {activeTask.status !== "running" && (
                 <button
                   type="button"
-                  onClick={() => setActiveTask(null)}
+                  onClick={() => handleDismissTask(activeTask?.id)}
                   className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
                   title="ปิดแถบแจ้งเตือน"
                 >
@@ -1659,7 +1726,7 @@ export default function NetworkAiPage() {
                           {activeTask.status !== "running" && (
                             <button
                               type="button"
-                              onClick={() => setActiveTask(null)}
+                              onClick={() => handleDismissTask(activeTask?.id)}
                               className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
                               title="ปิดการแจ้งเตือน"
                             >
@@ -1842,10 +1909,13 @@ export default function NetworkAiPage() {
                           <ReactMarkdown remarkPlugins={[remarkGfm]}>
                             {m.content}
                           </ReactMarkdown>
+                          {m.isTyping && (
+                            <span className="inline-block w-2 h-3.5 ml-1 bg-cyan-400 animate-pulse align-middle shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
+                          )}
                         </div>
 
                         {/* Live Web Sources Citation */}
-                        {m.webSources && m.webSources.length > 0 && (
+                        {m.webSources && m.webSources.length > 0 && !m.isTyping && (
                           <div className="mt-2 pt-2 border-t border-white/5 flex flex-wrap items-center gap-1.5 text-[10px]">
                             <span className="font-bold text-slate-400 flex items-center gap-1">
                               <Globe className="w-3 h-3 text-blue-400" />
@@ -1867,8 +1937,8 @@ export default function NetworkAiPage() {
                         )}
 
                         {/* Code Proposal Card */}
-                        {m.codeProposal && (
-                          <div className="mt-3 p-3 bg-slate-900 border border-amber-500/40 rounded-xl text-slate-100 shadow-md">
+                        {m.codeProposal && !m.isTyping && (
+                          <div className="mt-3 p-3 bg-slate-900 border border-amber-500/40 rounded-xl text-slate-100 shadow-md animate-in fade-in zoom-in-95 duration-300">
                             <div className="flex items-center justify-between gap-2 border-b border-slate-800 pb-2">
                               <div className="flex items-center gap-1.5 flex-wrap">
                                 <div className="w-5 h-5 rounded-md bg-amber-500/20 text-amber-300 flex items-center justify-center">
@@ -2183,7 +2253,7 @@ export default function NetworkAiPage() {
                       </a>
                       <button
                         type="button"
-                        onClick={() => setActiveTask(null)}
+                        onClick={() => handleDismissTask(activeTask?.id)}
                         className="w-5 h-5 rounded-full hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center text-xs"
                         title="ปิดการแจ้งเตือน"
                       >
@@ -2219,7 +2289,7 @@ export default function NetworkAiPage() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => setActiveTask(null)}
+                        onClick={() => handleDismissTask(activeTask?.id)}
                         className="w-5 h-5 rounded-full hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center text-xs"
                       >
                         ✕
