@@ -78,9 +78,11 @@ interface Device {
 
 interface CodeProposal {
   filePath: string;
-  action: "modify" | "create";
+  action: "modify" | "create" | "patch";
   description: string;
-  code: string;
+  code?: string;
+  target?: string;
+  replacement?: string;
   applied?: boolean;
   hasBackup?: boolean;
   rejected?: boolean;
@@ -827,12 +829,16 @@ export default function NetworkAiPage() {
       let replyContent = data.reply || "⚠️ ไม่ได้รับข้อมูลตอบกลับจากระบบ";
 
       if (!codeProposal) {
-        const match = replyContent.match(/\[CODE_PROPOSAL\]([\s\S]*?)\[\/CODE_PROPOSAL\]/);
+        const match = replyContent.match(/\[CODE_PROPOSAL\]([\s\S]*?)\[\/CODE_PROPOSAL\]/i);
         if (match) {
           try {
             const rawJson = match[1].trim().replace(/^```(?:json)?\s*/i, "").replace(/```$/, "").trim();
             const parsed = JSON.parse(rawJson);
-            if (parsed.filePath && parsed.code) {
+            const isValid =
+              parsed.filePath &&
+              (parsed.code !== undefined ||
+                (parsed.action === "patch" && parsed.target !== undefined && parsed.replacement !== undefined));
+            if (isValid) {
               codeProposal = parsed;
               replyContent = replyContent.replace(match[0], "").trim();
             }
@@ -1697,9 +1703,32 @@ export default function NetworkAiPage() {
                               </button>
 
                               {previewCodeIndex === idx && (
-                                <pre className="mt-2 p-2.5 bg-black/90 rounded-lg text-[10px] font-mono text-emerald-400 max-h-52 overflow-y-auto overflow-x-auto border border-slate-800 leading-relaxed select-text">
-                                  {m.codeProposal.code}
-                                </pre>
+                                <div className="mt-2 p-2.5 bg-black/90 rounded-lg text-[10px] font-mono max-h-52 overflow-y-auto overflow-x-auto border border-slate-800 leading-relaxed select-text">
+                                  {m.codeProposal.action === "patch" ? (
+                                    <div className="space-y-2">
+                                      <div>
+                                        <div className="text-rose-400 font-bold mb-0.5 flex items-center gap-1">
+                                          <span>- ข้อความเดิมที่จะแทนที่ (Target):</span>
+                                        </div>
+                                        <pre className="p-2 bg-rose-950/40 text-rose-300 rounded border border-rose-900/60 whitespace-pre-wrap break-all">
+                                          {m.codeProposal.target}
+                                        </pre>
+                                      </div>
+                                      <div>
+                                        <div className="text-emerald-400 font-bold mb-0.5 flex items-center gap-1">
+                                          <span>+ ข้อความใหม่ (Replacement):</span>
+                                        </div>
+                                        <pre className="p-2 bg-emerald-950/40 text-emerald-300 rounded border border-emerald-900/60 whitespace-pre-wrap break-all">
+                                          {m.codeProposal.replacement}
+                                        </pre>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <pre className="text-emerald-400 whitespace-pre-wrap break-all">
+                                      {m.codeProposal.code}
+                                    </pre>
+                                  )}
+                                </div>
                               )}
                             </div>
 
