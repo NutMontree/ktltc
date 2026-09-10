@@ -32,7 +32,7 @@ const corePortMapping: Record<string, string> = {
   '192.168.6.32': '1/1/9',  // ป้อมยาม (UPlink-To-YAM)
   '192.168.6.31': '1/1/10', // ตึกโดม (Uplink-To-DOME)
   '192.168.6.35': '1/1/11', // บ้านพักครู (Home-Techer)
-  '192.168.6.210': '1/1/7', // อาคาร 4 (Cisco SG500-28)
+  '192.168.6.210': '1/1/8', // อาคาร 4 แผนกคอมฯ (UPLink-To-Budding-4(Computer)Cisco)
 };
 
 // Cache previous counters to calculate exact Mbps delta (shared via Redis with memory fallback)
@@ -93,7 +93,7 @@ async function fetchCoreSwitchBandwidth(): Promise<Record<string, { rx: number; 
       setTimeout(() => {
         shell.write('no page\n');
         setTimeout(() => {
-          shell.write('show interface 1/1/1,1/1/2,1/1/3,1/1/4,1/1/5,1/1/6,1/1/7,1/1/9,1/1/10,1/1/11,1/1/48\n');
+          shell.write('show interface 1/1/1,1/1/2,1/1/3,1/1/4,1/1/5,1/1/6,1/1/7,1/1/8,1/1/9,1/1/10,1/1/11,1/1/48\n');
           setTimeout(() => {
             clearTimeout(timer);
             try { shell.end(); ssh.dispose(); } catch (e) {}

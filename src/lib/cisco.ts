@@ -48,6 +48,7 @@ export async function getCiscoPorts(ip: string): Promise<any[]> {
     let combinedOutput = '';
 
     await new Promise<void>((resolve) => {
+      let sent = false;
       const timer = setTimeout(() => {
         try {
           shell.end();
@@ -63,32 +64,33 @@ export async function getCiscoPorts(ip: string): Promise<any[]> {
           shell.write('cisco\n');
         } else if (str.includes('Password:')) {
           shell.write('Ktltc@33110\n');
+        } else if ((str.includes('>') || str.includes('#')) && !sent) {
+          sent = true;
+          setTimeout(() => {
+            shell.write('terminal datadump\n');
+            setTimeout(() => {
+              shell.write('show interfaces status\n');
+              setTimeout(() => {
+                shell.write('show interfaces description\n');
+                setTimeout(() => {
+                  shell.write('show mac address-table\n');
+                  setTimeout(() => {
+                    shell.write('exit\n');
+                    setTimeout(() => {
+                      clearTimeout(timer);
+                      try {
+                        shell.end();
+                        ssh.dispose();
+                      } catch (e) {}
+                      resolve();
+                    }, 500);
+                  }, 800);
+                }, 800);
+              }, 800);
+            }, 300);
+          }, 200);
         }
       });
-
-      setTimeout(() => {
-        shell.write('terminal datadump\n');
-        setTimeout(() => {
-          shell.write('show interfaces status\n');
-          setTimeout(() => {
-            shell.write('show interfaces description\n');
-            setTimeout(() => {
-              shell.write('show mac address-table\n');
-              setTimeout(() => {
-                shell.write('exit\n');
-                setTimeout(() => {
-                  clearTimeout(timer);
-                  try {
-                    shell.end();
-                    ssh.dispose();
-                  } catch (e) {}
-                  resolve();
-                }, 800);
-              }, 1000);
-            }, 1000);
-          }, 1000);
-        }, 400);
-      }, 1000);
     });
 
     try {
