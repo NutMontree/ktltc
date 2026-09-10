@@ -21,5 +21,5 @@ export const networkDevices: NetworkDevice[] = [
   { id: 'sw-13', ip: '192.168.6.13', name: 'Edge Switch (V18)', location: 'อาคารช่างยนต์', type: 'Edge Switch', brand: 'Switch' },
   { id: 'sw-32', ip: '192.168.6.32', name: 'Reyee RG-ES226GC-P', location: 'ป้อมยาม', type: 'Edge Switch', brand: 'Reyee' },
   { id: 'sw-35', ip: '192.168.6.35', name: 'HPE 1930', location: 'บ้านพักครู', type: 'Edge Switch', brand: 'HPE' },
-  { id: 'sw-190', ip: '192.168.6.190', name: 'Cisco SG500-28', location: 'อาคาร 4 (แผนกคอมฯ)', type: 'Edge Switch', brand: 'Cisco' }
+  { id: 'sw-210', ip: '192.168.6.210', name: 'Cisco SG500-28', location: 'อาคาร 4 (แผนกคอมฯ)', type: 'Edge Switch', brand: 'Cisco' }
 ];

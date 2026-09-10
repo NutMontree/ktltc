@@ -32,7 +32,7 @@ export async function GET(request: Request) {
   // ==========================================
   // 🟢 Cisco Managed Switch (SSH API)
   // ==========================================
-  if (ip === '192.168.6.190' || brand === 'Cisco') {
+  if (ip === '192.168.6.210' || ip === '192.168.6.190' || brand === 'Cisco') {
     try {
       const { getCiscoPorts } = await import('@/lib/cisco');
       const ports = await getCiscoPorts(ip);

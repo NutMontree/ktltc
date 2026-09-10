@@ -142,11 +142,7 @@ function parseSG500Output(raw: string) {
       let deviceType = 'LAN';
       let defaultLabel = '';
 
-      if (portNum >= 1 && portNum <= 12) {
-        type = 'Wi-Fi AP';
-        deviceType = 'Wi-Fi AP';
-        defaultLabel = isUp ? '📶 Wi-Fi AP (VLAN 90)' : '📶 พอร์ต Wi-Fi (VLAN 90)';
-      } else if (portNum >= 13 && portNum <= 20) {
+      if (portNum >= 1 && portNum <= 20) {
         type = 'LAN';
         deviceType = 'LAN';
         defaultLabel = isUp ? (primaryMac ? `💻 PC (${primaryMac})` : '💻 LAN (VLAN 10)') : '💻 พอร์ต LAN (VLAN 10)';

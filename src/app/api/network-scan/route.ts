@@ -32,7 +32,7 @@ const corePortMapping: Record<string, string> = {
   '192.168.6.32': '1/1/9',  // ป้อมยาม (UPlink-To-YAM)
   '192.168.6.31': '1/1/10', // ตึกโดม (Uplink-To-DOME)
   '192.168.6.35': '1/1/11', // บ้านพักครู (Home-Techer)
-  '192.168.6.190': '1/1/7', // อาคาร 4 (Cisco SG500-28)
+  '192.168.6.210': '1/1/7', // อาคาร 4 (Cisco SG500-28)
 };
 
 // Cache previous counters to calculate exact Mbps delta (shared via Redis with memory fallback)
