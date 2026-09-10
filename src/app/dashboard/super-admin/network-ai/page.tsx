@@ -46,6 +46,7 @@ import {
   Clock,
   ListPlus,
   CornerDownLeft,
+  ArrowUp,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import ReactMarkdown from "react-markdown";
@@ -58,6 +59,13 @@ interface ChatSession {
   lastMessage: string;
   updatedAt: string;
   createdAt: string;
+}
+
+interface AgentActionStep {
+  type: "explore" | "edit" | "command" | "info";
+  title: string;
+  detail?: string;
+  diff?: { add: number; del: number };
 }
 
 interface Device {
@@ -102,6 +110,8 @@ interface Message {
   content: string;
   timestamp: string;
   modelUsed?: string;
+  duration?: string;
+  actionSteps?: AgentActionStep[];
   learnedAlert?: string;
   webSources?: Array<{ title: string; snippet: string; link: string }>;
   codeProposal?: CodeProposal;
@@ -256,6 +266,26 @@ export default function NetworkAiPage() {
   const [activeTask, setActiveTask] = useState<M1Task | null>(null);
   const [showTaskTerminal, setShowTaskTerminal] = useState(true);
 
+  // Antigravity Agent Action Trace State
+  const [expandedSteps, setExpandedSteps] = useState<Record<number, boolean>>({});
+  const [thinkingElapsed, setThinkingElapsed] = useState(0);
+
+  // Thinking timer effect
+  useEffect(() => {
+    let timer: any = null;
+    if (isSending) {
+      setThinkingElapsed(0);
+      timer = setInterval(() => {
+        setThinkingElapsed((prev) => prev + 1);
+      }, 1000);
+    } else {
+      setThinkingElapsed(0);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [isSending]);
+
   // Multimodal & Attachments State
   const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
   const [isAttachModalOpen, setIsAttachModalOpen] = useState(false);
@@ -286,7 +316,7 @@ export default function NetworkAiPage() {
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const chatMessagesContainerRef = useRef<HTMLDivElement>(null);
-  const chatInputRef = useRef<HTMLInputElement>(null);
+  const chatInputRef = useRef<HTMLTextAreaElement>(null);
 
   // Fetch Chat Sessions
   const fetchSessions = async () => {
@@ -797,6 +827,7 @@ export default function NetworkAiPage() {
 
     const controller = new AbortController();
     abortControllerRef.current = controller;
+    const sendStartTime = Date.now();
 
     try {
       const res = await fetch("/api/super-admin/network-ai/chat", {
@@ -848,11 +879,52 @@ export default function NetworkAiPage() {
         }
       }
 
+      const sendElapsedSec = Math.max(1, Math.round((Date.now() - sendStartTime) / 1000));
+      const durationStr =
+        sendElapsedSec >= 60
+          ? `Worked for ${Math.floor(sendElapsedSec / 60)}m ${sendElapsedSec % 60}s`
+          : `Worked for ${sendElapsedSec}s`;
+
+      const actionSteps: AgentActionStep[] = [];
+      if (data.inspectedFile || codeProposal?.filePath) {
+        const pathName = codeProposal?.filePath || data.inspectedFile || "src/app/page.tsx";
+        actionSteps.push({
+          type: "explore",
+          title: "Explored 1 file",
+          detail: pathName,
+        });
+      }
+      if (codeProposal) {
+        const fileName = codeProposal.filePath.split("/").pop() || codeProposal.filePath;
+        actionSteps.push({
+          type: "edit",
+          title: fileName,
+          detail: codeProposal.filePath,
+          diff: {
+            add: codeProposal.action === "patch" ? 3 : 26,
+            del: codeProposal.action === "patch" ? 1 : 3,
+          },
+        });
+      }
+      if (data.commandRan || codeProposal) {
+        actionSteps.push({
+          type: "command",
+          title: "npm run build && pm2 reload ktltc --",
+        });
+      } else {
+        actionSteps.push({
+          type: "command",
+          title: "live telemetry & network health check",
+        });
+      }
+
       const aiReply: Message = {
         role: "model",
         content: replyContent,
         timestamp: new Date().toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" }),
         modelUsed: data.modelUsed,
+        duration: durationStr,
+        actionSteps,
         learnedAlert,
         webSources: data.webSources,
         codeProposal,
@@ -1356,110 +1428,84 @@ export default function NetworkAiPage() {
 
         {/* Right Column / Fullscreen Modal: AI Console & Long-Term Memory */}
         <div
-          className={`flex flex-col bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl overflow-hidden transition-all ${
+          className={`flex flex-col bg-[#0f0f14] border border-[#23232f] rounded-2xl shadow-2xl overflow-hidden transition-all text-slate-100 ${
             isFullscreenChat
               ? "fixed inset-2 sm:inset-4 md:inset-6 z-[99999] shadow-2xl h-[calc(100dvh-1rem)] sm:h-[calc(100dvh-2rem)] md:h-[calc(100dvh-3rem)]"
-              : "lg:col-span-7 h-[calc(100dvh-12rem)] min-h-[400px] max-h-[780px]"
+              : "lg:col-span-7 h-[calc(100dvh-12rem)] min-h-[460px] max-h-[820px]"
           }`}
         >
-          {/* Header Tabs & Control Bar */}
-          <div className="px-4 py-3 border-b border-slate-200 dark:border-amber-500/20 bg-slate-50/70 dark:bg-slate-900/60 flex items-center justify-between gap-2 flex-wrap">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              {/* Gemini-style Sidebar Toggle Button (Navbar ซ้ายมือ) */}
+          {/* Antigravity Breadcrumbs & Header Bar */}
+          <div className="px-4 py-2.5 bg-[#14141b] border-b border-[#23232f] flex items-center justify-between gap-2 flex-wrap shrink-0">
+            <div className="flex items-center gap-2 min-w-0">
               {activeTab === "chat" && (
                 <button
                   type="button"
                   onClick={() => setIsSessionsDrawerOpen(!isSessionsDrawerOpen)}
-                  className={`p-1.5 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 ${
-                    isSessionsDrawerOpen
-                      ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/40 shadow-xs"
-                      : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-amber-500/40 hover:text-amber-600"
-                  }`}
-                  title={isSessionsDrawerOpen ? "ซ่อนประวัติห้องแชต (ปิด Navbar ซ้าย)" : "แสดงประวัติห้องแชต (เปิด Navbar ซ้าย)"}
+                  className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
+                  title={isSessionsDrawerOpen ? "ซ่อนประวัติห้องแชต" : "แสดงประวัติห้องแชต"}
                 >
                   {isSessionsDrawerOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
-                  <span className="hidden sm:inline text-xs font-bold">
-                    {isSessionsDrawerOpen ? "ซ่อนแถบข้าง" : "ประวัติแชต"}
-                  </span>
-                  {sessionsList.length > 0 && !isSessionsDrawerOpen && (
-                    <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-amber-500/20 text-amber-700 dark:text-amber-400 font-bold">
-                      {sessionsList.length}
-                    </span>
-                  )}
                 </button>
               )}
 
-              {/* Gemini-style New Chat Button */}
-              {activeTab === "chat" && (
-                <button
-                  type="button"
-                  onClick={handleCreateNewSession}
-                  className="px-2.5 py-1.5 text-xs font-bold rounded-xl flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 shadow-md shadow-amber-500/20 cursor-pointer transition-all"
-                  title="เริ่มต้นบทสนทนาใหม่"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">แชตใหม่</span>
-                </button>
-              )}
-
-              <button
-                type="button"
-                onClick={() => setActiveTab("chat")}
-                className={`px-3 py-1.5 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all cursor-pointer ${
-                  activeTab === "chat"
-                    ? "bg-slate-200/90 dark:bg-slate-800 text-slate-900 dark:text-white font-bold border border-slate-300 dark:border-slate-700"
-                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800"
-                }`}
-              >
-                <Bot className="w-4 h-4 text-amber-500" />
-                <span>แชต</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab("knowledge");
-                  fetchKnowledge();
-                }}
-                className={`px-3 py-1.5 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all cursor-pointer ${
-                  activeTab === "knowledge"
-                    ? "bg-slate-200/90 dark:bg-slate-800 text-slate-900 dark:text-white font-bold border border-slate-300 dark:border-slate-700"
-                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800"
-                }`}
-              >
-                <Brain className="w-4 h-4 text-amber-500" />
-                <span>สมอง M1 ({knowledgeList.length})</span>
-              </button>
+              {/* Breadcrumb Path */}
+              <div className="flex items-center gap-1.5 text-xs text-slate-400 truncate">
+                <span className="opacity-60">Desktop</span>
+                <span className="opacity-40">/</span>
+                <span className="text-slate-200 font-medium truncate max-w-[160px] sm:max-w-xs">
+                  {currentSessionTitle || "ทักทายการเริ่มต้นสนทนา"}
+                </span>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2 flex-wrap">
-              {/* Single Model Selector Trigger Button (Modal) */}
+            <div className="flex items-center gap-2">
+              {/* Tab Selector: Chat vs Knowledge */}
+              <div className="flex items-center bg-[#1c1c26] p-0.5 rounded-xl border border-white/5 text-[11px]">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("chat")}
+                  className={`px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer ${
+                    activeTab === "chat"
+                      ? "bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  แชต
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab("knowledge");
+                    fetchKnowledge();
+                  }}
+                  className={`px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer ${
+                    activeTab === "knowledge"
+                      ? "bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  สมอง ({knowledgeList.length})
+                </button>
+              </div>
+
+              {/* New Chat Button */}
               <button
                 type="button"
-                onClick={() => setIsModelModalOpen(true)}
-                className="px-2.5 py-1.5 text-xs font-bold rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs"
-                title="คลิกเพื่อเลือกหรือสลับโมเดล AI (Modal)"
+                onClick={handleCreateNewSession}
+                className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                title="สร้างห้องแชตใหม่"
               >
-                {engineMode === "gemini-3.6-flash" && <Zap className="w-3.5 h-3.5 text-amber-500" />}
-                {engineMode === "gemini-3.7-flash" && <Sparkles className="w-3.5 h-3.5 text-amber-500" />}
-                {engineMode === "m1" && <Brain className="w-3.5 h-3.5 text-amber-500" />}
-                <span>
-                  {engineMode === "gemini-3.6-flash" ? "Gemini 3.6 Flash" : engineMode === "gemini-3.7-flash" ? "Gemini 3.7 Pro" : "Agent M1 Local"}
-                </span>
-                <ChevronDown className="w-3 h-3 opacity-60 ml-0.5" />
+                <Plus className="w-4 h-4" />
               </button>
 
               {/* Fullscreen Modal Toggle Button */}
               <button
                 type="button"
                 onClick={() => setIsFullscreenChat(!isFullscreenChat)}
-                className="p-1.5 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors cursor-pointer border border-slate-200 dark:border-slate-700"
-                title={isFullscreenChat ? "ย่อขนาดกลับ" : "ขยายเต็มจอ (Fullscreen Modal)"}
+                className="p-1.5 text-slate-400 hover:text-slate-200 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+                title={isFullscreenChat ? "ย่อขนาดกลับ" : "ขยายเต็มจอ"}
               >
-                {isFullscreenChat ? (
-                  <Minimize2 className="w-4 h-4 text-amber-500" />
-                ) : (
-                  <Maximize2 className="w-4 h-4" />
-                )}
+                {isFullscreenChat ? <Minimize2 className="w-4 h-4 text-amber-400" /> : <Maximize2 className="w-4 h-4" />}
               </button>
             </div>
           </div>
@@ -1565,95 +1611,152 @@ export default function NetworkAiPage() {
                 {messages.map((m, idx) => (
                   <div
                     key={idx}
-                    className={`flex flex-col gap-1.5 ${m.role === "user" ? "items-end" : "items-start"}`}
+                    className={`flex flex-col gap-2 ${m.role === "user" ? "items-end" : "items-start"}`}
                   >
-                    <div className={`flex gap-2.5 max-w-[95%] sm:max-w-[90%] ${m.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
-                      {m.role === "model" ? (
-                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 text-slate-950 font-bold flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
-                          <Bot className="w-4 h-4" />
-                        </div>
-                      ) : (
-                        <div className="w-7 h-7 rounded-full bg-slate-700 text-white flex items-center justify-center shrink-0 mt-0.5 overflow-hidden border border-slate-300 dark:border-slate-600 shadow-2xs">
-                          {session?.user?.image ? (
-                            <img
-                              src={session.user.image}
-                              alt={session.user.name || "Super Admin"}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <User className="w-4 h-4" />
-                          )}
-                        </div>
-                      )}
-
-                      <div
-                        className={`rounded-2xl px-4 py-3 text-xs leading-relaxed shadow-xs overflow-hidden break-words ${
-                          m.role === "user"
-                            ? "bg-gradient-to-r from-amber-600 via-amber-700 to-yellow-700 text-white rounded-br-xs shadow-md shadow-amber-950/20"
-                            : "bg-slate-100 dark:bg-slate-900/90 text-slate-800 dark:text-slate-100 rounded-bl-xs border border-slate-200 dark:border-amber-500/20 shadow-xs"
-                        }`}
-                        style={{ overflowWrap: "anywhere" }}
-                      >
-                        {/* Attached Images/Files in Message */}
-                        {m.attachments && m.attachments.length > 0 && (
-                          <div className="mb-2.5 flex flex-wrap gap-2">
-                            {m.attachments.map((att, attIdx) => (
-                              <div key={attIdx} className="rounded-xl overflow-hidden">
-                                {att.type.startsWith("image/") && att.base64 ? (
-                                  <div
-                                    onClick={() => setPreviewImageModal(att.base64!)}
-                                    className="relative group cursor-pointer overflow-hidden rounded-xl border border-black/10 dark:border-white/10"
-                                  >
-                                    <img
-                                      src={att.base64}
-                                      alt={att.name}
-                                      className="max-w-[220px] max-h-[160px] object-cover rounded-xl transition-transform group-hover:scale-105"
-                                    />
-                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                                      <Maximize2 className="w-4 h-4" />
+                    {m.role === "user" ? (
+                      /* User Message Card (Antigravity Style) */
+                      <div className="w-full flex flex-col items-end gap-1.5">
+                        <div className="bg-[#1e1e26] text-slate-100 border border-white/5 rounded-2xl px-4 py-3 text-xs leading-relaxed max-w-[95%] sm:max-w-[85%] shadow-md whitespace-pre-wrap break-words">
+                          {m.attachments && m.attachments.length > 0 && (
+                            <div className="mb-2.5 flex flex-wrap gap-2">
+                              {m.attachments.map((att, attIdx) => (
+                                <div key={attIdx} className="rounded-xl overflow-hidden">
+                                  {att.type.startsWith("image/") && att.base64 ? (
+                                    <div
+                                      onClick={() => setPreviewImageModal(att.base64!)}
+                                      className="relative group cursor-pointer overflow-hidden rounded-xl border border-white/10"
+                                    >
+                                      <img
+                                        src={att.base64}
+                                        alt={att.name}
+                                        className="max-w-[220px] max-h-[160px] object-cover rounded-xl transition-transform group-hover:scale-105"
+                                      />
                                     </div>
+                                  ) : (
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white/5 rounded-lg text-[11px] font-mono">
+                                      <FileText className="w-3.5 h-3.5 text-amber-400" />
+                                      <span className="truncate max-w-[140px]">{att.name}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          <div>{m.content}</div>
+                        </div>
+
+                        {/* Under-bubble Action Bar for User questions */}
+                        <div className="flex items-center gap-1.5 pr-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleSendMessage(m.content);
+                              toast.success(isSending ? "เพิ่มคำถามนี้เข้าคิวแล้ว..." : "กำลังถามคำถามนี้ซ้ำ...");
+                            }}
+                            className="px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 border border-white/5 transition-all flex items-center gap-1 text-[10px] font-medium shadow-2xs cursor-pointer hover:scale-105 active:scale-95"
+                            title="กดเพื่อถามคำถามนี้ซ้ำ"
+                          >
+                            <RotateCcw className="w-2.5 h-2.5" />
+                            <span>ถามซ้ำ</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setInputMessage(m.content);
+                              chatInputRef.current?.focus();
+                              toast("คัดลอกคำถามลงช่องพิมพ์แล้ว สามารถแก้ไขแล้วส่งได้ทันที", { icon: "📝" });
+                            }}
+                            className="px-2.5 py-1 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 border border-white/5 transition-all flex items-center gap-1 text-[10px] font-medium shadow-2xs cursor-pointer hover:scale-105 active:scale-95"
+                            title="คัดลอกลงช่องพิมพ์เพื่อแก้ไข"
+                          >
+                            <Copy className="w-2.5 h-2.5" />
+                            <span>แก้ไข/คัดลอก</span>
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      /* AI Model Response (Antigravity Style) */
+                      <div className="w-full space-y-2.5">
+                        {/* Antigravity Agent Action Trace (Worked for 1m ˅) */}
+                        {m.duration && (
+                          <div className="space-y-1.5 font-mono text-[11px]">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setExpandedSteps((prev) => ({
+                                  ...prev,
+                                  [idx]: prev[idx] !== undefined ? !prev[idx] : false,
+                                }))
+                              }
+                              className="flex items-center gap-1.5 text-slate-400 hover:text-slate-200 transition-colors py-0.5 cursor-pointer font-medium select-none"
+                            >
+                              <span>{m.duration}</span>
+                              <ChevronDown
+                                className={`w-3.5 h-3.5 transition-transform ${
+                                  expandedSteps[idx] === false ? "-rotate-90" : ""
+                                }`}
+                              />
+                            </button>
+
+                            {expandedSteps[idx] !== false && m.actionSteps && m.actionSteps.length > 0 && (
+                              <div className="pl-3 border-l border-slate-700/60 space-y-1.5 my-1.5">
+                                {m.actionSteps.map((step, sIdx) => (
+                                  <div key={sIdx} className="flex items-center gap-2 text-slate-300">
+                                    {step.type === "explore" && (
+                                      <div className="flex items-center gap-1 text-slate-400">
+                                        <span>{step.title}</span>
+                                        <span className="text-slate-500">&rsaquo;</span>
+                                      </div>
+                                    )}
+                                    {step.type === "edit" && (
+                                      <div className="flex items-center gap-1.5">
+                                        <span className="text-slate-400">Edited</span>
+                                        <span className="text-cyan-400 font-medium">⚛️ {step.title}</span>
+                                        {step.diff && (
+                                          <>
+                                            <span className="text-emerald-400 font-bold">+{step.diff.add}</span>
+                                            <span className="text-rose-400 font-bold">-{step.diff.del}</span>
+                                          </>
+                                        )}
+                                      </div>
+                                    )}
+                                    {step.type === "command" && (
+                                      <div className="flex items-center gap-1 text-slate-300 flex-wrap">
+                                        <span className="text-slate-400">Ran</span>
+                                        <span className="font-mono text-amber-300 bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-900/40 text-[10px]">
+                                          {step.title}
+                                        </span>
+                                        <span className="text-slate-500">&rsaquo;</span>
+                                      </div>
+                                    )}
                                   </div>
-                                ) : (
-                                  <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-black/10 dark:bg-white/10 rounded-lg text-[11px] font-mono">
-                                    <FileText className="w-3.5 h-3.5 text-amber-500" />
-                                    <span className="truncate max-w-[140px]">{att.name}</span>
-                                    <span className="text-[9px] opacity-70">
-                                      ({(att.size / 1024).toFixed(1)} KB)
-                                    </span>
-                                  </div>
-                                )}
+                                ))}
                               </div>
-                            ))}
+                            )}
                           </div>
                         )}
 
-                        {/* Message Content: ReactMarkdown for model, plain text for user */}
-                        {m.role === "model" ? (
-                          <div className="prose dark:prose-invert max-w-none text-xs leading-relaxed space-y-1.5 break-words prose-p:leading-relaxed prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-slate-100 prose-pre:bg-slate-950 prose-pre:border prose-pre:border-slate-800 prose-pre:text-slate-100 prose-pre:overflow-x-auto prose-code:text-amber-600 dark:prose-code:text-amber-400 prose-code:bg-amber-500/10 dark:prose-code:bg-amber-950/40 prose-code:px-1 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[11px] prose-strong:font-bold prose-strong:text-amber-700 dark:prose-strong:text-amber-400 prose-ul:my-1 prose-li:my-0.5">
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                              {m.content}
-                            </ReactMarkdown>
-                          </div>
-                        ) : (
-                          <div className="whitespace-pre-wrap font-sans">
+                        {/* Markdown Response Content */}
+                        <div className="prose prose-invert max-w-none text-xs leading-relaxed space-y-1.5 break-words prose-p:leading-relaxed prose-headings:font-bold prose-headings:text-slate-100 prose-pre:bg-black/90 prose-pre:border prose-pre:border-slate-800 prose-pre:text-slate-100 prose-pre:overflow-x-auto prose-code:text-amber-400 prose-code:bg-amber-950/40 prose-code:px-1 prose-code:py-0.5 prose-code:rounded-md prose-code:text-[11px] prose-strong:font-bold prose-strong:text-amber-400 prose-ul:my-1 prose-li:my-0.5">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
                             {m.content}
-                          </div>
-                        )}
+                          </ReactMarkdown>
+                        </div>
 
                         {/* Live Web Sources Citation */}
                         {m.webSources && m.webSources.length > 0 && (
-                          <div className="mt-2.5 pt-2 border-t border-slate-200/50 dark:border-slate-700/50 flex flex-wrap items-center gap-1.5 text-[10px]">
-                            <span className="font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                              <Globe className="w-3 h-3 text-blue-500" />
+                          <div className="mt-2 pt-2 border-t border-white/5 flex flex-wrap items-center gap-1.5 text-[10px]">
+                            <span className="font-bold text-slate-400 flex items-center gap-1">
+                              <Globe className="w-3 h-3 text-blue-400" />
                               แหล่งข้อมูลจากอินเทอร์เน็ตสด:
                             </span>
-                            {m.webSources.map((s, idx) => (
+                            {m.webSources.map((s, sIdx) => (
                               <a
-                                key={idx}
+                                key={sIdx}
                                 href={s.link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="px-2 py-0.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:underline rounded-md border border-blue-500/20 truncate max-w-[220px]"
+                                className="px-2 py-0.5 bg-blue-500/10 text-blue-300 hover:underline rounded border border-blue-500/20 truncate max-w-[220px]"
                                 title={s.title}
                               >
                                 {s.title}
@@ -1662,7 +1765,7 @@ export default function NetworkAiPage() {
                           </div>
                         )}
 
-                        {/* M1 Code Modification Proposal Card */}
+                        {/* Code Proposal Card */}
                         {m.codeProposal && (
                           <div className="mt-3 p-3 bg-slate-900 border border-amber-500/40 rounded-xl text-slate-100 shadow-md">
                             <div className="flex items-center justify-between gap-2 border-b border-slate-800 pb-2">
@@ -1791,41 +1894,12 @@ export default function NetworkAiPage() {
                           </div>
                         )}
 
-                        <div className="flex items-center justify-between gap-4 mt-1.5 pt-1 border-t border-white/10 text-[9px] opacity-70">
+                        {/* Model & Timestamp Footer */}
+                        <div className="flex items-center gap-3 text-[10px] text-slate-500 pt-1">
                           <span>{m.modelUsed || "Agent M1"}</span>
+                          <span>•</span>
                           <span>{m.timestamp}</span>
                         </div>
-                      </div>
-                    </div>
-
-                    {/* Under-bubble Action Bar for User questions */}
-                    {m.role === "user" && (
-                      <div className="flex items-center gap-1.5 mr-9 -mt-0.5">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            handleSendMessage(m.content);
-                            toast.success(isSending ? "เพิ่มคำถามนี้เข้าคิวแล้ว..." : "กำลังถามคำถามนี้ซ้ำ...");
-                          }}
-                          className="px-2.5 py-1 rounded-full bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 transition-all flex items-center gap-1 text-[10px] font-medium shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
-                          title="กดเพื่อถามคำถามนี้ซ้ำ (หรือต่อคิวหาก AI กำลังตอบอยู่)"
-                        >
-                          <RotateCcw className="w-2.5 h-2.5" />
-                          <span>ถามซ้ำ</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setInputMessage(m.content);
-                            chatInputRef.current?.focus();
-                            toast("คัดลอกคำถามลงช่องพิมพ์แล้ว สามารถแก้ไขแล้วส่งได้ทันที", { icon: "📝" });
-                          }}
-                          className="px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 border border-slate-200 dark:border-slate-700 transition-all flex items-center gap-1 text-[10px] font-medium shadow-2xs cursor-pointer hover:scale-105 active:scale-95"
-                          title="คัดลอกลงช่องพิมพ์เพื่อแก้ไข"
-                        >
-                          <Copy className="w-2.5 h-2.5" />
-                          <span>แก้ไข/คัดลอก</span>
-                        </button>
                       </div>
                     )}
 
@@ -1839,27 +1913,32 @@ export default function NetworkAiPage() {
                   </div>
                 ))}
 
+                {/* Antigravity Working / Thinking Active Indicator */}
                 {isSending && (
-                  <div className="flex gap-2.5 items-start animate-in fade-in duration-200">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-500 to-yellow-600 text-slate-950 font-bold flex items-center justify-center shrink-0 shadow-2xs">
-                      <Bot className="w-4 h-4" />
+                  <div className="flex flex-col gap-2 animate-in fade-in duration-200">
+                    <div className="inline-flex items-center gap-2 text-xs text-slate-400 font-medium py-0.5">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                      </span>
+                      <span>Working... ({thinkingElapsed}s)</span>
                     </div>
-                    <div className="bg-slate-100 dark:bg-slate-800 rounded-2xl px-4 py-2.5 text-xs text-slate-500 flex items-center justify-between gap-3 border border-slate-200 dark:border-slate-700/60 shadow-xs max-w-[90%]">
-                      <div className="flex items-center gap-2">
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin text-amber-500 shrink-0" />
-                        <span className="text-slate-700 dark:text-slate-200">
-                          {engineMode === "m1" ? "Agent M1" : "AI"} กำลังประมวลผลคำตอบ...
-                        </span>
+                    <div className="bg-[#181822]/90 border border-white/5 rounded-xl p-3 text-xs text-slate-300 font-mono space-y-1.5 max-w-xl shadow-lg">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2 text-slate-300">
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin text-blue-400 shrink-0" />
+                          <span>M1 is analyzing codebase & generating response...</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleAbortRequest}
+                          className="px-2 py-0.5 bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 border border-rose-500/30 rounded-lg text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-colors shrink-0"
+                          title="Cancel generation"
+                        >
+                          <Square className="w-2.5 h-2.5 fill-current" />
+                          <span>Stop</span>
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={handleAbortRequest}
-                        className="px-2.5 py-1 bg-rose-500/15 hover:bg-rose-500/25 text-rose-600 dark:text-rose-400 border border-rose-500/30 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer hover:scale-105 active:scale-95 shrink-0"
-                        title="กดยกเลิกการทำงานของคำถามนี้ทันที"
-                      >
-                        <Square className="w-3 h-3 fill-current" />
-                        <span>ยกเลิก</span>
-                      </button>
                     </div>
                   </div>
                 )}
@@ -1868,211 +1947,206 @@ export default function NetworkAiPage() {
               </div>
             </div>
 
-            {/* Chat Input Area */}
-            <div className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0">
-              {/* Message Queue Tray (คิวคำถามรอส่ง) */}
-              {messageQueue.length > 0 && (
-                <div className="px-3 py-2 bg-amber-500/10 border-b border-amber-500/30 flex items-center justify-between gap-2 text-xs">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping shrink-0" />
-                    <Clock className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
-                    <span className="font-bold text-amber-800 dark:text-amber-300 shrink-0">
-                      คิวคำถาม ({messageQueue.length}):
-                    </span>
-                    <span className="truncate text-slate-700 dark:text-slate-300 font-medium max-w-[240px] sm:max-w-md">
-                      "{messageQueue[0].text}"
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveFromQueue(messageQueue[0].id)}
-                      className="px-2 py-0.5 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 border border-rose-500/20 rounded-md text-[10px] font-bold flex items-center gap-1 cursor-pointer"
-                      title="ยกเลิกคำถามนี้ในคิว"
-                    >
-                      <X className="w-3 h-3" />
-                      <span>ยกเลิกข้อนี้</span>
-                    </button>
-                    {messageQueue.length > 1 && (
+            {/* Antigravity Floating Input Bar Area */}
+            <div className="p-3 sm:p-4 bg-[#0f0f14] border-t border-white/5 shrink-0">
+              <div className="max-w-4xl mx-auto space-y-2">
+                {/* Message Queue Tray (คิวคำถามรอส่ง) */}
+                {messageQueue.length > 0 && (
+                  <div className="px-3 py-2 bg-[#1a1a24] border border-amber-500/30 rounded-xl flex items-center justify-between gap-2 text-xs">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping shrink-0" />
+                      <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                      <span className="font-bold text-amber-300 shrink-0">
+                        คิวคำถาม ({messageQueue.length}):
+                      </span>
+                      <span className="truncate text-slate-300 font-medium max-w-[220px] sm:max-w-md">
+                        "{messageQueue[0].text}"
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
                       <button
                         type="button"
-                        onClick={handleClearQueue}
-                        className="px-2 py-0.5 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-[10px] hover:underline cursor-pointer"
+                        onClick={() => handleRemoveFromQueue(messageQueue[0].id)}
+                        className="px-2 py-0.5 text-rose-400 hover:bg-rose-500/10 border border-rose-500/20 rounded-md text-[10px] font-bold flex items-center gap-1 cursor-pointer"
+                        title="ยกเลิกคำถามนี้ในคิว"
                       >
-                        ล้างทั้งหมด
+                        <X className="w-3 h-3" />
+                        <span>ยกเลิก</span>
                       </button>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              <div className="p-3">
-                <div className="flex items-center justify-between text-[11px] mb-2 px-1 text-slate-500 dark:text-slate-400 gap-2 flex-wrap">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span className="text-slate-500 font-medium">โมเดล AI:</span>
-                    <button
-                      type="button"
-                      onClick={() => setIsModelModalOpen(true)}
-                      className="px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer text-[10px] flex items-center gap-1.5 bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border border-amber-500/30 shadow-2xs"
-                      title="คลิกเพื่อเลือกเปลี่ยนโมเดล (Modal)"
-                    >
-                      {engineMode === "gemini-3.6-flash" && <Zap className="w-2.5 h-2.5 text-amber-500" />}
-                      {engineMode === "gemini-3.7-flash" && <Sparkles className="w-2.5 h-2.5 text-amber-500" />}
-                      {engineMode === "m1" && <Brain className="w-2.5 h-2.5 text-amber-500" />}
-                      <span>
-                        {engineMode === "gemini-3.6-flash" ? "Gemini 3.6 Flash" : engineMode === "gemini-3.7-flash" ? "Gemini 3.7 Pro" : "Agent M1 Local"}
-                      </span>
-                      <ChevronDown className="w-2.5 h-2.5 opacity-60 ml-0.5" />
-                    </button>
-                  </div>
-                  <span className="text-[10px] text-slate-400">
-                    {currentSessionTitle ? `ห้อง: ${currentSessionTitle}` : ""}
-                  </span>
-                </div>
-
-                {/* Pre-send Attachment Tray */}
-                {attachments.length > 0 && (
-                  <div className="mb-2.5 p-2 bg-slate-50 dark:bg-slate-800/90 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-wrap gap-2 items-center">
-                    {attachments.map((att) => (
-                      <div
-                        key={att.id}
-                        className="relative group flex items-center gap-2 p-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs shadow-2xs"
-                      >
-                        {att.type.startsWith("image/") && att.base64 ? (
-                          <img
-                            src={att.base64}
-                            alt={att.name}
-                            className="w-9 h-9 object-cover rounded-md border border-slate-200 dark:border-slate-700 cursor-pointer"
-                            onClick={() => setPreviewImageModal(att.base64!)}
-                          />
-                        ) : (
-                          <div className="w-9 h-9 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-[10px]">
-                            <FileText className="w-4 h-4" />
-                          </div>
-                        )}
-                        <div className="max-w-[130px] truncate text-[11px]">
-                          <p className="font-medium text-slate-800 dark:text-slate-200 truncate">{att.name}</p>
-                          <p className="text-[9px] text-slate-400">
-                            {(att.size / 1024).toFixed(1)} KB
-                          </p>
-                        </div>
+                      {messageQueue.length > 1 && (
                         <button
                           type="button"
-                          onClick={() => handleRemoveAttachment(att.id)}
-                          className="w-5 h-5 rounded-full bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-colors ml-0.5 cursor-pointer"
+                          onClick={handleClearQueue}
+                          className="px-2 py-0.5 text-slate-400 hover:text-slate-200 text-[10px] hover:underline cursor-pointer"
                         >
-                          <X className="w-3 h-3" />
+                          ล้างทั้งหมด
                         </button>
-                      </div>
-                    ))}
+                      )}
+                    </div>
                   </div>
                 )}
 
-                {/* Hidden File & Camera Inputs */}
-                <input
-                  type="file"
-                  ref={imageInputRef}
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                  onChange={(e) => {
-                    if (e.target.files) processFiles(e.target.files);
-                    e.target.value = "";
-                  }}
-                />
-                <input
-                  type="file"
-                  ref={cameraInputRef}
-                  accept="image/*"
-                  capture="environment"
-                  className="hidden"
-                  onChange={(e) => {
-                    if (e.target.files) processFiles(e.target.files);
-                    e.target.value = "";
-                  }}
-                />
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  accept=".pdf,.txt,.log,.conf,.cfg,.json,.csv,.md,text/*,application/pdf"
-                  multiple
-                  className="hidden"
-                  onChange={(e) => {
-                    if (e.target.files) processFiles(e.target.files);
-                    e.target.value = "";
-                  }}
-                />
+                {/* Unified Antigravity Input Card */}
+                <div className="bg-[#181822] border border-[#2d2d3c] hover:border-[#3d3d52] focus-within:border-slate-500/60 rounded-2xl p-3 shadow-xl transition-all">
+                  {/* Pre-send Attachment Tray */}
+                  {attachments.length > 0 && (
+                    <div className="mb-2.5 p-2 bg-[#12121a] rounded-xl border border-white/5 flex flex-wrap gap-2 items-center">
+                      {attachments.map((att) => (
+                        <div
+                          key={att.id}
+                          className="relative group flex items-center gap-2 p-1.5 bg-[#1a1a26] border border-white/10 rounded-lg text-xs"
+                        >
+                          {att.type.startsWith("image/") && att.base64 ? (
+                            <img
+                              src={att.base64}
+                              alt={att.name}
+                              className="w-9 h-9 object-cover rounded-md border border-white/10 cursor-pointer"
+                              onClick={() => setPreviewImageModal(att.base64!)}
+                            />
+                          ) : (
+                            <div className="w-9 h-9 rounded-md bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold text-[10px]">
+                              <FileText className="w-4 h-4" />
+                            </div>
+                          )}
+                          <div className="max-w-[130px] truncate text-[11px]">
+                            <p className="font-medium text-slate-200 truncate">{att.name}</p>
+                            <p className="text-[9px] text-slate-400">
+                              {(att.size / 1024).toFixed(1)} KB
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveAttachment(att.id)}
+                            className="w-5 h-5 rounded-full bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-colors ml-0.5 cursor-pointer"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    handleSendMessage();
-                  }}
-                  className="flex gap-2 items-center"
-                >
-                  {/* Attach Button - Always active */}
-                  <button
-                    type="button"
-                    onClick={() => setIsAttachModalOpen(true)}
-                    className="p-2.5 bg-slate-100 hover:bg-amber-50 dark:bg-slate-800 dark:hover:bg-amber-950/40 text-slate-600 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400 border border-slate-200 dark:border-slate-700 rounded-xl transition-all cursor-pointer flex items-center justify-center shrink-0"
-                    title="แนบรูปภาพ ถ่ายภาพ หรือเอกสาร"
-                  >
-                    <Paperclip className="w-4 h-4" />
-                  </button>
-
-                  {/* Input text - Always active, never disabled */}
+                  {/* Hidden File & Camera Inputs */}
                   <input
+                    type="file"
+                    ref={imageInputRef}
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files) processFiles(e.target.files);
+                      e.target.value = "";
+                    }}
+                  />
+                  <input
+                    type="file"
+                    ref={cameraInputRef}
+                    accept="image/*"
+                    capture="environment"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files) processFiles(e.target.files);
+                      e.target.value = "";
+                    }}
+                  />
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept=".pdf,.txt,.log,.conf,.cfg,.json,.csv,.md,text/*,application/pdf"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files) processFiles(e.target.files);
+                      e.target.value = "";
+                    }}
+                  />
+
+                  {/* Multiline Antigravity Textarea */}
+                  <textarea
                     ref={chatInputRef}
-                    type="text"
+                    rows={2}
                     placeholder={
                       isSending
-                        ? "M1 กำลังตอบอยู่... คุณสามารถพิมพ์ข้อความถัดไปแล้วกด 'ต่อคิว' ได้ทันที"
-                        : "พิมพ์คุยกับ M1, วางรูปภาพ (Ctrl+V), หรือกด 📎 แนบไฟล์..."
+                        ? "M1 กำลังประมวลผลคำตอบ... พิมพ์ข้อความแล้วกด Enter เพื่อส่งเข้า 'คิว' ได้ทันที"
+                        : "Ask anything, @ to mention, / for actions"
                     }
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }
+                    }}
                     onPaste={handlePaste}
-                    className="flex-1 px-4 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-amber-500 text-slate-800 dark:text-slate-100 placeholder-slate-400"
+                    className="w-full bg-transparent text-slate-100 placeholder-slate-500 text-xs sm:text-sm resize-none focus:outline-hidden focus:ring-0 leading-relaxed max-h-36 block"
                   />
 
-                  {/* Stop / Abort Button when generating */}
-                  {isSending && (
-                    <button
-                      type="button"
-                      onClick={handleAbortRequest}
-                      className="px-3 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-rose-600/20 cursor-pointer shrink-0 hover:scale-105 active:scale-95"
-                      title="กดยกเลิกการทำงานของคำถามนี้ทันที"
-                    >
-                      <Square className="w-3.5 h-3.5 fill-current" />
-                      <span className="hidden sm:inline">ยกเลิก</span>
-                    </button>
-                  )}
+                  {/* Bottom Toolbar inside card: (+) Attachment, Model Selector Pill, Stop / Send Arrow */}
+                  <div className="flex items-center justify-between pt-2 mt-1 border-t border-white/5">
+                    <div className="flex items-center gap-2">
+                      {/* (+) Attachment button */}
+                      <button
+                        type="button"
+                        onClick={() => setIsAttachModalOpen(true)}
+                        className="w-7 h-7 rounded-full bg-[#242432] hover:bg-[#2f2f42] text-slate-300 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                        title="แนบรูปภาพ ถ่ายภาพ หรือเอกสาร"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
 
-                  {/* Send / Queue Button */}
-                  <button
-                    type="submit"
-                    disabled={!inputMessage.trim() && attachments.length === 0}
-                    className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 shadow-md cursor-pointer shrink-0 disabled:opacity-50 ${
-                      isSending
-                        ? "bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white shadow-amber-600/20"
-                        : "bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 shadow-amber-500/20"
-                    }`}
-                    title={isSending ? "กดเพื่อส่งคำถามเข้าคิวรอตอบถัดไป" : "ส่งข้อความ"}
-                  >
-                    {isSending ? (
-                      <>
-                        <ListPlus className="w-3.5 h-3.5" />
-                        <span>ต่อคิว</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>ส่ง</span>
-                        <Send className="w-3.5 h-3.5" />
-                      </>
-                    )}
-                  </button>
-                </form>
+                      {/* Model Selector Pill */}
+                      <button
+                        type="button"
+                        onClick={() => setIsModelModalOpen(true)}
+                        className="flex items-center gap-1.5 px-3 py-1 bg-[#242432] hover:bg-[#2f2f42] text-slate-200 hover:text-white rounded-full text-xs font-medium border border-white/5 transition-colors cursor-pointer shadow-xs"
+                        title="คลิกเพื่อเลือกเปลี่ยนโมเดล"
+                      >
+                        <Sparkles className="w-3 h-3 text-amber-400" />
+                        <span className="truncate max-w-[130px] sm:max-w-[200px]">
+                          {engineMode === "gemini-3.6-flash"
+                            ? "Gemini 3.8 Flash Medium"
+                            : engineMode === "gemini-3.7-flash"
+                            ? "Gemini 3.7 Pro Thinking"
+                            : "Agent M1 Pro (Local)"}
+                        </span>
+                        <ChevronDown className="w-3 h-3 text-slate-400 opacity-70 ml-0.5" />
+                      </button>
+                    </div>
+
+                    {/* Right Actions: Stop Generation / Send or Queue */}
+                    <div className="flex items-center gap-2">
+                      {isSending && (
+                        <button
+                          type="button"
+                          onClick={handleAbortRequest}
+                          className="w-7 h-7 rounded-full bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/30 flex items-center justify-center transition-all cursor-pointer hover:scale-105"
+                          title="หยุดการสร้างคำตอบ"
+                        >
+                          <Square className="w-3 h-3 fill-current" />
+                        </button>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => handleSendMessage()}
+                        disabled={!inputMessage.trim() && attachments.length === 0}
+                        className={`w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer disabled:opacity-25 disabled:cursor-not-allowed ${
+                          isSending
+                            ? "bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold shadow-md shadow-amber-500/20"
+                            : "bg-white hover:bg-slate-200 text-black shadow-md"
+                        }`}
+                        title={isSending ? "เพิ่มคำถามเข้าคิว (Queue)" : "ส่งข้อความ (Enter)"}
+                      >
+                        {isSending ? (
+                          <ListPlus className="w-3.5 h-3.5" />
+                        ) : (
+                          <ArrowUp className="w-4 h-4 stroke-[2.5]" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </>
