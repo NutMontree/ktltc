@@ -270,6 +270,8 @@ export default function NetworkAiPage() {
   const [dismissedTaskIds, setDismissedTaskIds] = useState<Record<string, boolean>>({});
 
   const handleDismissTask = async (taskId?: string) => {
+    setRebuildingCode(false);
+    setActiveTask(null);
     if (taskId) {
       setDismissedTaskIds((prev) => ({ ...prev, [taskId]: true }));
       try {
@@ -281,7 +283,6 @@ export default function NetworkAiPage() {
         body: JSON.stringify({ action: "dismiss", taskId }),
       }).catch(() => {});
     }
-    setActiveTask(null);
   };
 
   // Antigravity Agent Action Trace State
@@ -484,25 +485,40 @@ export default function NetworkAiPage() {
   // Poll background task status (Real-time Live Console Runner)
   useEffect(() => {
     let timer: any = null;
+    let localTicker: any = null;
+    let isCancelled = false;
+
     const checkTask = async () => {
       try {
-        const res = await fetch("/api/super-admin/network-ai/code-action");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.task && data.task.status !== "idle") {
-            const isDismissed =
-              dismissedTaskIds[data.task.id] ||
-              (typeof window !== "undefined" && sessionStorage.getItem(`m1_dismissed_${data.task.id}`));
-            if (isDismissed && data.task.status !== "running") {
-              return;
-            }
-            setActiveTask(data.task);
-            if (data.task.status === "running") {
-              setRebuildingCode(true);
-            } else if (data.task.status === "success" || data.task.status === "error") {
-              setRebuildingCode(false);
-            }
-          }
+        const res = await fetch(`/api/super-admin/network-ai/code-action?_t=${Date.now()}`, {
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache" },
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (isCancelled) return;
+
+        if (!data.task || data.task.status === "idle") {
+          setRebuildingCode(false);
+          setActiveTask(null);
+          return;
+        }
+
+        const isDismissed =
+          dismissedTaskIds[data.task.id] ||
+          (typeof window !== "undefined" && sessionStorage.getItem(`m1_dismissed_${data.task.id}`));
+
+        if (isDismissed) {
+          setRebuildingCode(false);
+          setActiveTask(null);
+          return;
+        }
+
+        setActiveTask(data.task);
+        if (data.task.status === "running") {
+          setRebuildingCode(true);
+        } else {
+          setRebuildingCode(false);
         }
       } catch {
         // ignore
@@ -512,13 +528,35 @@ export default function NetworkAiPage() {
     // Check once on mount
     checkTask();
 
-    // Poll every 1.5 seconds if running
+    // Re-check when window is focused or tab visibility becomes visible
+    const handleVisibility = () => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        checkTask();
+      }
+    };
+    window.addEventListener("focus", checkTask);
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    // Poll every 1.5s while running/active, or every 5s if idle
+    const pollInterval = (activeTask?.status === "running" || rebuildingCode) ? 1500 : 5000;
+    timer = setInterval(checkTask, pollInterval);
+
+    // Local smooth duration ticker so time never freezes on screen while running
     if (activeTask?.status === "running" || rebuildingCode) {
-      timer = setInterval(checkTask, 1500);
+      localTicker = setInterval(() => {
+        setActiveTask((prev) => {
+          if (!prev || prev.status !== "running") return prev;
+          return { ...prev, durationSeconds: prev.durationSeconds + 1 };
+        });
+      }, 1000);
     }
 
     return () => {
+      isCancelled = true;
       if (timer) clearInterval(timer);
+      if (localTicker) clearInterval(localTicker);
+      window.removeEventListener("focus", checkTask);
+      document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, [activeTask?.status, rebuildingCode, dismissedTaskIds]);
 
@@ -2064,6 +2102,8 @@ export default function NetworkAiPage() {
                                       <span>
                                         {rebuildingCode || activeTask?.status === "running"
                                           ? `กำลังประมวลผล (${activeTask?.durationSeconds || 0}s)...`
+                                          : activeTask?.status === "success"
+                                          ? "✅ Rebuild สำเร็จแล้ว (กดเพื่อ Rebuild ซ้ำ)"
                                           : "Rebuild & PM2 Reload"}
                                       </span>
                                     </button>
@@ -2243,7 +2283,12 @@ export default function NetworkAiPage() {
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
                       <a
-                        href="/test"
+                        href={(() => {
+                          const p = [...messages].reverse().find((m) => m.codeProposal?.filePath);
+                          return p?.codeProposal?.filePath
+                            ? p.codeProposal.filePath.replace("src/app/(website)", "").replace("/page.tsx", "") || "/"
+                            : "/test";
+                        })()}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[10px] font-bold flex items-center gap-1 shadow-sm"

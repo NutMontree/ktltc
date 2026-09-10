@@ -22,6 +22,9 @@ declare global {
   var __ktltc_m1_task: M1Task | undefined;
 }
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 // Allowed root directory for M1 edits (Sandbox to project src/ folder)
 const PROJECT_ROOT = process.cwd().includes(path.join(".next", "standalone"))
   ? path.resolve(process.cwd(), "../..")
@@ -107,10 +110,10 @@ export async function GET() {
     };
   }
 
-  // If completed more than 2 minutes ago, reset to idle so banner doesn't linger forever
+  // If completed more than 24 hours ago, reset to idle
   if ((currentTask.status === "success" || currentTask.status === "error") && currentTask.completedAt) {
     const ageSeconds = (Date.now() - new Date(currentTask.completedAt).getTime()) / 1000;
-    if (ageSeconds > 120) {
+    if (ageSeconds > 86400) {
       currentTask.status = "idle";
     }
   }
@@ -132,10 +135,19 @@ export async function GET() {
     }
   }
 
-  return NextResponse.json({
-    success: true,
-    task: currentTask,
-  });
+  return NextResponse.json(
+    {
+      success: true,
+      task: currentTask,
+    },
+    {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+      },
+    }
+  );
 }
 
 export async function POST(req: NextRequest) {

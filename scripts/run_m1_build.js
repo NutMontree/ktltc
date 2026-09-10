@@ -121,14 +121,16 @@ async function main() {
       const handleData = (chunk) => {
         buffer += chunk.toString('utf-8');
         const lines = buffer.split('\n');
-        buffer = lines.pop(); // keep remainder
-
         for (const line of lines) {
           const trimmed = line.trim();
           if (trimmed) {
             taskState.outputLogs.push(trimmed);
             if (taskState.outputLogs.length > 200) {
               taskState.outputLogs = taskState.outputLogs.slice(-200);
+            }
+            if (trimmed.includes('Compiled') || trimmed.includes('compiled successfully') || trimmed.includes('Route (app)')) {
+              taskState.step = 'generating';
+              taskState.stepMessage = 'ขั้นตอนที่ 1/2: คอมไพล์ผ่านแล้ว กำลังสร้าง Routing...';
             }
           }
         }
@@ -167,7 +169,34 @@ async function main() {
     process.exit(1);
   }
 
-  // Step 2: Mark task success immediately since build is 100% complete
+  // Step 2: PM2 Cluster Reload
+  taskState.step = 'reloading';
+  taskState.stepMessage = 'ขั้นตอนที่ 2/2: กำลังรีโหลด PM2 Cluster (Zero-downtime)...';
+  taskState.outputLogs.push(`--- ขั้นตอนที่ 2/2: กำลังรีโหลด PM2 Cluster (pm2 reload ktltc --update-env && pm2 save) ---`);
+  await syncState();
+
+  const runPm2 = () => {
+    return new Promise((resolve) => {
+      const pm2Process = spawn('bash', ['-c', 'pm2 reload ktltc --update-env && pm2 save'], {
+        cwd: PROJECT_ROOT,
+        env: cleanEnv
+      });
+      pm2Process.stdout.on('data', (d) => {
+        const text = d.toString().trim();
+        if (text) taskState.outputLogs.push(text);
+      });
+      pm2Process.stderr.on('data', (d) => {
+        const text = d.toString().trim();
+        if (text) taskState.outputLogs.push(text);
+      });
+      pm2Process.on('close', (code) => resolve({ code }));
+      pm2Process.on('error', (err) => resolve({ code: 1, error: err.message }));
+    });
+  };
+
+  await runPm2();
+
+  // Final Success State
   clearInterval(ticker);
   const finalDuration = Math.round((Date.now() - startTime.getTime()) / 1000);
   taskState.durationSeconds = finalDuration;
@@ -176,23 +205,9 @@ async function main() {
   taskState.stepMessage = `✅ คอมไพล์และรีโหลดเซิร์ฟเวอร์สำเร็จสมบูรณ์ใน ${finalDuration} วินาที! หน้าเว็บอัปเดตเวอร์ชันใหม่แล้ว`;
   taskState.completedAt = new Date().toISOString();
   taskState.exitCode = 0;
-  taskState.outputLogs.push(`--- ✅ คอมไพล์สำเร็จสมบูรณ์ (Exit code: 0) ใช้เวลาทั้งหมด ${finalDuration} วินาที ---`);
-  taskState.outputLogs.push(`--- กำลังรีโหลด PM2 Cluster (pm2 reload ktltc --update-env && pm2 save) ---`);
+  taskState.outputLogs.push(`--- ✅ สำเร็จสมบูรณ์ทุกขั้นตอนใน ${finalDuration} วินาที ---`);
   await syncState();
   if (mongoClient) await mongoClient.close().catch(() => {});
-
-  // Trigger PM2 Reload with cleanEnv
-  try {
-    const pm2Process = spawn('bash', ['-c', 'pm2 reload ktltc --update-env && pm2 save'], {
-      cwd: PROJECT_ROOT,
-      detached: true,
-      stdio: 'ignore',
-      env: cleanEnv
-    });
-    pm2Process.unref();
-  } catch (e) {
-    console.error('Failed to spawn pm2 reload:', e);
-  }
 
   process.exit(0);
 }
