@@ -47,6 +47,7 @@ import {
   ListPlus,
   CornerDownLeft,
   ArrowUp,
+  AlertTriangle,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import ReactMarkdown from "react-markdown";
@@ -473,7 +474,9 @@ export default function NetworkAiPage() {
           const data = await res.json();
           if (data.task && data.task.status !== "idle") {
             setActiveTask(data.task);
-            if (data.task.status === "success" || data.task.status === "error") {
+            if (data.task.status === "running") {
+              setRebuildingCode(true);
+            } else if (data.task.status === "success" || data.task.status === "error") {
               setRebuildingCode(false);
             }
           }
@@ -486,9 +489,9 @@ export default function NetworkAiPage() {
     // Check once on mount
     checkTask();
 
-    // Poll every 2 seconds if running
+    // Poll every 1.5 seconds if running
     if (activeTask?.status === "running" || rebuildingCode) {
-      timer = setInterval(checkTask, 2000);
+      timer = setInterval(checkTask, 1500);
     }
 
     return () => {
@@ -1612,7 +1615,101 @@ export default function NetworkAiPage() {
                   ref={chatMessagesContainerRef}
                   className="flex-1 p-4 overflow-y-auto space-y-4"
                 >
-                {messages.map((m, idx) => (
+                  {/* Antigravity Persistent Live Task Runner Banner inside Chat */}
+                  {activeTask && activeTask.status !== "idle" && (
+                    <div
+                      className={`p-3 rounded-xl border transition-all text-xs space-y-2 shadow-lg animate-in fade-in ${
+                        activeTask.status === "running"
+                          ? "bg-[#181822] border-amber-500/50 shadow-amber-500/5 ring-1 ring-amber-500/20"
+                          : activeTask.status === "success"
+                          ? "bg-[#181822] border-emerald-500/50 shadow-emerald-500/5 ring-1 ring-emerald-500/20"
+                          : "bg-[#181822] border-rose-500/50 shadow-rose-500/5 ring-1 ring-rose-500/20"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <div className="flex items-center gap-2 min-w-0">
+                          {activeTask.status === "running" ? (
+                            <span className="relative flex h-2.5 w-2.5 shrink-0">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+                            </span>
+                          ) : activeTask.status === "success" ? (
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                          ) : (
+                            <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+                          )}
+                          <span className="font-bold text-white">
+                            {activeTask.status === "running"
+                              ? `⚙️ กำลังประมวลผลคำสั่ง (${activeTask.durationSeconds}s)`
+                              : activeTask.status === "success"
+                              ? `✅ Task Completed (${activeTask.durationSeconds}s)`
+                              : `❌ Task Failed`}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => setShowTaskTerminal(!showTaskTerminal)}
+                            className="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-slate-200 text-[10px] font-medium flex items-center gap-1 transition-colors cursor-pointer"
+                          >
+                            <Terminal className="w-3 h-3 text-amber-400" />
+                            <span>{showTaskTerminal ? "ซ่อน Console" : "ดู Console Log สด"}</span>
+                          </button>
+                          {activeTask.status !== "running" && (
+                            <button
+                              type="button"
+                              onClick={() => setActiveTask(null)}
+                              className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                              title="ปิดการแจ้งเตือน"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Step Message */}
+                      <div className="text-[11px] text-slate-300 font-mono flex items-center justify-between gap-2 flex-wrap">
+                        <span>{activeTask.stepMessage || activeTask.command}</span>
+                        {activeTask.status === "success" && (
+                          <a
+                            href="/test"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] font-bold flex items-center gap-1 shrink-0 cursor-pointer"
+                          >
+                            <span>เปิดหน้าเว็บจริง</span>
+                            <Globe className="w-3 h-3" />
+                          </a>
+                        )}
+                      </div>
+
+                      {/* Terminal Console Output inside Chat */}
+                      {showTaskTerminal && activeTask.outputLogs && activeTask.outputLogs.length > 0 && (
+                        <div className="p-2.5 bg-black/80 rounded-lg font-mono text-[10px] leading-relaxed max-h-44 overflow-y-auto space-y-1 text-slate-300 border border-white/5 scrollbar-thin">
+                          {activeTask.outputLogs.map((log, lIdx) => (
+                            <div
+                              key={lIdx}
+                              className={`break-all ${
+                                log.includes("Error") || log.includes("❌") || log.includes("failed")
+                                  ? "text-rose-400 font-bold"
+                                  : log.includes("✓") || log.includes("✅") || log.includes("success") || log.includes("Successfully")
+                                  ? "text-emerald-400"
+                                  : log.includes("PM2") || log.includes("reload")
+                                  ? "text-amber-300"
+                                  : "text-slate-400"
+                              }`}
+                            >
+                              {log}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {messages.map((m, idx) => (
                   <div
                     key={idx}
                     className={`flex flex-col gap-2 ${m.role === "user" ? "items-end" : "items-start"}`}
@@ -1876,7 +1973,8 @@ export default function NetworkAiPage() {
                                       <button
                                         type="button"
                                         onClick={() => handleRollbackCode(idx, m.codeProposal!.filePath)}
-                                        className="px-2.5 py-1 bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 rounded-lg text-[11px] font-bold transition-colors flex items-center gap-1 cursor-pointer"
+                                        disabled={rebuildingCode || activeTask?.status === "running"}
+                                        className="px-2.5 py-1 bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 rounded-lg text-[11px] font-bold transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
                                       >
                                         <RotateCcw className="w-3 h-3" />
                                         <span>ย้อนกลับ (Rollback ไฟล์เดิม)</span>
@@ -1885,12 +1983,40 @@ export default function NetworkAiPage() {
                                     <button
                                       type="button"
                                       onClick={handleTriggerRebuild}
-                                      disabled={rebuildingCode}
-                                      className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold transition-colors flex items-center gap-1 cursor-pointer"
+                                      disabled={rebuildingCode || activeTask?.status === "running"}
+                                      className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50 shadow-xs"
                                     >
-                                      {rebuildingCode ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3" />}
-                                      <span>Rebuild & PM2 Reload</span>
+                                      {rebuildingCode || activeTask?.status === "running" ? (
+                                        <RefreshCw className="w-3 h-3 animate-spin" />
+                                      ) : (
+                                        <Play className="w-3 h-3" />
+                                      )}
+                                      <span>
+                                        {rebuildingCode || activeTask?.status === "running"
+                                          ? `กำลังประมวลผล (${activeTask?.durationSeconds || 0}s)...`
+                                          : "Rebuild & PM2 Reload"}
+                                      </span>
                                     </button>
+
+                                    {/* Direct link to live page */}
+                                    <a
+                                      href={m.codeProposal.filePath.replace("src/app/(website)", "").replace("/page.tsx", "") || "/"}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="px-2.5 py-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 rounded-lg text-[11px] font-bold transition-colors flex items-center gap-1 cursor-pointer"
+                                      title="คลิกเพื่อเปิดดูหน้าเว็บจริงทันที"
+                                    >
+                                      <Globe className="w-3 h-3 text-blue-400" />
+                                      <span>เปิดหน้าเว็บจริง ↗</span>
+                                    </a>
+
+                                    {/* Live Step Status Message inside Card */}
+                                    {activeTask && activeTask.status === "running" && (
+                                      <div className="w-full text-[11px] text-amber-300/90 font-mono bg-amber-500/10 border border-amber-500/20 rounded-lg px-2.5 py-1.5 flex items-center gap-2 mt-1">
+                                        <RefreshCw className="w-3 h-3 animate-spin text-amber-400 shrink-0" />
+                                        <span>{activeTask.stepMessage || "กำลังคอมไพล์ Next.js Turbopack..."}</span>
+                                      </div>
+                                    )}
                                   </div>
                                 )}
                               </div>

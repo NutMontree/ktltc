@@ -62,26 +62,54 @@ function validateSafePath(relativeFilePath: string): { safe: boolean; fullPath?:
   return { safe: true, fullPath };
 }
 
-// GET: Polling live task status and real-time build logs
+// GET: Polling live task status and real-time build logs (Persistent across PM2 reloads)
 export async function GET() {
   const session = await auth();
   if (!session || (session.user as any)?.role !== "super_admin") {
     return NextResponse.json({ error: "Unauthorized: Super Admin Only" }, { status: 403 });
   }
 
-  const currentTask = globalThis.__ktltc_m1_task || {
-    id: "",
-    command: "",
-    status: "idle" as const,
-    startedAt: "",
-    durationSeconds: 0,
-    outputLogs: [],
-  };
+  let currentTask: any = null;
 
-  // If currently running, calculate dynamic duration
-  if (currentTask.status === "running" && currentTask.startedAt) {
-    const elapsed = Math.round((Date.now() - new Date(currentTask.startedAt).getTime()) / 1000);
-    currentTask.durationSeconds = Math.max(0, elapsed);
+  // 1. Try reading from MongoDB m1_tasks
+  try {
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+    currentTask = await db.collection("m1_tasks").findOne({}, { sort: { updatedAt: -1 } });
+  } catch (err) {
+    console.error("Failed to read task from MongoDB:", err);
+  }
+
+  // 2. Fallback to scratch file
+  if (!currentTask) {
+    try {
+      const statusFile = path.join(PROJECT_ROOT, "scratch", "m1_task_status.json");
+      const stat = await fs.stat(statusFile).catch(() => null);
+      if (stat) {
+        const raw = await fs.readFile(statusFile, "utf-8");
+        currentTask = JSON.parse(raw);
+      }
+    } catch {}
+  }
+
+  if (!currentTask) {
+    currentTask = {
+      id: "",
+      command: "",
+      status: "idle" as const,
+      startedAt: "",
+      durationSeconds: 0,
+      outputLogs: [],
+    };
+  }
+
+  // If running for more than 5 minutes without update, mark as error
+  if (currentTask.status === "running" && currentTask.updatedAt) {
+    const ageSeconds = (Date.now() - new Date(currentTask.updatedAt).getTime()) / 1000;
+    if (ageSeconds > 300) {
+      currentTask.status = "error";
+      currentTask.stepMessage = "❌ Task timeout (หมดเวลาการประมวลผล)";
+    }
   }
 
   return NextResponse.json({
@@ -103,17 +131,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Action is required" }, { status: 400 });
     }
 
-    // 1. Rebuild and PM2 Reload Action with Live Streamed Logs
+    // 1. Rebuild and PM2 Reload Action via Detached Runner (Rock-solid & persistent)
     if (action === "rebuild") {
       const taskId = `task-${Date.now()}`;
       const commandStr = "npm run build && pm2 reload ktltc --update-env && pm2 save";
       const startTime = new Date();
 
-      globalThis.__ktltc_m1_task = {
+      const initialTask = {
         id: taskId,
         command: commandStr,
-        status: "running",
+        status: "running" as const,
+        step: "compiling",
+        stepMessage: "ขั้นตอนที่ 1/2: กำลังคอมไพล์โค้ด Next.js Turbopack...",
         startedAt: startTime.toISOString(),
+        completedAt: null,
         durationSeconds: 0,
         outputLogs: [
           `[${startTime.toLocaleTimeString("th-TH")}] ⚙️ 1 task running`,
@@ -122,56 +153,47 @@ export async function POST(req: NextRequest) {
           `--- กำลังเริ่มต้นรัน Turbopack Build และ PM2 Cluster Reload ---`,
         ],
         exitCode: null,
+        updatedAt: startTime.toISOString(),
       };
 
-      const child = spawn("bash", ["-c", commandStr], {
+      // Save initial state to MongoDB
+      try {
+        const client = await clientPromise;
+        const db = client.db("ktltc_db");
+        await db.collection("m1_tasks").updateOne(
+          { id: taskId },
+          { $set: initialTask },
+          { upsert: true }
+        );
+      } catch (err) {
+        console.error("Failed to save initial task to MongoDB:", err);
+      }
+
+      // Save to scratch file
+      try {
+        const statusFile = path.join(PROJECT_ROOT, "scratch", "m1_task_status.json");
+        await fs.writeFile(statusFile, JSON.stringify(initialTask, null, 2), "utf-8");
+      } catch {}
+
+      // Spawn detached background worker so PM2 reload won't terminate it
+      const runnerScript = path.join(PROJECT_ROOT, "scripts", "run_m1_build.js");
+      const child = spawn("node", [runnerScript, taskId], {
         cwd: PROJECT_ROOT,
+        detached: true,
+        stdio: "ignore",
         env: {
           ...process.env,
           PATH: `${process.env.PATH}:/usr/local/bin:/usr/bin:/bin`,
         },
       });
 
-      const appendLog = (data: Buffer) => {
-        const text = data.toString("utf-8");
-        const lines = text.split("\n").filter((l) => l.trim().length > 0);
-        if (globalThis.__ktltc_m1_task && globalThis.__ktltc_m1_task.id === taskId) {
-          globalThis.__ktltc_m1_task.outputLogs.push(...lines);
-          if (globalThis.__ktltc_m1_task.outputLogs.length > 250) {
-            globalThis.__ktltc_m1_task.outputLogs = globalThis.__ktltc_m1_task.outputLogs.slice(-250);
-          }
-        }
-      };
-
-      child.stdout.on("data", appendLog);
-      child.stderr.on("data", appendLog);
-
-      child.on("close", (code) => {
-        const endTime = new Date();
-        const duration = Math.round((endTime.getTime() - startTime.getTime()) / 1000);
-        if (globalThis.__ktltc_m1_task && globalThis.__ktltc_m1_task.id === taskId) {
-          globalThis.__ktltc_m1_task.completedAt = endTime.toISOString();
-          globalThis.__ktltc_m1_task.durationSeconds = duration;
-          globalThis.__ktltc_m1_task.exitCode = code;
-          if (code === 0) {
-            globalThis.__ktltc_m1_task.status = "success";
-            globalThis.__ktltc_m1_task.outputLogs.push(
-              `--- ✅ สำเร็จสมบูรณ์ (Exit code: 0) ใช้เวลา ${duration} วินาที ---`
-            );
-          } else {
-            globalThis.__ktltc_m1_task.status = "error";
-            globalThis.__ktltc_m1_task.outputLogs.push(
-              `--- ❌ กระบวนการล้มเหลว (Exit code: ${code}) โปรดตรวจสอบ Log ด้านบน ---`
-            );
-          }
-        }
-      });
+      child.unref();
 
       return NextResponse.json({
         success: true,
         taskId,
         message: "🚀 เริ่มต้นการ Build และ PM2 Reload เรียบร้อยแล้ว",
-        task: globalThis.__ktltc_m1_task,
+        task: initialTask,
       });
     }
 
