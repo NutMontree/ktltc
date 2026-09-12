@@ -91,8 +91,91 @@ export default function DVEGradingPage() {
     ? studentGrades.filter(g => g.classGroupId === selectedClassGroup)
     : studentGrades;
 
+  const getStandardScores = (g: StudentGrade) => {
+    // 1. จิตพิสัย(20) - ค่าเริ่มต้น 20 หากไม่มีคะแนน
+    let mental = 20;
+    if (g.scores) {
+      if (g.scores["mental_health"] !== undefined && g.scores["mental_health"] !== null && g.scores["mental_health"] !== ("" as any)) {
+        mental = Number(g.scores["mental_health"]);
+      } else {
+        const mentalKey = Object.keys(g.scores).find(k => k.toLowerCase().includes("mental") || k.includes("จิตพิสัย"));
+        if (mentalKey && g.scores[mentalKey] !== undefined && g.scores[mentalKey] !== null && g.scores[mentalKey] !== ("" as any)) {
+          mental = Number(g.scores[mentalKey]);
+        }
+      }
+    }
+    if (isNaN(mental)) mental = 20;
+
+    // 2. ทดสอบ(30) - เก็บจาก test/ทดสอบ หรือรวม end_of_chapter_exam (20) + project (10)
+    let test = 0;
+    if (g.scores) {
+      if (g.scores["test"] !== undefined && g.scores["test"] !== null && g.scores["test"] !== ("" as any)) {
+        test = Number(g.scores["test"]);
+      } else if (g.scores["ทดสอบ"] !== undefined && g.scores["ทดสอบ"] !== null && g.scores["ทดสอบ"] !== ("" as any)) {
+        test = Number(g.scores["ทดสอบ"]);
+      } else {
+        const eoc = Number(g.scores["end_of_chapter_exam"] ?? 0);
+        const proj = Number(g.scores["project"] ?? 0);
+        test = (isNaN(eoc) ? 0 : eoc) + (isNaN(proj) ? 0 : proj);
+      }
+    }
+    if (isNaN(test)) test = 0;
+
+    // 3. ภาระงาน(20) - เก็บจาก task / ภาระงาน / class_work / งานที่มอบหมาย / ระหว่างเรียน
+    let task = 0;
+    if (g.scores) {
+      if (g.scores["task"] !== undefined && g.scores["task"] !== null && g.scores["task"] !== ("" as any)) {
+        task = Number(g.scores["task"]);
+      } else if (g.scores["ภาระงาน"] !== undefined && g.scores["ภาระงาน"] !== null && g.scores["ภาระงาน"] !== ("" as any)) {
+        task = Number(g.scores["ภาระงาน"]);
+      } else if (g.scores["class_work"] !== undefined && g.scores["class_work"] !== null && g.scores["class_work"] !== ("" as any)) {
+        task = Number(g.scores["class_work"]);
+      } else {
+        const taskKey = Object.keys(g.scores).find(k => k.includes("ภาระงาน") || k.includes("งานที่มอบหมาย") || k.includes("ระหว่างเรียน"));
+        if (taskKey && g.scores[taskKey] !== undefined && g.scores[taskKey] !== null && g.scores[taskKey] !== ("" as any)) {
+          task = Number(g.scores[taskKey]);
+        }
+      }
+    }
+    if (isNaN(task)) task = 0;
+
+    // 4. กลางภาค(10)
+    let midterm = 0;
+    if (g.scores) {
+      if (g.scores["midterm_exam"] !== undefined && g.scores["midterm_exam"] !== null && g.scores["midterm_exam"] !== ("" as any)) {
+        midterm = Number(g.scores["midterm_exam"]);
+      } else if (g.scores["กลางภาค"] !== undefined && g.scores["กลางภาค"] !== null && g.scores["กลางภาค"] !== ("" as any)) {
+        midterm = Number(g.scores["กลางภาค"]);
+      } else {
+        const midKey = Object.keys(g.scores).find(k => k.includes("กลางภาค") || k.toLowerCase().includes("midterm"));
+        if (midKey && g.scores[midKey] !== undefined && g.scores[midKey] !== null && g.scores[midKey] !== ("" as any)) {
+          midterm = Number(g.scores[midKey]);
+        }
+      }
+    }
+    if (isNaN(midterm)) midterm = 0;
+
+    // 5. ปลายภาค(20)
+    let finalScore = 0;
+    if (g.scores) {
+      if (g.scores["final_exam"] !== undefined && g.scores["final_exam"] !== null && g.scores["final_exam"] !== ("" as any)) {
+        finalScore = Number(g.scores["final_exam"]);
+      } else if (g.scores["ปลายภาค"] !== undefined && g.scores["ปลายภาค"] !== null && g.scores["ปลายภาค"] !== ("" as any)) {
+        finalScore = Number(g.scores["ปลายภาค"]);
+      } else {
+        const finalKey = Object.keys(g.scores).find(k => k.includes("ปลายภาค") || k.toLowerCase().includes("final"));
+        if (finalKey && g.scores[finalKey] !== undefined && g.scores[finalKey] !== null && g.scores[finalKey] !== ("" as any)) {
+          finalScore = Number(g.scores[finalKey]);
+        }
+      }
+    }
+    if (isNaN(finalScore)) finalScore = 0;
+
+    return { mental, test, task, midterm, finalScore };
+  };
+
   const exportToExcel = () => {
-    if (filteredGrades.length === 0 || !config) {
+    if (filteredGrades.length === 0) {
       message.error("ไม่พบข้อมูลที่จะส่งออก");
       return;
     }
@@ -102,32 +185,38 @@ export default function DVEGradingPage() {
       subjectNameStr += `_${selectedClassGroup}`;
     }
 
+    const semesterStr = currentSubject?.semester ? currentSubject.semester.split("/")[0] : "1";
+    const academicYearStr = currentSubject?.academicYear || (currentSubject?.semester?.includes("/") ? currentSubject.semester.split("/")[1] : "2569");
+
     const aoaData: any[][] = [
-      [`ภาคเรียนที่ ${currentSubject?.semester || "1"}  ปีการศึกษา ${currentSubject?.academicYear || ""}`],
+      [`ภาคเรียนที่ ${semesterStr}  ปีการศึกษา ${academicYearStr}`],
       [`รหัสวิชา : ${currentSubject?.code || ""} : ${currentSubject?.name || ""}`],
       [],
       [
         "ลำดับ", 
-        "รหัสนักศึกษา", 
-        "ชื่อ-นามสกุล", 
-        "ห้องเรียน", 
-        ...config.categories.map((cat) => `${cat.name} (${cat.points})`),
-        "คะแนนรวม (100)",
-        "เกรด",
-        "ผลการเรียน"
+        "รหัสนักเรียนนักศึกษา", 
+        "ชื่อ-สกุล", 
+        "กลุ่มเรียน", 
+        "จิตพิสัย(20)",
+        "ทดสอบ(30)",
+        "ภาระงาน(20)",
+        "กลางภาค(10)",
+        "ปลายภาค(20)"
       ]
     ];
 
     filteredGrades.forEach((g, idx) => {
+      const { mental, test, task, midterm, finalScore } = getStandardScores(g);
       const row = [
         idx + 1,
         g.studentCode || "",
         g.studentName || "-",
         g.classGroupId || "-",
-        ...config.categories.map((cat) => g.scores[cat.id] ?? 0),
-        g.totalScore,
-        g.finalGrade,
-        g.isPassed ? "ผ่าน" : "ไม่ผ่าน"
+        mental,
+        test,
+        task,
+        midterm,
+        finalScore
       ];
       aoaData.push(row);
     });
@@ -142,7 +231,7 @@ export default function DVEGradingPage() {
   };
 
   const exportToSot02 = () => {
-    if (filteredGrades.length === 0 || !config) {
+    if (filteredGrades.length === 0) {
       message.error("ไม่พบข้อมูลที่จะส่งออก");
       return;
     }
@@ -152,8 +241,11 @@ export default function DVEGradingPage() {
       subjectNameStr += `_${selectedClassGroup}`;
     }
 
+    const semesterStr = currentSubject?.semester ? currentSubject.semester.split("/")[0] : "1";
+    const academicYearStr = currentSubject?.academicYear || (currentSubject?.semester?.includes("/") ? currentSubject.semester.split("/")[1] : "2569");
+
     const aoaData: any[][] = [
-      [`ภาคเรียนที่ ${currentSubject?.semester || "1"}  ปีการศึกษา ${currentSubject?.academicYear || ""}`],
+      [`ภาคเรียนที่ ${semesterStr}  ปีการศึกษา ${academicYearStr}`],
       [`รหัสวิชา : ${currentSubject?.code || ""} : ${currentSubject?.name || ""}`],
       [],
       [
@@ -161,20 +253,26 @@ export default function DVEGradingPage() {
         "รหัสนักเรียนนักศึกษา", 
         "ชื่อ-สกุล", 
         "กลุ่มเรียน", 
-        ...config.categories.map((cat) => `${cat.name}(${cat.points})`)
+        "จิตพิสัย(20)",
+        "ทดสอบ(30)",
+        "ภาระงาน(20)",
+        "กลางภาค(10)",
+        "ปลายภาค(20)"
       ]
     ];
 
     filteredGrades.forEach((g, idx) => {
+      const { mental, test, task, midterm, finalScore } = getStandardScores(g);
       const row = [
         idx + 1,
         g.studentCode || "",
         g.studentName || "-",
         g.classGroupId || "-",
-        ...config.categories.map((cat) => {
-          const score = g.scores[cat.id];
-          return (score === undefined || score === null) ? "" : score;
-        })
+        mental,
+        test,
+        task,
+        midterm,
+        finalScore
       ];
       aoaData.push(row);
     });
@@ -231,12 +329,39 @@ export default function DVEGradingPage() {
     }
   };
 
+  const sortStudentGrades = (grades: StudentGrade[]) => {
+    return [...grades].sort((a, b) => {
+      // 1. Sort by department
+      const deptA = a.department || "";
+      const deptB = b.department || "";
+      if (deptA !== deptB) return deptA.localeCompare(deptB, "th");
+
+      // 2. Sort by classGroupId
+      const classA = a.classGroupId || "";
+      const classB = b.classGroupId || "";
+      if (classA !== classB) return classA.localeCompare(classB, "th");
+
+      // 3. Sort by sequence (เลขที่)
+      const seqA = a.sequence !== undefined && a.sequence !== null && !isNaN(Number(a.sequence)) ? Number(a.sequence) : 9999;
+      const seqB = b.sequence !== undefined && b.sequence !== null && !isNaN(Number(b.sequence)) ? Number(b.sequence) : 9999;
+      if (seqA !== seqB) return seqA - seqB;
+
+      // 4. Sort by studentCode
+      const codeA = a.studentCode || "";
+      const codeB = b.studentCode || "";
+      if (codeA !== codeB) return codeA.localeCompare(codeB, "th");
+
+      // 5. Sort by studentName
+      return (a.studentName || "").localeCompare(b.studentName || "", "th");
+    });
+  };
+
   const fetchStudentGrades = async () => {
     try {
       const res = await fetch(`/api/dve/student-grades?subjectId=${selectedSubjectId}&_t=${Date.now()}`);
       const data = await res.json();
       if (res.ok && data.success) {
-        setStudentGrades(data.grades);
+        setStudentGrades(sortStudentGrades(data.grades));
       }
     } catch (error) {
       console.error("Fetch student grades error:", error);
@@ -283,15 +408,10 @@ export default function DVEGradingPage() {
     if (!grade) return;
 
     try {
-      // Update locally immediately for UX
+      // Update locally immediately for UX with proper sequence-first sorting
       setStudentGrades(prev => {
         const newGrades = prev.map(g => g.id === gradeId ? { ...g, sequence: newSequence } : g);
-        return newGrades.sort((a, b) => {
-          const codeA = a.studentCode || "";
-          const codeB = b.studentCode || "";
-          if (codeA !== codeB) return codeA.localeCompare(codeB, "th");
-          return (a.studentName || "").localeCompare(b.studentName || "");
-        });
+        return sortStudentGrades(newGrades);
       });
 
       const res = await fetch("/api/dve/student-grades", {
@@ -307,7 +427,9 @@ export default function DVEGradingPage() {
           isSequenceUpdateOnly: true
         }),
       });
-      if (!res.ok) {
+      if (res.ok) {
+        fetchStudentGrades();
+      } else {
         message.error("บันทึกลำดับเลขที่ล้มเหลว");
         fetchStudentGrades(); // Revert on error
       }
@@ -358,8 +480,9 @@ export default function DVEGradingPage() {
       const filledScores: Record<string, number> = { ...grade.scores };
       if (config) {
         config.categories.forEach(cat => {
+          const isMentalHealth = cat.id === "mental_health" || cat.name?.includes("จิตพิสัย");
           if (filledScores[cat.id] === undefined || filledScores[cat.id] === null) {
-            filledScores[cat.id] = cat.cannotDeduct ? cat.points : 0;
+            filledScores[cat.id] = isMentalHealth ? cat.points : 0;
           } else if (filledScores[cat.id] > cat.points) {
             filledScores[cat.id] = cat.points;
           } else if (filledScores[cat.id] < 0) {
@@ -401,8 +524,9 @@ export default function DVEGradingPage() {
       const filledScores: Record<string, number> = { ...gradeForm };
       if (config) {
         config.categories.forEach(cat => {
+          const isMentalHealth = cat.id === "mental_health" || cat.name?.includes("จิตพิสัย");
           if (filledScores[cat.id] === undefined || filledScores[cat.id] === null) {
-            filledScores[cat.id] = cat.cannotDeduct ? cat.points : 0;
+            filledScores[cat.id] = isMentalHealth ? cat.points : 0;
           } else if (filledScores[cat.id] > cat.points) {
             filledScores[cat.id] = cat.points;
           } else if (filledScores[cat.id] < 0) {

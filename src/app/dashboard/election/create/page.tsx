@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import PremiumDatePicker from "@/components/PremiumDatePicker";
 
 export default function CreateElection() {
   const router = useRouter();
@@ -17,6 +18,10 @@ export default function CreateElection() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.startDate || !formData.endDate) {
+      toast.error("กรุณาระบุวันและเวลาที่เริ่มและสิ้นสุด");
+      return;
+    }
     setLoading(true);
 
     try {
@@ -77,24 +82,24 @@ export default function CreateElection() {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 วันและเวลาที่เริ่ม <span className="text-red-500">*</span>
               </label>
-              <input
-                type="datetime-local"
-                required
+              <PremiumDatePicker
                 value={formData.startDate}
-                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                onChange={(val) => setFormData({ ...formData, startDate: val })}
+                showTime={true}
+                placeholder="เลือกวันและเวลาที่เริ่ม"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white flex items-center justify-between"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 วันและเวลาที่สิ้นสุด <span className="text-red-500">*</span>
               </label>
-              <input
-                type="datetime-local"
-                required
+              <PremiumDatePicker
                 value={formData.endDate}
-                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                onChange={(val) => setFormData({ ...formData, endDate: val })}
+                showTime={true}
+                placeholder="เลือกวันและเวลาที่สิ้นสุด"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white flex items-center justify-between"
               />
             </div>
           </div>

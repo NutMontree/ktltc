@@ -75,6 +75,7 @@
     "mongodb": "^6.3.0",
     "mongoose": "^9.7.1",
     "motion": "^12.43.0",
+    "msedge-tts": "^2.0.7",
     "net-snmp": "^3.26.3",
     "next": "16.1.4",
     "next-auth": "^5.0.0-beta.30",

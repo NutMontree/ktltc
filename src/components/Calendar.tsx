@@ -2,12 +2,15 @@
 
 import React, { useState } from "react";
 import { Calendar, theme, ConfigProvider, Badge } from "antd";
+import thTH from "antd/locale/th_TH";
 import type { CalendarProps } from "antd";
 import type { Dayjs } from "dayjs";
 import { motion } from "framer-motion";
 import { CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import "dayjs/locale/th";
+
+dayjs.locale("th");
 
 /**
  * Calendar.tsx: คอมโพเนนต์ปฏิทินกิจกรรม
@@ -67,6 +70,7 @@ export default function CalendarPage() {
 
   return (
     <ConfigProvider
+      locale={thTH}
       theme={{
         token: {
           colorPrimary: "#6366f1", // สี Indigo หลักของปฏิทิน

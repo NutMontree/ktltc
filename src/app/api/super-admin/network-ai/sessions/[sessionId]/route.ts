@@ -25,7 +25,7 @@ export async function GET(
     const sessionInfo = await sessionsCol.findOne({ sessionId });
     const messages = await messagesCol
       .find({ sessionId })
-      .sort({ createdAt: 1 })
+      .sort({ createdAt: 1, _id: 1 })
       .toArray();
 
     return NextResponse.json({

@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { Plus, Trash2, Edit2, Users, BarChart3, Settings, Upload, Minus, AlertCircle, X } from "lucide-react";
 import { format } from "date-fns";
 import { uploadFile } from "@/lib/upload";
+import PremiumDatePicker from "@/components/PremiumDatePicker";
 
 // User Selector Component Helper
 const UserSelector = ({ 
@@ -839,12 +840,12 @@ export default function ManageElection() {
                     <span>วันและเวลาที่เริ่ม <span className="text-red-500">*</span></span>
                     {editForm.startDate && <ThaiDateTime dateString={editForm.startDate} />}
                   </label>
-                  <input
-                    type="datetime-local"
-                    required
+                  <PremiumDatePicker
                     value={editForm.startDate}
-                    onChange={(e) => setEditForm({ ...editForm, startDate: e.target.value })}
-                    className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all"
+                    onChange={(val) => setEditForm({ ...editForm, startDate: val })}
+                    showTime={true}
+                    placeholder="เลือกวันและเวลาที่เริ่ม"
+                    className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all flex items-center justify-between"
                   />
                 </div>
                 <div>
@@ -852,12 +853,12 @@ export default function ManageElection() {
                     <span>วันและเวลาที่สิ้นสุด <span className="text-red-500">*</span></span>
                     {editForm.endDate && <ThaiDateTime dateString={editForm.endDate} />}
                   </label>
-                  <input
-                    type="datetime-local"
-                    required
+                  <PremiumDatePicker
                     value={editForm.endDate}
-                    onChange={(e) => setEditForm({ ...editForm, endDate: e.target.value })}
-                    className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all"
+                    onChange={(val) => setEditForm({ ...editForm, endDate: val })}
+                    showTime={true}
+                    placeholder="เลือกวันและเวลาที่สิ้นสุด"
+                    className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all flex items-center justify-between"
                   />
                 </div>
               </div>

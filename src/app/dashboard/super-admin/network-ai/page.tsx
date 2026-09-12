@@ -46,8 +46,20 @@ import {
   Clock,
   ListPlus,
   CornerDownLeft,
-  ArrowUp,
   AlertTriangle,
+  ArrowUp,
+  MoreVertical,
+  Pencil,
+  Mic,
+  MicOff,
+  Volume2,
+  VolumeX,
+  PhoneCall,
+  PhoneOff,
+  AudioLines,
+  Headphones,
+  SlidersHorizontal,
+  Settings,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import ReactMarkdown from "react-markdown";
@@ -267,7 +279,20 @@ export default function NetworkAiPage() {
   const [previewCodeIndex, setPreviewCodeIndex] = useState<number | null>(null);
   const [activeTask, setActiveTask] = useState<M1Task | null>(null);
   const [showTaskTerminal, setShowTaskTerminal] = useState(true);
+  const [isTaskCollapsed, setIsTaskCollapsed] = useState(true);
+  const [taskTriggerMsgIndex, setTaskTriggerMsgIndex] = useState<number | null>(null);
   const [dismissedTaskIds, setDismissedTaskIds] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (activeTask?.status === "success") {
+      setIsTaskCollapsed(true);
+      const timer = setTimeout(() => {
+        setActiveTask(null);
+        setTaskTriggerMsgIndex(null);
+      }, 15000);
+      return () => clearTimeout(timer);
+    }
+  }, [activeTask?.status]);
 
   const handleDismissTask = async (taskId?: string) => {
     setRebuildingCode(false);
@@ -320,6 +345,9 @@ export default function NetworkAiPage() {
   const [isModelModalOpen, setIsModelModalOpen] = useState(false);
   const [isFullscreenChat, setIsFullscreenChat] = useState(false);
   const [isLoadingSession, setIsLoadingSession] = useState(false);
+  const [activeSessionMenuId, setActiveSessionMenuId] = useState<string | null>(null);
+  const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
+  const [editingSessionTitle, setEditingSessionTitle] = useState("");
 
   // Message Queue & Abort Controller
   const [messageQueue, setMessageQueue] = useState<QueuedMessage[]>([]);
@@ -336,6 +364,766 @@ export default function NetworkAiPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const chatMessagesContainerRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Voice Recognition (STT) & Speech Synthesis (TTS) State
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeechOutputEnabled, setIsSpeechOutputEnabled] = useState(true);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [availableVoices, setAvailableVoices] = useState<{ id: string; name: string; type: "browser" | "server" }[]>([]);
+  const [selectedVoiceId, setSelectedVoiceId] = useState<string>("server-niwat");
+  const [voiceRate, setVoiceRate] = useState<number>(1.0);
+  const [voicePitch, setVoicePitch] = useState<number>(1.0);
+  const [isVoiceSettingsOpen, setIsVoiceSettingsOpen] = useState(false);
+  const [isPreviewSpeaking, setIsPreviewSpeaking] = useState(false);
+  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
+  const currentUtteranceRef = useRef<any>(null);
+  const recognitionRef = useRef<any>(null);
+  const isSpeechOutputEnabledRef = useRef(true);
+
+  // Live Two-Way Voice Call Mode State
+  const [isVoiceCallActive, setIsVoiceCallActive] = useState(false);
+  const [voiceCallStatus, setVoiceCallStatus] = useState<"idle" | "listening" | "thinking" | "speaking">("idle");
+  const [liveTranscript, setLiveTranscript] = useState("");
+  const [isVoiceListeningActive, setIsVoiceListeningActive] = useState(false);
+  const [isVoiceSoundDetected, setIsVoiceSoundDetected] = useState(false);
+  const isVoiceCallActiveRef = useRef(false);
+  const voiceCallStatusRef = useRef<"idle" | "listening" | "thinking" | "speaking">("idle");
+  const voiceCallSilenceTimerRef = useRef<any>(null);
+
+  // Forcefully unlock both Web Audio API & HTML5 Audio Element on user gesture
+  const getAudioContext = () => {
+    if (typeof window === "undefined") return null;
+    try {
+      if (!audioContextRef.current) {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioCtx) {
+          audioContextRef.current = new AudioCtx();
+        }
+      }
+      if (audioContextRef.current && audioContextRef.current.state === "suspended") {
+        audioContextRef.current.resume().catch(() => {});
+      }
+    } catch (e) {
+      console.warn("AudioContext error:", e);
+    }
+    return audioContextRef.current;
+  };
+
+  const unlockAudioPlayback = () => {
+    if (typeof window === "undefined") return;
+    try {
+      // 1. Unlock AudioContext with micro-sample buffer
+      const ctx = getAudioContext();
+      if (ctx) {
+        if (ctx.state === "suspended") {
+          ctx.resume().catch(() => {});
+        }
+        try {
+          const buffer = ctx.createBuffer(1, 1, 22050);
+          const src = ctx.createBufferSource();
+          src.buffer = buffer;
+          src.connect(ctx.destination);
+          src.start(0);
+        } catch {
+          // ignore
+        }
+      }
+
+      // 2. Unlock persistent HTMLAudioElement
+      if (!currentAudioRef.current) {
+        currentAudioRef.current = new Audio();
+      }
+      const audio = currentAudioRef.current;
+      audio.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
+      audio.volume = 0.001;
+      const p = audio.play();
+      if (p !== undefined) {
+        p.then(() => {
+          try {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.volume = 1.0;
+          } catch {}
+        }).catch(() => {});
+      }
+    } catch (e) {
+      console.warn("unlockAudioPlayback error:", e);
+    }
+  };
+
+  // Global listener for user interaction to prime audio system
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleGesture = () => {
+      unlockAudioPlayback();
+    };
+    window.addEventListener("click", handleGesture, { passive: true });
+    window.addEventListener("touchstart", handleGesture, { passive: true });
+    window.addEventListener("keydown", handleGesture, { passive: true });
+    return () => {
+      window.removeEventListener("click", handleGesture);
+      window.removeEventListener("touchstart", handleGesture);
+      window.removeEventListener("keydown", handleGesture);
+    };
+  }, []);
+
+  useEffect(() => {
+    isSpeechOutputEnabledRef.current = isSpeechOutputEnabled;
+  }, [isSpeechOutputEnabled]);
+
+  useEffect(() => {
+    isVoiceCallActiveRef.current = isVoiceCallActive;
+  }, [isVoiceCallActive]);
+
+  useEffect(() => {
+    voiceCallStatusRef.current = voiceCallStatus;
+  }, [voiceCallStatus]);
+
+  // Load voices from browser + load stored preferences
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const savedSpeech = localStorage.getItem("m1_speech_output_enabled");
+    if (savedSpeech !== null) {
+      setIsSpeechOutputEnabled(savedSpeech === "true");
+    } else {
+      setIsSpeechOutputEnabled(true);
+      localStorage.setItem("m1_speech_output_enabled", "true");
+    }
+  }, []);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const updateVoiceList = () => {
+      const list: { id: string; name: string; type: "browser" | "server" }[] = [];
+
+      // 1. Studio Neural Voices (Server - Works everywhere, ultra-natural)
+      list.push({
+        id: "server-niwat",
+        name: "🌟 นิวัฒน์ (เสียงนิวรอลผู้ชาย นุ่ม ทุ้ม สตูดิโอ - แนะนำ)",
+        type: "server",
+      });
+      list.push({
+        id: "server-premwadee",
+        name: "🌟 เปรมวดี (เสียงนิวรอลผู้หญิง หวาน ชัด สตูดิโอ)",
+        type: "server",
+      });
+
+      // 2. Browser Detected Voices
+      if ("speechSynthesis" in window) {
+        const rawVoices = window.speechSynthesis.getVoices();
+        const thaiVoices = rawVoices.filter((v) => v.lang === "th-TH" || v.lang.startsWith("th"));
+
+        thaiVoices.forEach((v) => {
+          let label = v.name;
+          if (v.name.includes("Google")) label = `✨ ${v.name} (เสียง Google)`;
+          else if (v.name.includes("Natural") || v.name.includes("Online")) label = `💎 ${v.name} (เสียงระบบ)`;
+          else if (v.name.includes("Kanya") || v.name.includes("Siri")) label = `🍎 ${v.name} (Apple Siri)`;
+          list.push({ id: v.voiceURI, name: label, type: "browser" });
+        });
+      }
+
+      // 3. Fallback server voice
+      list.push({
+        id: "server-google",
+        name: "☁️ Google Translate TTS (เสียงสังเคราะห์)",
+        type: "server",
+      });
+
+      setAvailableVoices(list);
+
+      const savedVoice = localStorage.getItem("m1_voice_id");
+      const savedRate = localStorage.getItem("m1_voice_rate");
+      const savedPitch = localStorage.getItem("m1_voice_pitch");
+
+      if (savedVoice && savedVoice !== "browser-auto") {
+        setSelectedVoiceId(savedVoice);
+      } else {
+        setSelectedVoiceId("server-niwat");
+      }
+      if (savedRate) setVoiceRate(parseFloat(savedRate));
+      if (savedPitch) setVoicePitch(parseFloat(savedPitch));
+    };
+
+    updateVoiceList();
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.onvoiceschanged = updateVoiceList;
+    }
+    return () => {
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.onvoiceschanged = null;
+      }
+    };
+  }, []);
+
+  const handleVoiceChange = (id: string) => {
+    setSelectedVoiceId(id);
+    localStorage.setItem("m1_voice_id", id);
+    toast.success("เปลี่ยนเสียงพูดเรียบร้อยแล้ว");
+  };
+
+  const handleRateChange = (r: number) => {
+    setVoiceRate(r);
+    localStorage.setItem("m1_voice_rate", r.toString());
+  };
+
+  const handlePitchChange = (p: number) => {
+    setVoicePitch(p);
+    localStorage.setItem("m1_voice_pitch", p.toString());
+  };
+
+  const handleTestVoice = (sampleText = "สวัสดีครับ ผมคือ Agent M1 ระบบเครือข่ายพร้อมทำงานแล้วครับ ได้ยินเสียงผมชัดเจนไหมครับ") => {
+    setIsPreviewSpeaking(true);
+    speakText(sampleText, () => {
+      setIsPreviewSpeaking(false);
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch {
+          // ignore
+        }
+      }
+      if (currentAudioRef.current) {
+        try {
+          currentAudioRef.current.pause();
+        } catch {
+          // ignore
+        }
+        currentAudioRef.current = null;
+      }
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+      if (voiceCallSilenceTimerRef.current) {
+        clearTimeout(voiceCallSilenceTimerRef.current);
+      }
+    };
+  }, []);
+
+  const stopSpeaking = () => {
+    // 1. Stop Web Audio API source node
+    if (audioSourceRef.current) {
+      try {
+        audioSourceRef.current.stop();
+        audioSourceRef.current.disconnect();
+      } catch {
+        // ignore
+      }
+      audioSourceRef.current = null;
+    }
+    // 2. Stop HTMLAudioElement (pause and reset without destroying instance)
+    if (currentAudioRef.current) {
+      try {
+        currentAudioRef.current.pause();
+        currentAudioRef.current.currentTime = 0;
+      } catch {
+        // ignore
+      }
+    }
+    // 3. Stop SpeechSynthesis
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch {
+        // ignore
+      }
+    }
+    if (currentUtteranceRef.current) {
+      currentUtteranceRef.current = null;
+    }
+    setIsSpeaking(false);
+    setIsPreviewSpeaking(false);
+  };
+
+  const fallbackBrowserTTS = (cleanedText: string, onEndedCallback?: () => void) => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+      setIsSpeaking(false);
+      if (onEndedCallback) onEndedCallback();
+      return;
+    }
+
+    try {
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.resume();
+    } catch {
+      // ignore
+    }
+
+    const utterance = new SpeechSynthesisUtterance(cleanedText);
+    utterance.lang = "th-TH";
+    utterance.rate = voiceRate;
+    utterance.pitch = voicePitch;
+
+    const allVoices = window.speechSynthesis.getVoices();
+    const thaiVoices = allVoices.filter((v) => v.lang === "th-TH" || v.lang.startsWith("th"));
+
+    if (selectedVoiceId && !selectedVoiceId.startsWith("server-") && selectedVoiceId !== "browser-auto") {
+      const match = allVoices.find((v) => v.voiceURI === selectedVoiceId);
+      if (match) utterance.voice = match;
+      else if (thaiVoices.length > 0) utterance.voice = thaiVoices[0];
+    } else if (thaiVoices.length > 0) {
+      const natural = thaiVoices.find(
+        (v) =>
+          v.name.includes("Google") ||
+          v.name.includes("Natural") ||
+          v.name.includes("Online") ||
+          v.name.includes("Kanya") ||
+          v.name.includes("Premwadee") ||
+          v.name.includes("Siri")
+      );
+      utterance.voice = natural || thaiVoices[0];
+    }
+
+    let isDone = false;
+    const finish = () => {
+      if (isDone) return;
+      isDone = true;
+      setIsSpeaking(false);
+      currentUtteranceRef.current = null;
+      if (onEndedCallback) onEndedCallback();
+    };
+
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = finish;
+    utterance.onerror = (err) => {
+      console.warn("SpeechSynthesis error:", err);
+      finish();
+    };
+
+    // Safety timeout in case speech synthesis stalls
+    const timeoutMs = Math.max(3000, (cleanedText.length / 3) * 1000);
+    setTimeout(() => {
+      if (!isDone) {
+        finish();
+      }
+    }, timeoutMs);
+
+    currentUtteranceRef.current = utterance;
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const speakText = async (text: string, onEndedCallback?: () => void) => {
+    stopSpeaking();
+
+    // Clean text: strip markdown code blocks, links, headers, formatting symbols
+    const cleaned = text
+      .replace(/```[\s\S]*?```/g, " โค้ดโปรแกรม ")
+      .replace(/`([^`]+)`/g, "$1")
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+      .replace(/[#*_\-~>]/g, " ")
+      .replace(/https?:\/\/\S+/gi, " ")
+      .replace(/[\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    if (!cleaned) {
+      if (onEndedCallback) onEndedCallback();
+      return;
+    }
+
+    const isServerVoice =
+      !selectedVoiceId ||
+      selectedVoiceId.startsWith("server-") ||
+      selectedVoiceId === "browser-auto" ||
+      !window.speechSynthesis?.getVoices().some((v) => v.voiceURI === selectedVoiceId);
+
+    setIsSpeaking(true);
+
+    // 1. Primary: Server Neural Audio (Microsoft Neural Studio Voice - Niwat / Premwadee)
+    if (isServerVoice) {
+      try {
+        const serverVoiceName =
+          selectedVoiceId === "server-premwadee"
+            ? "th-TH-PremwadeeNeural"
+            : "th-TH-NiwatNeural";
+
+        console.log(`[TTS Client] Requesting voice: ${serverVoiceName}, text: "${cleaned.slice(0, 50)}..."`);
+        const res = await fetch("/api/super-admin/network-ai/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: cleaned, voice: serverVoiceName }),
+        });
+
+        if (res.ok) {
+          const arrayBuffer = await res.arrayBuffer();
+          console.log("[TTS Client] Received audio bytes:", arrayBuffer.byteLength);
+          if (arrayBuffer.byteLength > 200) {
+            let audioPlayed = false;
+
+            // Strategy 1: HTMLAudioElement with persistent unlocked instance
+            try {
+              if (!currentAudioRef.current) {
+                currentAudioRef.current = new Audio();
+              }
+              const audio = currentAudioRef.current;
+              const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
+              const audioUrl = URL.createObjectURL(blob);
+              audio.src = audioUrl;
+              audio.playbackRate = voiceRate;
+              audio.volume = 1.0;
+
+              let endedTriggered = false;
+              const finishPlayback = () => {
+                if (endedTriggered) return;
+                endedTriggered = true;
+                setIsSpeaking(false);
+                URL.revokeObjectURL(audioUrl);
+                audio.onended = null;
+                audio.onerror = null;
+                if (onEndedCallback) onEndedCallback();
+              };
+
+              audio.onended = finishPlayback;
+              audio.onerror = (e) => {
+                console.warn("[TTS Client] HTMLAudioElement playback error:", e);
+                finishPlayback();
+              };
+
+              const playPromise = audio.play();
+              if (playPromise !== undefined) {
+                await playPromise;
+                audioPlayed = true;
+                console.log("[TTS Client] HTMLAudioElement playback started successfully!");
+                return;
+              }
+            } catch (audioErr) {
+              console.warn("[TTS Client] HTMLAudioElement play() rejected:", audioErr);
+            }
+
+            // Strategy 2: Web Audio API (if HTMLAudioElement was blocked or threw)
+            if (!audioPlayed) {
+              try {
+                const ctx = getAudioContext();
+                if (ctx) {
+                  if (ctx.state === "suspended") {
+                    await ctx.resume().catch(() => {});
+                  }
+                  if (ctx.state === "running") {
+                    const audioBuffer = await ctx.decodeAudioData(arrayBuffer.slice(0));
+                    const source = ctx.createBufferSource();
+                    source.buffer = audioBuffer;
+                    source.playbackRate.value = voiceRate;
+
+                    const gainNode = ctx.createGain();
+                    gainNode.gain.value = 1.0;
+
+                    source.connect(gainNode);
+                    gainNode.connect(ctx.destination);
+                    audioSourceRef.current = source;
+
+                    source.onended = () => {
+                      console.log("[TTS Client] Web Audio playback finished");
+                      setIsSpeaking(false);
+                      audioSourceRef.current = null;
+                      if (onEndedCallback) onEndedCallback();
+                    };
+
+                    source.start(0);
+                    console.log("[TTS Client] Web Audio API playback started successfully!");
+                    return;
+                  }
+                }
+              } catch (webAudioErr) {
+                console.warn("[TTS Client] Web Audio API decode/start failed:", webAudioErr);
+              }
+            }
+          }
+        } else {
+          console.warn("[TTS Client] Server TTS route returned non-200:", res.status);
+        }
+      } catch (err) {
+        console.warn("[TTS Client] Server TTS fetch error:", err);
+      }
+    }
+
+    // 2. Fallback: Browser Web Speech Synthesis
+    fallbackBrowserTTS(cleaned, onEndedCallback);
+  };
+
+  // Start Voice Call Continuous Listening Loop
+  const startVoiceCallListening = () => {
+    if (typeof window === "undefined") return;
+
+    isVoiceCallActiveRef.current = true;
+    voiceCallStatusRef.current = "listening";
+    setVoiceCallStatus("listening");
+
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      toast.error("เบราว์เซอร์นี้ไม่รองรับระบบรับฟังเสียง (แนะนำ Google Chrome หรือ Microsoft Edge)");
+      return;
+    }
+
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.abort();
+      } catch {
+        // ignore
+      }
+      recognitionRef.current = null;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = "th-TH";
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => {
+        setIsVoiceListeningActive(true);
+      };
+
+      recognition.onsoundstart = () => {
+        setIsVoiceSoundDetected(true);
+      };
+
+      recognition.onsoundend = () => {
+        setIsVoiceSoundDetected(false);
+      };
+
+      recognition.onspeechstart = () => {
+        setIsVoiceSoundDetected(true);
+      };
+
+      recognition.onspeechend = () => {
+        setIsVoiceSoundDetected(false);
+      };
+
+      recognition.onresult = (event: any) => {
+        let currentInterim = "";
+        let currentFinal = "";
+        for (let i = 0; i < event.results.length; i++) {
+          const item = event.results[i];
+          if (item.isFinal) {
+            currentFinal += (item[0]?.transcript || "") + " ";
+          } else {
+            currentInterim += (item[0]?.transcript || "");
+          }
+        }
+
+        const effective = (currentFinal + currentInterim).trim();
+        if (effective) {
+          setLiveTranscript(effective);
+
+          // Reset silence timer: when user pauses for 1.4s, automatically send message to M1
+          if (voiceCallSilenceTimerRef.current) {
+            clearTimeout(voiceCallSilenceTimerRef.current);
+          }
+          voiceCallSilenceTimerRef.current = setTimeout(() => {
+            if (isVoiceCallActiveRef.current && effective.length > 0) {
+              try {
+                recognition.stop();
+              } catch {
+                // ignore
+              }
+              sendVoiceCallMessage(effective);
+            }
+          }, 1400);
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        console.warn("Voice Call SpeechRecognition error:", event.error);
+        if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+          toast.error("โปรดอนุญาตการใช้ไมโครโฟนในเบราว์เซอร์");
+          setIsVoiceCallActive(false);
+          isVoiceCallActiveRef.current = false;
+          setVoiceCallStatus("idle");
+          voiceCallStatusRef.current = "idle";
+          setIsVoiceListeningActive(false);
+          setIsVoiceSoundDetected(false);
+        } else if (event.error === "audio-capture") {
+          toast.error("ไม่พบอุปกรณ์ไมโครโฟน โปรดตรวจสอบไมค์");
+          setIsVoiceListeningActive(false);
+          setIsVoiceSoundDetected(false);
+        }
+      };
+
+      recognition.onend = () => {
+        setIsVoiceListeningActive(false);
+        setIsVoiceSoundDetected(false);
+        if (isVoiceCallActiveRef.current && voiceCallStatusRef.current === "listening") {
+          setTimeout(() => {
+            if (isVoiceCallActiveRef.current && voiceCallStatusRef.current === "listening") {
+              try {
+                recognition.start();
+              } catch (e) {
+                console.warn("Recognition restart caught:", e);
+              }
+            }
+          }, 250);
+        }
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err: any) {
+      console.error("Failed to start voice call listening:", err);
+      toast.error("ไม่สามารถเปิดไมโครโฟนได้: " + (err.message || ""));
+    }
+  };
+
+  const sendVoiceCallMessage = async (transcript: string) => {
+    if (!transcript.trim()) return;
+    if (voiceCallSilenceTimerRef.current) {
+      clearTimeout(voiceCallSilenceTimerRef.current);
+      voiceCallSilenceTimerRef.current = null;
+    }
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.abort();
+      } catch {
+        // ignore
+      }
+      recognitionRef.current = null;
+    }
+    setIsVoiceListeningActive(false);
+    setIsVoiceSoundDetected(false);
+    voiceCallStatusRef.current = "thinking";
+    setVoiceCallStatus("thinking");
+    setLiveTranscript(transcript);
+    await executeSend(transcript);
+  };
+
+  const handleStartVoiceCall = async () => {
+    isVoiceCallActiveRef.current = true;
+    voiceCallStatusRef.current = "listening";
+    setIsVoiceCallActive(true);
+    setVoiceCallStatus("listening");
+    setLiveTranscript("");
+    stopSpeaking();
+
+    // Pre-unlock both HTMLAudioElement and AudioContext on this direct user click gesture!
+    unlockAudioPlayback();
+
+    // Check microphone permission directly
+    if (typeof navigator !== "undefined" && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach((track) => track.stop());
+      } catch (err: any) {
+        console.warn("Microphone access error:", err);
+        if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+          toast.error("กรุณากด 'อนุญาต (Allow)' การใช้ไมโครโฟนบนเบราว์เซอร์ เพื่อสนทนาด้วยเสียง");
+          setIsVoiceCallActive(false);
+          isVoiceCallActiveRef.current = false;
+          setVoiceCallStatus("idle");
+          voiceCallStatusRef.current = "idle";
+          return;
+        }
+      }
+    }
+
+    startVoiceCallListening();
+    toast.success("เปิดโหมดสนทนาด้วยเสียงเรียลไทม์แล้ว พูดคุยกับ M1 ได้เลยครับ", { icon: "🎙️" });
+  };
+
+  const handleInterruptVoiceCall = () => {
+    unlockAudioPlayback();
+    stopSpeaking();
+    isVoiceCallActiveRef.current = true;
+    voiceCallStatusRef.current = "listening";
+    startVoiceCallListening();
+    toast("ฟังเสียงคุณต่อ...", { icon: "🎙️", duration: 1500 });
+  };
+
+  const handleEndVoiceCall = () => {
+    isVoiceCallActiveRef.current = false;
+    voiceCallStatusRef.current = "idle";
+    setIsVoiceCallActive(false);
+    setVoiceCallStatus("idle");
+    setLiveTranscript("");
+    setIsVoiceListeningActive(false);
+    setIsVoiceSoundDetected(false);
+    stopSpeaking();
+    if (voiceCallSilenceTimerRef.current) {
+      clearTimeout(voiceCallSilenceTimerRef.current);
+      voiceCallSilenceTimerRef.current = null;
+    }
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.abort();
+      } catch {
+        // ignore
+      }
+      recognitionRef.current = null;
+    }
+    toast("สิ้นสุดการสนทนาด้วยเสียงแล้ว", { icon: "📞" });
+  };
+
+
+  const toggleVoiceRecording = () => {
+    if (typeof window === "undefined") return;
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      toast.error("เบราว์เซอร์นี้ไม่รองรับพิมพ์ด้วยเสียง (แนะนำ Google Chrome หรือ Microsoft Edge)");
+      return;
+    }
+
+    if (isListening) {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch {
+          // ignore
+        }
+      }
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = "th-TH";
+      recognition.continuous = false;
+      recognition.interimResults = true;
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        toast("🎙️ กำลังฟังเสียง... พูดได้เลย", { id: "voice-stt", duration: 3000 });
+      };
+
+      recognition.onresult = (event: any) => {
+        let transcript = "";
+        for (let i = 0; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        if (transcript) {
+          setInputMessage(transcript);
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        console.warn("SpeechRecognition error:", event.error);
+        setIsListening(false);
+        if (event.error !== "no-speech" && event.error !== "aborted") {
+          toast.error(`เกิดข้อผิดพลาดในการรับเสียง: ${event.error}`);
+        }
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err: any) {
+      console.error("Failed to start voice recognition:", err);
+      setIsListening(false);
+      toast.error("ไม่สามารถเริ่มไมโครโฟนได้: " + err.message);
+    }
+  };
 
   // Fetch Chat Sessions
   const fetchSessions = async () => {
@@ -360,6 +1148,13 @@ export default function NetworkAiPage() {
       setIsSessionsDrawerOpen(false);
       return;
     }
+    if (activeTask?.id) {
+      handleDismissTask(activeTask.id);
+    }
+    setActiveTask(null);
+    setTaskTriggerMsgIndex(null);
+    setRebuildingCode(false);
+    setIsTaskCollapsed(true);
     setIsLoadingSession(true);
     try {
       const res = await fetch(`/api/super-admin/network-ai/sessions/${sessionId}`);
@@ -389,6 +1184,13 @@ export default function NetworkAiPage() {
 
   // Create / Start a New Chat Session
   const handleCreateNewSession = () => {
+    if (activeTask?.id) {
+      handleDismissTask(activeTask.id);
+    }
+    setActiveTask(null);
+    setTaskTriggerMsgIndex(null);
+    setRebuildingCode(false);
+    setIsTaskCollapsed(true);
     const newId = crypto.randomUUID();
     setCurrentSessionId(newId);
     setCurrentSessionTitle("บทสนทนาใหม่");
@@ -405,9 +1207,41 @@ export default function NetworkAiPage() {
     toast.success("เริ่มต้นห้องแชตใหม่แล้ว");
   };
 
+  // Rename a Chat Session
+  const handleRenameSession = async (sessionId: string, newTitle: string) => {
+    const trimmed = newTitle.trim();
+    if (!trimmed) {
+      setEditingSessionId(null);
+      return;
+    }
+    try {
+      const res = await fetch("/api/super-admin/network-ai/sessions", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, title: trimmed }),
+      });
+      if (res.ok) {
+        toast.success("เปลี่ยนชื่อห้องเรียบร้อย");
+        setSessionsList((prev) =>
+          prev.map((s) => (s.sessionId === sessionId ? { ...s, title: trimmed } : s))
+        );
+        if (sessionId === currentSessionId) {
+          setCurrentSessionTitle(trimmed);
+        }
+      } else {
+        toast.error("เปลี่ยนชื่อไม่สำเร็จ");
+      }
+    } catch {
+      toast.error("เกิดข้อผิดพลาดในการเปลี่ยนชื่อ");
+    } finally {
+      setEditingSessionId(null);
+    }
+  };
+
   // Delete a Chat Session
-  const handleDeleteSession = async (sessionId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleDeleteSession = async (sessionId: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setActiveSessionMenuId(null);
     if (!confirm("ต้องการลบประวัติการสนทนาของห้องนี้ใช่หรือไม่?")) return;
     try {
       const res = await fetch(`/api/super-admin/network-ai/sessions?id=${sessionId}`, {
@@ -504,9 +1338,7 @@ export default function NetworkAiPage() {
           return;
         }
 
-        const isDismissed =
-          dismissedTaskIds[data.task.id] ||
-          (typeof window !== "undefined" && sessionStorage.getItem(`m1_dismissed_${data.task.id}`));
+        const isDismissed = Boolean(dismissedTaskIds[data.task.id]);
 
         if (isDismissed) {
           setRebuildingCode(false);
@@ -519,6 +1351,9 @@ export default function NetworkAiPage() {
           setRebuildingCode(true);
         } else {
           setRebuildingCode(false);
+          if (data.task.status === "success") {
+            setIsTaskCollapsed(true);
+          }
         }
       } catch {
         // ignore
@@ -607,6 +1442,8 @@ export default function NetworkAiPage() {
   // Handle Apply Code Modification
   const handleApplyCode = async (msgIndex: number, proposal: CodeProposal, andRebuild: boolean = false) => {
     setApplyingCode(true);
+    setTaskTriggerMsgIndex(msgIndex);
+    setIsTaskCollapsed(false);
     try {
       const payload: any = {
         action: proposal.action === "patch" ? "patch" : "apply",
@@ -642,7 +1479,7 @@ export default function NetworkAiPage() {
       );
 
       if (andRebuild) {
-        handleTriggerRebuild();
+        handleTriggerRebuild(msgIndex);
       }
     } catch (err: any) {
       toast.error(err.message || "เกิดข้อผิดพลาดในการบันทึกไฟล์");
@@ -681,14 +1518,19 @@ export default function NetworkAiPage() {
   };
 
   // Trigger Rebuild & PM2 Reload (Live Background Task)
-  const handleTriggerRebuild = async () => {
+  const handleTriggerRebuild = async (msgIndex?: number) => {
+    if (typeof msgIndex === "number") {
+      setTaskTriggerMsgIndex(msgIndex);
+    }
     setRebuildingCode(true);
     setShowTaskTerminal(true);
+    setIsTaskCollapsed(false);
+    setDismissedTaskIds({});
     try {
       const res = await fetch("/api/super-admin/network-ai/code-action", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "rebuild" }),
+        body: JSON.stringify({ action: "rebuild", sessionId: currentSessionId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "สั่ง Rebuild ไม่สำเร็จ");
@@ -1028,6 +1870,20 @@ export default function NetworkAiPage() {
               )
             );
             chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+            if (isVoiceCallActiveRef.current) {
+              setVoiceCallStatus("speaking");
+              voiceCallStatusRef.current = "speaking";
+              setLiveTranscript(replyFullText);
+              speakText(replyFullText, () => {
+                if (isVoiceCallActiveRef.current) {
+                  voiceCallStatusRef.current = "listening";
+                  setVoiceCallStatus("listening");
+                  startVoiceCallListening();
+                }
+              });
+            } else if (isSpeechOutputEnabledRef.current) {
+              speakText(replyFullText);
+            }
             resolve();
           } else {
             const currentSlice = replyFullText.slice(0, charIndex);
@@ -1064,6 +1920,18 @@ export default function NetworkAiPage() {
             timestamp: new Date().toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" }),
           },
         ]);
+        if (isVoiceCallActiveRef.current) {
+          setVoiceCallStatus("speaking");
+          voiceCallStatusRef.current = "speaking";
+          setLiveTranscript("เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง");
+          speakText("เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้งครับ", () => {
+            if (isVoiceCallActiveRef.current) {
+              voiceCallStatusRef.current = "listening";
+              setVoiceCallStatus("listening");
+              startVoiceCallListening();
+            }
+          });
+        }
       }
     } finally {
       abortControllerRef.current = null;
@@ -1094,6 +1962,7 @@ export default function NetworkAiPage() {
 
     setInputMessage("");
     setAttachments([]);
+    unlockAudioPlayback();
     await executeSend(textToSend, currentAttachments);
   };
 
@@ -1160,391 +2029,42 @@ export default function NetworkAiPage() {
   return (
     <div className="w-full max-w-[1600px] mx-auto px-4 py-6 space-y-6">
       {/* Header & Breadcrumb */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
-            <Link href="/dashboard/super-admin" className="hover:text-blue-600 transition-colors">
-              Super Admin
-            </Link>
-            <ChevronRight className="w-3 h-3" />
-            <span className="text-amber-600 dark:text-amber-400">Server Room Agent M1</span>
-          </div>
-          <h1 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-            <span className="p-2 rounded-xl bg-amber-500/10 text-amber-500 dark:bg-amber-500/20 dark:text-amber-400 border border-amber-500/30 shadow-md shadow-amber-500/10">
-              <Brain className="w-6 h-6" />
-            </span>
-            KTLTC Agent M1: Self-Learning AI Console
-            <span className="text-[10px] bg-amber-500/20 text-amber-600 dark:text-amber-300 px-2.5 py-0.5 rounded-full border border-amber-500/30 font-bold uppercase tracking-wider">
-              Gold Edition
-            </span>
+      <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard/super-admin"
+            className="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition-colors"
+            title="กลับแดชบอร์ด Super Admin"
+          >
+            <ChevronRight className="w-4 h-4 rotate-180" />
+          </Link>
+          <span className="p-1.5 rounded-xl bg-amber-500/10 text-amber-500 dark:bg-amber-500/20 dark:text-amber-400 border border-amber-500/30 shadow-xs">
+            <Brain className="w-5 h-5" />
+          </span>
+          <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
+            KTLTC Agent M1
           </h1>
-          <p className="text-xs text-slate-500 mt-1 flex items-center gap-2">
-            <span>เครื่องเซิร์ฟเวอร์ ktltc-server • Ollama Model M1 Active</span>
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-            <span className="text-amber-600 dark:text-amber-400 font-medium">
-              ความรู้ในสมอง M1: {knowledgeList.length} รายการ
-            </span>
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Model Selector Modal Trigger Button */}
-          <button
-            type="button"
-            onClick={() => setIsModelModalOpen(true)}
-            className="flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-amber-500/10 dark:hover:bg-amber-500/10 text-slate-800 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 border border-slate-200 dark:border-slate-700 hover:border-amber-500/40 transition-all cursor-pointer shadow-xs"
-            title="คลิกเพื่อเลือกหรือสลับโมเดล AI (Modal)"
-          >
-            {engineMode === "m1" && <Sparkles className="w-3.5 h-3.5 text-amber-500" />}
-            {engineMode === "gemini-3.5-flash" && <Zap className="w-3.5 h-3.5 text-amber-500" />}
-            {engineMode === "gemini-3.7-flash" && <Sparkles className="w-3.5 h-3.5 text-purple-500" />}
-            {engineMode === "m1-local" && <Brain className="w-3.5 h-3.5 text-emerald-500" />}
-            <span>
-              โมเดล: {engineMode === "m1" ? "Agent M1 Pro" : engineMode === "gemini-3.5-flash" ? "Gemini 3.5 Flash" : engineMode === "gemini-3.7-flash" ? "Gemini 3.7 Pro (Thinking)" : "Agent M1 Local"}
-            </span>
-            <ChevronDown className="w-3.5 h-3.5 opacity-60 ml-0.5" />
-          </button>
-
-          <button
-            onClick={fetchTelemetry}
-            disabled={loadingDevices}
-            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg transition-colors cursor-pointer"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${loadingDevices ? "animate-spin" : ""}`} />
-            <span>ตรวจสด ({lastTelemetryUpdate || "รอ..."})</span>
-          </button>
-          <div className="px-2.5 py-1 text-xs font-bold rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>SUPER_ADMIN ONLY</span>
-          </div>
         </div>
       </div>
 
-      {/* Live Background Task Runner Banner (สไตล์ Antigravity) */}
-      {activeTask && activeTask.status !== "idle" && (
+
+
+      {/* Fullscreen Chat Backdrop - High z-index to overlay above Navbar (z-9999) */}
+      {isFullscreenChat && (
         <div
-          className={`rounded-2xl border transition-all overflow-hidden shadow-xl ${
-            activeTask.status === "running"
-              ? "bg-slate-900 border-amber-500/50 shadow-amber-500/10 ring-1 ring-amber-500/30"
-              : activeTask.status === "success"
-              ? "bg-slate-900 border-emerald-500/50 shadow-emerald-500/10 ring-1 ring-emerald-500/30"
-              : "bg-slate-900 border-rose-500/50 shadow-rose-500/10 ring-1 ring-rose-500/30"
-          }`}
-        >
-          {/* Top Bar */}
-          <div className="px-4 py-3 flex items-center justify-between gap-3 flex-wrap bg-slate-950/80 border-b border-slate-800">
-            <div className="flex items-center gap-3 min-w-0">
-              {activeTask.status === "running" ? (
-                <div className="relative flex items-center justify-center">
-                  <RefreshCw className="w-4 h-4 text-amber-400 animate-spin" />
-                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-                </div>
-              ) : activeTask.status === "success" ? (
-                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-              ) : (
-                <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0" />
-              )}
-
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                    {activeTask.status === "running" && (
-                      <span className="px-2 py-0.5 text-[10px] rounded-md bg-amber-500/20 text-amber-300 font-mono font-bold border border-amber-500/30 animate-pulse">
-                        ⚙️ 1 task running
-                      </span>
-                    )}
-                    {activeTask.status === "success" && (
-                      <span className="px-2 py-0.5 text-[10px] rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/30">
-                        ✅ Task Completed
-                      </span>
-                    )}
-                    {activeTask.status === "error" && (
-                      <span className="px-2 py-0.5 text-[10px] rounded-md bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30">
-                        ❌ Task Failed
-                      </span>
-                    )}
-                  </span>
-                  <span className="text-xs font-mono text-emerald-400 dark:text-emerald-300 font-medium truncate max-w-[280px] sm:max-w-xl">
-                    {activeTask.command}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-[11px] font-mono text-slate-400 bg-slate-800/80 px-2 py-1 rounded-lg border border-slate-700">
-                ⏱️ {activeTask.status === "running" ? `กำลังรัน... ${activeTask.durationSeconds}s` : `เสร็จสิ้นใน ${activeTask.durationSeconds}s`}
-              </span>
-
-              <button
-                type="button"
-                onClick={() => setShowTaskTerminal(!showTaskTerminal)}
-                className="px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 flex items-center gap-1.5 transition-colors cursor-pointer"
-                title="แสดง/ซ่อน Terminal Output"
-              >
-                <Terminal className="w-3.5 h-3.5 text-amber-400" />
-                <span>{showTaskTerminal ? "ซ่อน Console" : "ดู Console Log สด"}</span>
-              </button>
-
-              {activeTask.status !== "running" && (
-                <button
-                  type="button"
-                  onClick={() => handleDismissTask(activeTask?.id)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
-                  title="ปิดแถบแจ้งเตือน"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Terminal Console Output */}
-          {showTaskTerminal && (
-            <div className="p-3.5 bg-slate-950 font-mono text-xs leading-relaxed max-h-56 overflow-y-auto space-y-1 text-slate-300 scrollbar-thin border-t border-slate-800/60">
-              {activeTask.outputLogs.map((log, idx) => (
-                <div
-                  key={idx}
-                  className={`break-all ${
-                    log.includes("Error") || log.includes("❌") || log.includes("failed")
-                      ? "text-rose-400 font-bold"
-                      : log.includes("✓") || log.includes("✅") || log.includes("success") || log.includes("Successfully")
-                      ? "text-emerald-400"
-                      : log.includes("▲") || log.includes("Turbopack")
-                      ? "text-cyan-400 font-bold"
-                      : log.includes("PM2") || log.includes("reload")
-                      ? "text-amber-300"
-                      : "text-slate-400"
-                  }`}
-                >
-                  {log}
-                </div>
-              ))}
-              {activeTask.status === "running" && (
-                <div className="flex items-center gap-2 text-amber-400 text-xs pt-1.5 animate-pulse">
-                  <span className="w-2 h-2 rounded-full bg-amber-400" />
-                  <span>กำลังคอมไพล์ Next.js Turbopack และรีโหลด PM2 Cluster...</span>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[99998] transition-opacity"
+          onClick={() => setIsFullscreenChat(false)}
+        />
       )}
 
-      {/* Main Grid: Left (Live Runner & Devices) / Right (Chat & Brain Memory) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column: Command Runner & Device Matrix (5 Cols) */}
-        <div className="lg:col-span-5 space-y-6">
-          {/* Interactive Live Command Terminal */}
-          <div className="bg-slate-900 text-slate-100 border border-slate-800 rounded-2xl p-4 shadow-md space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
-                <Terminal className="w-4 h-4" />
-                Live Command Runner (สั่งงานสด)
-              </h2>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800">
-                SSH / Bash Ready
-              </span>
-            </div>
-
-            {/* Target Selector */}
-            <div className="flex gap-1.5 bg-slate-950/80 p-1 rounded-xl border border-slate-800 text-xs">
-              <button
-                onClick={() => {
-                  setSelectedTarget("aruba_core");
-                  setCustomCommand("show interface 1/1/5 brief");
-                }}
-                className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all text-center cursor-pointer ${
-                  selectedTarget === "aruba_core"
-                    ? "bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 shadow-xs"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                Aruba Core
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedTarget("server");
-                  setCustomCommand("pm2 list");
-                }}
-                className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all text-center cursor-pointer ${
-                  selectedTarget === "server"
-                    ? "bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 shadow-xs"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                Server นี้
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedTarget("cisco_b4");
-                  setCustomCommand("show interface status");
-                }}
-                className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all text-center cursor-pointer ${
-                  selectedTarget === "cisco_b4"
-                    ? "bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 shadow-xs"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                Cisco อาคาร 4
-              </button>
-            </div>
-
-            {/* Presets */}
-            <div className="flex flex-wrap gap-1.5">
-              {PRESET_COMMANDS[selectedTarget]?.map((preset, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    setCustomCommand(preset.cmd);
-                    handleExecuteCommand(selectedTarget, preset.cmd);
-                  }}
-                  disabled={isExecutingCmd}
-                  className="px-2 py-1 text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-md border border-slate-700 transition-colors flex items-center gap-1 cursor-pointer"
-                >
-                  <Play className="w-2.5 h-2.5 text-emerald-400" />
-                  <span>{preset.label}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Command Input */}
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={customCommand}
-                onChange={(e) => setCustomCommand(e.target.value)}
-                placeholder="พิมพ์คำสั่ง CLI ที่ต้องการรัน..."
-                className="flex-1 px-3 py-2 text-xs bg-slate-950 border border-slate-700 rounded-xl font-mono text-emerald-300 focus:outline-hidden focus:ring-2 focus:ring-amber-500"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleExecuteCommand();
-                  }
-                }}
-              />
-              <button
-                onClick={() => handleExecuteCommand()}
-                disabled={isExecutingCmd || !customCommand.trim()}
-                className="px-4 py-2 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-xl transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
-              >
-                {isExecutingCmd ? (
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <Play className="w-3.5 h-3.5" />
-                )}
-                <span>รัน</span>
-              </button>
-            </div>
-
-            {/* Output Screen */}
-            <div className="relative">
-              <div className="flex items-center justify-between text-[10px] text-slate-400 bg-slate-950/90 px-3 py-1.5 rounded-t-xl border border-b-0 border-slate-800">
-                <span>TERMINAL OUTPUT ({selectedTarget})</span>
-                {commandOutput && (
-                  <button
-                    onClick={handleCopyOutput}
-                    className="flex items-center gap-1 hover:text-white transition-colors cursor-pointer"
-                  >
-                    {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                    <span>{copied ? "คัดลอกแล้ว" : "คัดลอก"}</span>
-                  </button>
-                )}
-              </div>
-              <pre className="p-3 bg-black/90 text-slate-100 font-mono text-[11px] leading-relaxed rounded-b-xl border border-slate-800 overflow-x-auto max-h-52 min-h-[110px] whitespace-pre-wrap select-text">
-                {commandOutput || "# ผลลัพธ์จากการรันคำสั่งสดจะแสดงที่นี่..."}
-              </pre>
-            </div>
-          </div>
-
-          {/* Live Device Status */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <h2 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-blue-500" />
-                  สถานะอุปกรณ์และวงจรทั้งวิทยาลัย ({devices.length} จุด)
-                </h2>
-                <div className="flex items-center gap-2 mt-1 text-[11px]">
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                    ออนไลน์: {devices.filter((d) => d.status === "ONLINE").length}
-                  </span>
-                  <span className="text-slate-300 dark:text-slate-700">•</span>
-                  <span className="text-rose-600 dark:text-rose-400 font-bold">
-                    ออฟไลน์: {devices.filter((d) => d.status === "OFFLINE").length}
-                  </span>
-                </div>
-              </div>
-              <span className="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">
-                Live ICMP Ping
-              </span>
-            </div>
-
-            <div className="space-y-2 max-h-[460px] overflow-y-auto pr-1">
-              {devices.map((d) => (
-                <div
-                  key={d.id}
-                  className={`p-2.5 rounded-xl border transition-all ${
-                    d.status === "ONLINE"
-                      ? "border-emerald-500/30 bg-emerald-500/5 hover:border-emerald-500/50"
-                      : "border-rose-500/30 bg-rose-500/5 hover:border-rose-500/50"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span
-                          className={`w-2 h-2 rounded-full ${
-                            d.status === "ONLINE" ? "bg-emerald-500 animate-pulse" : "bg-rose-500"
-                          }`}
-                        />
-                        <h3 className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
-                          {d.name}
-                        </h3>
-                        {d.corePort && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                            Port {d.corePort}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[10px] text-slate-500 mt-0.5">
-                        {d.location} • <span className="font-mono">{d.ip}</span>
-                      </p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span
-                        className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${
-                          d.status === "ONLINE"
-                            ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300"
-                            : "bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300"
-                        }`}
-                      >
-                        {d.status}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Fullscreen Chat Backdrop - High z-index to overlay above Navbar (z-9999) */}
-        {isFullscreenChat && (
-          <div
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[99998] transition-opacity"
-            onClick={() => setIsFullscreenChat(false)}
-          />
-        )}
-
-        {/* Right Column / Fullscreen Modal: AI Console & Long-Term Memory */}
-        <div
-          className={`flex flex-col bg-[#0f0f14] border border-[#23232f] rounded-2xl shadow-2xl overflow-hidden transition-all text-slate-100 ${
-            isFullscreenChat
-              ? "fixed inset-2 sm:inset-4 md:inset-6 z-[99999] shadow-2xl h-[calc(100dvh-1rem)] sm:h-[calc(100dvh-2rem)] md:h-[calc(100dvh-3rem)]"
-              : "lg:col-span-7 h-[calc(100dvh-12rem)] min-h-[460px] max-h-[820px]"
-          }`}
-        >
+      {/* Main AI Console & Long-Term Memory (Full Width) */}
+      <div
+        className={`flex flex-col bg-[#0f0f14] border border-[#23232f] rounded-2xl shadow-2xl overflow-hidden transition-all text-slate-100 ${
+          isFullscreenChat
+            ? "fixed inset-2 sm:inset-4 md:inset-6 z-[99999] shadow-2xl h-[calc(100dvh-1rem)] sm:h-[calc(100dvh-2rem)] md:h-[calc(100dvh-3rem)]"
+            : "w-full h-[calc(100dvh-9rem)] min-h-[580px] max-h-[960px]"
+        }`}
+      >
           {/* Antigravity Breadcrumbs & Header Bar */}
           <div className="px-4 py-2.5 bg-[#14141b] border-b border-[#23232f] flex items-center justify-between gap-2 flex-wrap shrink-0">
             <div className="flex items-center gap-2 min-w-0">
@@ -1598,6 +2118,17 @@ export default function NetworkAiPage() {
                   สมอง ({knowledgeList.length})
                 </button>
               </div>
+
+              {/* Voice Call Button (Live 2-Way Voice Conversation) */}
+              <button
+                type="button"
+                onClick={handleStartVoiceCall}
+                className="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-semibold shadow-sm shadow-emerald-500/20 cursor-pointer transition-all hover:scale-105"
+                title="เปิดโหมดสนทนาด้วยเสียงสดกับ M1 (Live 2-Way Voice Call)"
+              >
+                <PhoneCall className="w-3.5 h-3.5 animate-pulse" />
+                <span className="hidden sm:inline">สนทนาเสียงสด</span>
+              </button>
 
               {/* New Chat Button */}
               <button
@@ -1688,28 +2219,121 @@ export default function NetworkAiPage() {
                       sessionsList.map((s) => (
                         <div
                           key={s.sessionId}
-                          onClick={() => handleSelectSession(s.sessionId)}
-                          className={`group p-2.5 rounded-xl text-xs cursor-pointer transition-all flex items-center justify-between gap-2 border ${
+                          onClick={() => {
+                            setActiveSessionMenuId(null);
+                            handleSelectSession(s.sessionId);
+                          }}
+                          className={`group relative p-2.5 rounded-xl text-xs cursor-pointer transition-all flex items-center justify-between gap-2 border ${
                             s.sessionId === currentSessionId
                               ? "bg-amber-500/15 border-amber-500/40 text-amber-700 dark:text-amber-300 font-bold shadow-2xs"
                               : "bg-white/60 dark:bg-slate-900/60 border-slate-200/70 dark:border-slate-800/80 text-slate-700 dark:text-slate-300 hover:border-amber-500/30 hover:bg-white dark:hover:bg-slate-900"
                           }`}
                         >
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-1.5">
-                              <MessageSquare className={`w-3 h-3 shrink-0 ${s.sessionId === currentSessionId ? "text-amber-500" : "text-slate-400 group-hover:text-amber-500"}`} />
-                              <p className="truncate text-xs font-medium">{s.title || "บทสนทนา"}</p>
+                          {editingSessionId === s.sessionId ? (
+                            <div
+                              onClick={(e) => e.stopPropagation()}
+                              className="flex-1 flex items-center gap-1.5"
+                            >
+                              <input
+                                type="text"
+                                value={editingSessionTitle}
+                                onChange={(e) => setEditingSessionTitle(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    handleRenameSession(s.sessionId, editingSessionTitle);
+                                  } else if (e.key === "Escape") {
+                                    setEditingSessionId(null);
+                                  }
+                                }}
+                                autoFocus
+                                className="flex-1 min-w-0 bg-white dark:bg-slate-950 text-xs px-2 py-1 rounded-lg border border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 text-slate-900 dark:text-slate-100 font-normal shadow-xs"
+                                placeholder="ชื่อห้อง..."
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleRenameSession(s.sessionId, editingSessionTitle)}
+                                className="p-1 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/15 rounded-lg cursor-pointer transition-colors"
+                                title="บันทึก"
+                              >
+                                <Check className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setEditingSessionId(null)}
+                                className="p-1 text-slate-400 hover:bg-slate-500/15 rounded-lg cursor-pointer transition-colors"
+                                title="ยกเลิก"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
                             </div>
-                            <p className="text-[10px] text-slate-400 truncate mt-0.5 pl-4.5">{s.lastMessage || "..."}</p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={(e) => handleDeleteSession(s.sessionId, e)}
-                            className="opacity-0 group-hover:opacity-100 p-1 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all shrink-0 cursor-pointer"
-                            title="ลบห้องนี้"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                          ) : (
+                            <>
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-1.5">
+                                  <MessageSquare className={`w-3 h-3 shrink-0 ${s.sessionId === currentSessionId ? "text-amber-500" : "text-slate-400 group-hover:text-amber-500"}`} />
+                                  <p className="truncate text-xs font-medium">{s.title || "บทสนทนา"}</p>
+                                </div>
+                                <p className="text-[10px] text-slate-400 truncate mt-0.5 pl-4.5">{s.lastMessage || "..."}</p>
+                              </div>
+
+                              <div className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setActiveSessionMenuId(activeSessionMenuId === s.sessionId ? null : s.sessionId);
+                                  }}
+                                  className={`p-1.5 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-amber-500/10 transition-all cursor-pointer ${
+                                    activeSessionMenuId === s.sessionId
+                                      ? "opacity-100 text-amber-500 bg-amber-500/10"
+                                      : "opacity-70 sm:opacity-0 sm:group-hover:opacity-100"
+                                  }`}
+                                  title="จัดการห้องนี้"
+                                >
+                                  <MoreVertical className="w-3.5 h-3.5" />
+                                </button>
+
+                                {activeSessionMenuId === s.sessionId && (
+                                  <>
+                                    <div
+                                      className="fixed inset-0 z-40"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setActiveSessionMenuId(null);
+                                      }}
+                                    />
+                                    <div className="absolute right-0 top-full mt-1 z-50 w-36 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl py-1 text-xs backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 font-normal">
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setEditingSessionTitle(s.title || "บทสนทนา");
+                                          setEditingSessionId(s.sessionId);
+                                          setActiveSessionMenuId(null);
+                                        }}
+                                        className="w-full px-3 py-1.5 text-left text-slate-700 dark:text-slate-200 hover:bg-amber-500/10 hover:text-amber-600 dark:hover:text-amber-400 flex items-center gap-2 transition-colors cursor-pointer"
+                                      >
+                                        <Pencil className="w-3 h-3 text-amber-500" />
+                                        <span>เปลี่ยนชื่อ</span>
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleDeleteSession(s.sessionId, e);
+                                        }}
+                                        className="w-full px-3 py-1.5 text-left text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 flex items-center gap-2 transition-colors cursor-pointer"
+                                      >
+                                        <Trash2 className="w-3 h-3 text-rose-500" />
+                                        <span>ลบห้องแชต</span>
+                                      </button>
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            </>
+                          )}
                         </div>
                       ))
                     )}
@@ -1721,100 +2345,6 @@ export default function NetworkAiPage() {
                   ref={chatMessagesContainerRef}
                   className="flex-1 p-4 overflow-y-auto space-y-4"
                 >
-                  {/* Antigravity Persistent Live Task Runner Banner inside Chat */}
-                  {activeTask && activeTask.status !== "idle" && (
-                    <div
-                      className={`p-3 rounded-xl border transition-all text-xs space-y-2 shadow-lg animate-in fade-in ${
-                        activeTask.status === "running"
-                          ? "bg-[#181822] border-amber-500/50 shadow-amber-500/5 ring-1 ring-amber-500/20"
-                          : activeTask.status === "success"
-                          ? "bg-[#181822] border-emerald-500/50 shadow-emerald-500/5 ring-1 ring-emerald-500/20"
-                          : "bg-[#181822] border-rose-500/50 shadow-rose-500/5 ring-1 ring-rose-500/20"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <div className="flex items-center gap-2 min-w-0">
-                          {activeTask.status === "running" ? (
-                            <span className="relative flex h-2.5 w-2.5 shrink-0">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
-                            </span>
-                          ) : activeTask.status === "success" ? (
-                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                          ) : (
-                            <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
-                          )}
-                          <span className="font-bold text-white">
-                            {activeTask.status === "running"
-                              ? `⚙️ กำลังประมวลผลคำสั่ง (${activeTask.durationSeconds}s)`
-                              : activeTask.status === "success"
-                              ? `✅ Task Completed (${activeTask.durationSeconds}s)`
-                              : `❌ Task Failed`}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-2 shrink-0">
-                          <button
-                            type="button"
-                            onClick={() => setShowTaskTerminal(!showTaskTerminal)}
-                            className="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-slate-200 text-[10px] font-medium flex items-center gap-1 transition-colors cursor-pointer"
-                          >
-                            <Terminal className="w-3 h-3 text-amber-400" />
-                            <span>{showTaskTerminal ? "ซ่อน Console" : "ดู Console Log สด"}</span>
-                          </button>
-                          {activeTask.status !== "running" && (
-                            <button
-                              type="button"
-                              onClick={() => handleDismissTask(activeTask?.id)}
-                              className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-                              title="ปิดการแจ้งเตือน"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Step Message */}
-                      <div className="text-[11px] text-slate-300 font-mono flex items-center justify-between gap-2 flex-wrap">
-                        <span>{activeTask.stepMessage || activeTask.command}</span>
-                        {activeTask.status === "success" && (
-                          <a
-                            href="/test"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] font-bold flex items-center gap-1 shrink-0 cursor-pointer"
-                          >
-                            <span>เปิดหน้าเว็บจริง</span>
-                            <Globe className="w-3 h-3" />
-                          </a>
-                        )}
-                      </div>
-
-                      {/* Terminal Console Output inside Chat */}
-                      {showTaskTerminal && activeTask.outputLogs && activeTask.outputLogs.length > 0 && (
-                        <div className="p-2.5 bg-black/80 rounded-lg font-mono text-[10px] leading-relaxed max-h-44 overflow-y-auto space-y-1 text-slate-300 border border-white/5 scrollbar-thin">
-                          {activeTask.outputLogs.map((log, lIdx) => (
-                            <div
-                              key={lIdx}
-                              className={`break-all ${
-                                log.includes("Error") || log.includes("❌") || log.includes("failed")
-                                  ? "text-rose-400 font-bold"
-                                  : log.includes("✓") || log.includes("✅") || log.includes("success") || log.includes("Successfully")
-                                  ? "text-emerald-400"
-                                  : log.includes("PM2") || log.includes("reload")
-                                  ? "text-amber-300"
-                                  : "text-slate-400"
-                              }`}
-                            >
-                              {log}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
                   {messages.map((m, idx) => (
                   <div
                     key={idx}
@@ -2052,139 +2582,212 @@ export default function NetworkAiPage() {
                                   <>
                                     <button
                                       type="button"
-                                      onClick={() => handleApplyCode(idx, m.codeProposal!, false)}
-                                      disabled={applyingCode}
-                                      className="px-2.5 py-1 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-slate-950 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-xs disabled:opacity-50"
-                                    >
-                                      {applyingCode ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
-                                      <span>อนุมัติและบันทึกไฟล์</span>
-                                    </button>
-                                    <button
-                                      type="button"
                                       onClick={() => handleApplyCode(idx, m.codeProposal!, true)}
                                       disabled={applyingCode || rebuildingCode}
-                                      className="px-2.5 py-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-xs disabled:opacity-50"
+                                      className="px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50"
                                     >
-                                      <Zap className="w-3 h-3 text-amber-300" />
+                                      {applyingCode || rebuildingCode ? (
+                                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                                      ) : (
+                                        <Zap className="w-3.5 h-3.5 text-amber-300" />
+                                      )}
                                       <span>อนุมัติ บันทึก + Rebuild ทันที</span>
                                     </button>
                                     <button
                                       type="button"
                                       onClick={() => handleRejectCode(idx)}
-                                      className="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-400 rounded-lg text-[11px] transition-colors cursor-pointer"
+                                      className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 rounded-lg text-xs transition-colors cursor-pointer"
                                     >
                                       ยกเลิก
                                     </button>
                                   </>
                                 ) : (
-                                  <div className="flex items-center gap-2 flex-wrap w-full">
-                                    {m.codeProposal.hasBackup && (
-                                      <button
-                                        type="button"
-                                        onClick={() => handleRollbackCode(idx, m.codeProposal!.filePath)}
-                                        disabled={rebuildingCode || activeTask?.status === "running"}
-                                        className="px-2.5 py-1 bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 rounded-lg text-[11px] font-bold transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
-                                      >
-                                        <RotateCcw className="w-3 h-3" />
-                                        <span>ย้อนกลับ (Rollback ไฟล์เดิม)</span>
-                                      </button>
+                                  <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium py-1">
+                                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                                    <span>คำสั่งนี้ดำเนินการบันทึกและปรับใช้โค้ดเรียบร้อยแล้ว</span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Task Runner Card right UNDER the M1 comment/proposal that triggered it */}
+                        {Boolean(
+                          activeTask &&
+                          activeTask.status !== "idle" &&
+                          !dismissedTaskIds[activeTask.id] &&
+                          ((taskTriggerMsgIndex !== null && taskTriggerMsgIndex === idx) ||
+                           (taskTriggerMsgIndex === null && Boolean(m.codeProposal)))
+                        ) && (
+                          <div className="w-full max-w-[95%] sm:max-w-[90%] transition-all">
+                            {isTaskCollapsed ? (
+                              /* หุบลง (Collapsed Compact Bar) */
+                              <div className="p-2.5 rounded-xl border border-emerald-500/30 bg-[#181822] flex items-center justify-between gap-2 text-xs shadow-md animate-in fade-in">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                                  <span className="font-bold text-emerald-300">✅ Rebuild สำเร็จ</span>
+                                  <span className="text-[11px] font-mono text-slate-400">({activeTask?.durationSeconds}s)</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                  <a
+                                    href={m.codeProposal?.filePath ? (m.codeProposal.filePath.replace("src/app/(website)", "").replace("/page.tsx", "") || "/") : "/test"}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[11px] font-bold flex items-center gap-1 shadow-xs cursor-pointer transition-all hover:scale-105"
+                                  >
+                                    <Globe className="w-3 h-3" />
+                                    <span>เปิดหน้าเว็บจริง ↗</span>
+                                  </a>
+                                  <button
+                                    type="button"
+                                    onClick={() => setIsTaskCollapsed(false)}
+                                    className="px-2 py-1 bg-white/5 hover:bg-white/10 text-slate-300 rounded-lg text-[10px] font-mono flex items-center gap-1 transition-colors cursor-pointer"
+                                    title="ขยายดู Console Log"
+                                  >
+                                    <Terminal className="w-3 h-3 text-amber-400" />
+                                    <span>ดู Log</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setActiveTask(null);
+                                      setTaskTriggerMsgIndex(null);
+                                    }}
+                                    className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-white/10 cursor-pointer"
+                                    title="ปิด"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              /* Expanded while running */
+                              <div
+                                className={`p-3.5 rounded-2xl border transition-all text-xs space-y-2.5 shadow-xl animate-in fade-in slide-in-from-bottom-2 ${
+                                  activeTask?.status === "running"
+                                    ? "bg-[#181822] border-amber-500/50 shadow-amber-500/10 ring-1 ring-amber-500/20"
+                                    : activeTask?.status === "success"
+                                    ? "bg-[#181822] border-emerald-500/50 shadow-emerald-500/10 ring-1 ring-emerald-500/20"
+                                    : "bg-[#181822] border-rose-500/50 shadow-rose-500/10 ring-1 ring-rose-500/20"
+                                }`}
+                              >
+                                <div className="flex items-center justify-between gap-2 flex-wrap">
+                                  <div className="flex items-center gap-2.5 min-w-0">
+                                    {activeTask?.status === "running" ? (
+                                      <div className="relative flex items-center justify-center">
+                                        <RefreshCw className="w-4 h-4 text-amber-400 animate-spin" />
+                                        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                                      </div>
+                                    ) : activeTask?.status === "success" ? (
+                                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                                    ) : (
+                                      <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
                                     )}
+                                    <span className="font-bold text-white flex items-center gap-2 flex-wrap">
+                                      {activeTask?.status === "running" && (
+                                        <span className="px-2 py-0.5 text-[10px] rounded-md bg-amber-500/20 text-amber-300 font-mono font-bold border border-amber-500/30 animate-pulse">
+                                          ⚙️ 1 task running
+                                        </span>
+                                      )}
+                                      {activeTask?.status === "success" && (
+                                        <span className="px-2 py-0.5 text-[10px] rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/30">
+                                          ✅ Task Completed
+                                        </span>
+                                      )}
+                                      {activeTask?.status === "error" && (
+                                        <span className="px-2 py-0.5 text-[10px] rounded-md bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30">
+                                          ❌ Task Failed
+                                        </span>
+                                      )}
+                                      <span className="text-[11px] font-mono text-slate-400">
+                                        ⏱️ {activeTask?.status === "running" ? `กำลังรัน... ${activeTask.durationSeconds}s` : `เสร็จสิ้นใน ${activeTask?.durationSeconds}s`}
+                                      </span>
+                                    </span>
+                                  </div>
+
+                                  <div className="flex items-center gap-2 shrink-0">
                                     <button
                                       type="button"
-                                      onClick={handleTriggerRebuild}
-                                      disabled={rebuildingCode || activeTask?.status === "running"}
-                                      className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[11px] font-bold transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50 shadow-xs"
+                                      onClick={() => setShowTaskTerminal(!showTaskTerminal)}
+                                      className="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 text-[10px] font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
                                     >
-                                      {rebuildingCode || activeTask?.status === "running" ? (
-                                        <RefreshCw className="w-3 h-3 animate-spin" />
-                                      ) : (
-                                        <Play className="w-3 h-3" />
-                                      )}
-                                      <span>
-                                        {rebuildingCode || activeTask?.status === "running"
-                                          ? `กำลังประมวลผล (${activeTask?.durationSeconds || 0}s)...`
-                                          : activeTask?.status === "success"
-                                          ? "✅ Rebuild สำเร็จแล้ว (กดเพื่อ Rebuild ซ้ำ)"
-                                          : "Rebuild & PM2 Reload"}
-                                      </span>
+                                      <Terminal className="w-3 h-3 text-amber-400" />
+                                      <span>{showTaskTerminal ? "ซ่อน Console" : "ดู Console Log สด"}</span>
                                     </button>
-
-                                    {/* Direct link to live page */}
-                                    <a
-                                      href={m.codeProposal.filePath.replace("src/app/(website)", "").replace("/page.tsx", "") || "/"}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="px-2.5 py-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 rounded-lg text-[11px] font-bold transition-colors flex items-center gap-1 cursor-pointer"
-                                      title="คลิกเพื่อเปิดดูหน้าเว็บจริงทันที"
+                                    <button
+                                      type="button"
+                                      onClick={() => setIsTaskCollapsed(true)}
+                                      className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                                      title="หุบลง"
                                     >
-                                      <Globe className="w-3 h-3 text-blue-400" />
-                                      <span>เปิดหน้าเว็บจริง ↗</span>
-                                    </a>
-
-                                    {/* Live Step Status Message inside Card */}
-                                    {(rebuildingCode || (activeTask && activeTask.status === "running")) && (
-                                      <div className="w-full text-[11px] text-amber-300/90 font-mono bg-amber-500/10 border border-amber-500/30 rounded-xl p-2.5 space-y-1.5 mt-2 animate-in fade-in">
-                                        <div className="flex items-center justify-between">
-                                          <span className="flex items-center gap-1.5 font-bold text-amber-300">
-                                            <RefreshCw className="w-3.5 h-3.5 animate-spin text-amber-400 shrink-0" />
-                                            {activeTask?.stepMessage || "กำลังเริ่มต้น Rebuild & PM2 Reload..."}
-                                          </span>
-                                          <span className="font-mono bg-amber-500/20 px-1.5 py-0.5 rounded text-[10px] text-amber-200">
-                                            {activeTask?.durationSeconds || 0}s
-                                          </span>
-                                        </div>
-                                        <div className="w-full bg-slate-800 rounded-full h-1 overflow-hidden">
-                                          <div
-                                            className={`h-full bg-amber-400 transition-all duration-300 ${
-                                              activeTask?.step === "reloading" ? "w-4/5" : "w-2/5 animate-pulse"
-                                            }`}
-                                          />
-                                        </div>
-                                      </div>
+                                      <ChevronDown className="w-3.5 h-3.5" />
+                                    </button>
+                                    {activeTask?.status !== "running" && (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setActiveTask(null);
+                                          setTaskTriggerMsgIndex(null);
+                                        }}
+                                        className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                                        title="ปิด"
+                                      >
+                                        <X className="w-3.5 h-3.5" />
+                                      </button>
                                     )}
+                                  </div>
+                                </div>
 
-                                    {/* Live Success Banner inside Card */}
-                                    {activeTask && activeTask.status === "success" && (
-                                      <div className="w-full text-[11px] text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-2.5 space-y-1 mt-2 animate-in fade-in">
-                                        <div className="flex items-center justify-between">
-                                          <span className="flex items-center gap-1.5 font-bold text-emerald-300">
-                                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                                            Rebuild สำเร็จสมบูรณ์! ({activeTask.durationSeconds}s)
-                                          </span>
-                                          <a
-                                            href={m.codeProposal.filePath.replace("src/app/(website)", "").replace("/page.tsx", "") || "/"}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] font-bold inline-flex items-center gap-1 shadow-sm"
-                                          >
-                                            <Globe className="w-3 h-3" />
-                                            <span>เปิดหน้าเว็บจริง ↗</span>
-                                          </a>
-                                        </div>
-                                        <p className="text-[10px] text-emerald-200/70">
-                                          อัปเดตเซิร์ฟเวอร์เรียบร้อยแล้ว หน้าเว็บแสดงผลโค้ดเวอร์ชันใหม่ทันที
-                                        </p>
-                                      </div>
+                                {/* Step Message & Web Link */}
+                                <div className="text-[11px] text-slate-300 font-mono flex items-center justify-between gap-2 flex-wrap pt-1 border-t border-white/5">
+                                  <span className="truncate max-w-xl">{activeTask?.stepMessage || activeTask?.command}</span>
+                                  <div className="flex items-center gap-2 shrink-0">
+                                    {activeTask?.status === "success" && (
+                                      <a
+                                        href={m.codeProposal?.filePath ? (m.codeProposal.filePath.replace("src/app/(website)", "").replace("/page.tsx", "") || "/") : "/test"}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[11px] font-bold flex items-center gap-1.5 shadow-sm cursor-pointer transition-all hover:scale-105"
+                                      >
+                                        <Globe className="w-3 h-3" />
+                                        <span>เปิดหน้าเว็บจริง ↗</span>
+                                      </a>
                                     )}
+                                    {activeTask?.status === "error" && (
+                                      <button
+                                        type="button"
+                                        onClick={() => handleTriggerRebuild(idx)}
+                                        className="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-[10px] font-bold flex items-center gap-1 shrink-0 cursor-pointer"
+                                      >
+                                        <RotateCcw className="w-3 h-3" />
+                                        <span>ลองใหม่</span>
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
 
-                                    {/* Live Error Banner inside Card */}
-                                    {activeTask && activeTask.status === "error" && (
-                                      <div className="w-full text-[11px] text-rose-300 bg-rose-500/10 border border-rose-500/30 rounded-xl p-2.5 space-y-1.5 mt-2 animate-in fade-in">
-                                        <div className="flex items-center justify-between">
-                                          <span className="flex items-center gap-1.5 font-bold text-rose-300">
-                                            <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
-                                            {activeTask.stepMessage || "การ Rebuild ไม่สำเร็จ"}
-                                          </span>
-                                          <button
-                                            type="button"
-                                            onClick={handleTriggerRebuild}
-                                            className="px-2 py-0.5 bg-rose-600/30 hover:bg-rose-600/50 text-rose-200 border border-rose-500/40 rounded text-[10px] font-bold cursor-pointer"
-                                          >
-                                            ลองใหม่อีกครั้ง
-                                          </button>
-                                        </div>
+                                {/* Terminal Console Output */}
+                                {showTaskTerminal && activeTask?.outputLogs && activeTask.outputLogs.length > 0 && (
+                                  <div className="p-3 bg-black/90 rounded-xl font-mono text-[10px] leading-relaxed max-h-56 overflow-y-auto space-y-1 text-slate-300 border border-white/5 scrollbar-thin">
+                                    {activeTask.outputLogs.map((log, lIdx) => (
+                                      <div
+                                        key={lIdx}
+                                        className={`break-all ${
+                                          log.includes("Error") || log.includes("❌") || log.includes("failed")
+                                            ? "text-rose-400 font-bold"
+                                            : log.includes("✓") || log.includes("✅") || log.includes("success") || log.includes("Successfully")
+                                            ? "text-emerald-400"
+                                            : log.includes("▲") || log.includes("Turbopack")
+                                            ? "text-cyan-400 font-bold"
+                                            : log.includes("PM2") || log.includes("reload")
+                                            ? "text-amber-300"
+                                            : "text-slate-400"
+                                        }`}
+                                      >
+                                        {log}
                                       </div>
-                                    )}
+                                    ))}
                                   </div>
                                 )}
                               </div>
@@ -2197,6 +2800,23 @@ export default function NetworkAiPage() {
                           <span>{m.modelUsed || "Agent M1"}</span>
                           <span>•</span>
                           <span>{m.timestamp}</span>
+                          {m.content && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (isSpeaking) {
+                                  stopSpeaking();
+                                } else {
+                                  speakText(m.content);
+                                }
+                              }}
+                              className="hover:text-amber-400 text-slate-400 transition-colors cursor-pointer flex items-center gap-1"
+                              title="ฟังเสียงอ่านข้อความนี้"
+                            >
+                              <Volume2 className="w-3 h-3" />
+                              <span>อ่านออกเสียง</span>
+                            </button>
+                          )}
                         </div>
                       </div>
                     )}
@@ -2241,108 +2861,13 @@ export default function NetworkAiPage() {
                   </div>
                 )}
 
-                <div ref={chatEndRef} />
+                  <div ref={chatEndRef} />
+                </div>
               </div>
-            </div>
 
-            {/* Antigravity Floating Input Bar Area */}
-            <div className="p-3 sm:p-4 pb-6 sm:pb-4 bg-[#0f0f14] border-t border-white/5 shrink-0">
-              <div className="max-w-4xl mx-auto space-y-2">
-                {/* Mobile-Friendly Pinned Task Bar (Always visible at bottom above input) */}
-                {(rebuildingCode || (activeTask && activeTask.status === "running")) && (
-                  <div className="px-3 py-2 bg-[#1c160c] border border-amber-500/40 rounded-xl flex items-center justify-between gap-2 text-xs shadow-lg animate-in fade-in">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <RefreshCw className="w-4 h-4 text-amber-400 animate-spin shrink-0" />
-                      <div className="min-w-0">
-                        <p className="font-bold text-amber-300 truncate text-[11px]">
-                          ⚙️ กำลัง Rebuild & PM2 Reload ({activeTask?.durationSeconds || 0}s)
-                        </p>
-                        <p className="text-[10px] text-amber-200/70 truncate">
-                          {activeTask?.stepMessage || "กำลังคอมไพล์ Next.js Turbopack..."}
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setShowTaskTerminal(true)}
-                      className="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/30 rounded-lg text-[10px] font-bold shrink-0 flex items-center gap-1 cursor-pointer"
-                    >
-                      <Terminal className="w-3 h-3" />
-                      <span>Console Logs</span>
-                    </button>
-                  </div>
-                )}
-
-                {/* Mobile-Friendly Pinned Success Alert */}
-                {activeTask && activeTask.status === "success" && !rebuildingCode && (
-                  <div className="px-3 py-2 bg-emerald-950/50 border border-emerald-500/40 rounded-xl flex items-center justify-between gap-2 text-xs shadow-lg animate-in fade-in">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span className="font-bold text-emerald-300 truncate text-[11px]">
-                        ✅ Rebuild สำเร็จ ({activeTask.durationSeconds}s)! หน้าเว็บอัปเดตแล้ว
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <a
-                        href={(() => {
-                          const p = [...messages].reverse().find((m) => m.codeProposal?.filePath);
-                          return p?.codeProposal?.filePath
-                            ? p.codeProposal.filePath.replace("src/app/(website)", "").replace("/page.tsx", "") || "/"
-                            : "/test";
-                        })()}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[10px] font-bold flex items-center gap-1 shadow-sm"
-                      >
-                        <Globe className="w-3 h-3" />
-                        <span>เปิดหน้าเว็บ ↗</span>
-                      </a>
-                      <button
-                        type="button"
-                        onClick={() => handleDismissTask(activeTask?.id)}
-                        className="w-5 h-5 rounded-full hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center text-xs"
-                        title="ปิดการแจ้งเตือน"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Mobile-Friendly Pinned Error Alert */}
-                {activeTask && activeTask.status === "error" && !rebuildingCode && (
-                  <div className="px-3 py-2 bg-rose-950/50 border border-rose-500/40 rounded-xl flex items-center justify-between gap-2 text-xs shadow-lg animate-in fade-in">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
-                      <span className="font-bold text-rose-300 truncate text-[11px]">
-                        {activeTask.stepMessage || "❌ การ Rebuild ล้มเหลว"}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <button
-                        type="button"
-                        onClick={handleTriggerRebuild}
-                        className="px-2 py-0.5 bg-rose-600 hover:bg-rose-500 text-white rounded text-[10px] font-bold cursor-pointer"
-                      >
-                        ลองใหม่
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setShowTaskTerminal(true)}
-                        className="px-2 py-0.5 bg-rose-500/20 text-rose-200 border border-rose-500/30 rounded text-[10px] font-bold cursor-pointer"
-                      >
-                        Logs
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDismissTask(activeTask?.id)}
-                        className="w-5 h-5 rounded-full hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center text-xs"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  </div>
-                )}
+              {/* Antigravity Floating Input Bar Area */}
+              <div className="p-3 sm:p-4 pb-6 sm:pb-4 bg-[#0f0f14] border-t border-white/5 shrink-0">
+                <div className="max-w-4xl mx-auto space-y-2">
 
                 {/* Message Queue Tray (คิวคำถามรอส่ง) */}
                 {messageQueue.length > 0 && (
@@ -2510,8 +3035,83 @@ export default function NetworkAiPage() {
                       </button>
                     </div>
 
-                    {/* Right Actions: Stop Generation / Send or Queue */}
-                    <div className="flex items-center gap-2">
+                    {/* Right Actions: Live Call, Mic, Audio Read Toggle, Stop Generation / Send or Queue */}
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      {/* Live Voice Call Button */}
+                      <button
+                        type="button"
+                        onClick={handleStartVoiceCall}
+                        className="w-7 h-7 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 flex items-center justify-center transition-all cursor-pointer hover:scale-105"
+                        title="เปิดโหมดสนทนาด้วยเสียงสดกับ M1 (Live 2-Way Voice Call)"
+                      >
+                        <PhoneCall className="w-3.5 h-3.5 animate-pulse" />
+                      </button>
+
+                      {/* Voice STT Microphone Button */}
+                      <button
+                        type="button"
+                        onClick={toggleVoiceRecording}
+                        className={`w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+                          isListening
+                            ? "bg-rose-500 text-white animate-pulse shadow-md shadow-rose-500/50 scale-105"
+                            : "bg-[#242432] hover:bg-[#2f2f42] text-slate-300 hover:text-white"
+                        }`}
+                        title={isListening ? "กำลังฟังเสียง (คลิกเพื่อหยุด)" : "พิมพ์ด้วยเสียง (พูดภาษาไทย)"}
+                      >
+                        {isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                      </button>
+
+                      {/* Voice TTS Auto-Read Toggle Button */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (isSpeaking) {
+                            stopSpeaking();
+                          }
+                          setIsSpeechOutputEnabled((prev) => {
+                            const next = !prev;
+                            localStorage.setItem("m1_speech_output_enabled", next ? "true" : "false");
+                            if (next) {
+                              unlockAudioPlayback();
+                            }
+                            toast(next ? "เปิดเสียงอ่านคำตอบอัตโนมัติ 🔊" : "ปิดเสียงอ่านอัตโนมัติ 🔇", {
+                              icon: next ? "🔊" : "🔇",
+                            });
+                            return next;
+                          });
+                        }}
+                        className={`w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+                          isSpeaking
+                            ? "bg-amber-500 text-slate-950 animate-bounce shadow-md shadow-amber-500/30"
+                            : isSpeechOutputEnabled
+                            ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
+                            : "bg-[#242432] hover:bg-[#2f2f42] text-slate-400 hover:text-slate-200"
+                        }`}
+                        title={
+                          isSpeaking
+                            ? "กำลังอ่านออกเสียง (คลิกเพื่อหยุดเสียง)"
+                            : isSpeechOutputEnabled
+                            ? "เสียงอ่าน AI: เปิดอยู่ (คลิกเพื่อปิด)"
+                            : "เสียงอ่าน AI: ปิดอยู่ (คลิกเพื่อเปิด)"
+                        }
+                      >
+                        {isSpeechOutputEnabled ? (
+                          <Volume2 className="w-3.5 h-3.5" />
+                        ) : (
+                          <VolumeX className="w-3.5 h-3.5 opacity-60" />
+                        )}
+                      </button>
+
+                      {/* Voice Settings Button */}
+                      <button
+                        type="button"
+                        onClick={() => setIsVoiceSettingsOpen(true)}
+                        className="w-7 h-7 rounded-full bg-[#242432] hover:bg-[#2f2f42] text-slate-400 hover:text-amber-400 flex items-center justify-center transition-colors cursor-pointer"
+                        title="ตั้งค่าและเปลี่ยนเสียงพูด AI (เลือกเสียง / ปรับความเร็ว / ทดสอบเสียง)"
+                      >
+                        <SlidersHorizontal className="w-3.5 h-3.5" />
+                      </button>
+
                       {isSending && (
                         <button
                           type="button"
@@ -2620,7 +3220,6 @@ export default function NetworkAiPage() {
             </div>
           )}
         </div>
-      </div>
 
       {/* 1. Attachment Selector Modal */}
       {isAttachModalOpen && (
@@ -3051,6 +3650,348 @@ export default function NetworkAiPage() {
                 </div>
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Live Two-Way Voice Call Modal (เหมือน Gemini Live / ChatGPT Voice) */}
+      {isVoiceCallActive && (
+        <div className="fixed inset-0 z-[100000] bg-slate-950/95 backdrop-blur-2xl flex flex-col justify-between p-6 sm:p-10 animate-in fade-in zoom-in-95 duration-200 select-none">
+          {/* Top Bar */}
+          <div className="w-full max-w-2xl mx-auto flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2.5">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+              </span>
+              <div>
+                <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
+                  <span>Agent M1 Live Voice</span>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-mono">
+                    NEURAL
+                  </span>
+                </h3>
+                <p className="text-[11px] text-slate-400">สนทนาสดด้วยเสียงสองทาง (ภาษาไทย)</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Voice Selector in Voice Call */}
+              <div className="flex items-center gap-1.5 bg-[#1e1e2c] px-3 py-1.5 rounded-xl border border-white/10 text-xs">
+                <Headphones className="w-3.5 h-3.5 text-amber-400" />
+                <select
+                  value={selectedVoiceId}
+                  onChange={(e) => handleVoiceChange(e.target.value)}
+                  className="bg-transparent text-slate-200 outline-none cursor-pointer text-xs max-w-[150px] sm:max-w-[200px] truncate"
+                >
+                  {availableVoices.map((v) => (
+                    <option key={v.id} value={v.id} className="bg-[#1e1e2c] text-white">
+                      {v.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Voice Settings Gear */}
+              <button
+                type="button"
+                onClick={() => setIsVoiceSettingsOpen(true)}
+                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-amber-400 transition-colors cursor-pointer"
+                title="ปรับแต่งเสียงพูดและความเร็ว"
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+              </button>
+
+              {/* End Call X button */}
+              <button
+                type="button"
+                onClick={handleEndVoiceCall}
+                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                title="ปิดหน้าต่างสนทนา"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Central Interactive Voice Orb / Soundwave */}
+          <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center gap-6 my-auto">
+            {/* Pulsing Avatar Sphere */}
+            <div className="relative flex items-center justify-center">
+              {/* Outer pulsing ripples when listening or speaking */}
+              {voiceCallStatus === "listening" && (
+                <>
+                  <div className="absolute w-44 h-44 rounded-full bg-blue-500/20 animate-ping opacity-60 pointer-events-none" />
+                  <div className="absolute w-56 h-56 rounded-full bg-cyan-500/10 animate-pulse pointer-events-none" />
+                </>
+              )}
+              {voiceCallStatus === "speaking" && (
+                <>
+                  <div className="absolute w-48 h-48 rounded-full bg-emerald-500/25 animate-ping opacity-75 pointer-events-none" />
+                  <div className="absolute w-60 h-60 rounded-full bg-teal-500/15 animate-pulse pointer-events-none" />
+                </>
+              )}
+
+              {/* Core Orb */}
+              <div
+                onClick={() => {
+                  if (voiceCallStatus === "speaking") {
+                    handleInterruptVoiceCall();
+                  } else if (voiceCallStatus === "listening") {
+                    if (liveTranscript.trim()) {
+                      sendVoiceCallMessage(liveTranscript.trim());
+                    }
+                  } else if (voiceCallStatus === "idle") {
+                    startVoiceCallListening();
+                  }
+                }}
+                className={`w-36 h-36 sm:w-44 sm:h-44 rounded-full flex flex-col items-center justify-center shadow-2xl transition-all duration-300 cursor-pointer ${
+                  voiceCallStatus === "listening"
+                    ? isVoiceSoundDetected
+                      ? "bg-gradient-to-tr from-emerald-600 via-cyan-500 to-blue-600 shadow-cyan-400/40 scale-110 ring-4 ring-cyan-400/30"
+                      : "bg-gradient-to-tr from-blue-600 via-cyan-500 to-indigo-600 shadow-cyan-500/30 scale-105"
+                    : voiceCallStatus === "thinking"
+                    ? "bg-gradient-to-tr from-amber-600 via-purple-600 to-rose-600 shadow-amber-500/30 animate-pulse"
+                    : voiceCallStatus === "speaking"
+                    ? "bg-gradient-to-tr from-emerald-500 via-teal-400 to-cyan-500 shadow-emerald-500/40 scale-110"
+                    : "bg-[#252538] text-slate-400 hover:scale-105"
+                }`}
+              >
+                {voiceCallStatus === "listening" && (
+                  <Mic className={`w-14 h-14 sm:w-16 sm:h-16 text-white ${isVoiceSoundDetected ? "animate-bounce" : "animate-pulse"}`} />
+                )}
+                {voiceCallStatus === "thinking" && (
+                  <Sparkles className="w-14 h-14 sm:w-16 sm:h-16 text-amber-200 animate-spin" />
+                )}
+                {voiceCallStatus === "speaking" && (
+                  <AudioLines className="w-14 h-14 sm:w-16 sm:h-16 text-white animate-bounce" />
+                )}
+                {voiceCallStatus === "idle" && (
+                  <MicOff className="w-14 h-14 sm:w-16 sm:h-16 text-slate-400" />
+                )}
+              </div>
+            </div>
+
+            {/* Status Text Indicator */}
+            <div className="text-center space-y-2">
+              <div className="inline-flex items-center justify-center">
+                {voiceCallStatus === "listening" && (
+                  isVoiceSoundDetected ? (
+                    <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 animate-pulse">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                      ตรวจพบเสียงพูดแล้ว...
+                    </span>
+                  ) : (
+                    <span className="bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                      ไมค์เปิดอยู่ • กำลังฟังเสียงคุณ...
+                    </span>
+                  )
+                )}
+                {voiceCallStatus === "thinking" && (
+                  <span className="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 animate-spin text-amber-400" />
+                    M1 กำลังคิดคำตอบ...
+                  </span>
+                )}
+                {voiceCallStatus === "speaking" && (
+                  <span className="bg-teal-500/20 text-teal-300 border border-teal-500/30 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5">
+                    <Volume2 className="w-3.5 h-3.5 text-teal-400 animate-bounce" />
+                    M1 กำลังพูดตอบ...
+                  </span>
+                )}
+                {voiceCallStatus === "idle" && (
+                  <span className="bg-slate-700/50 text-slate-300 px-3 py-1 rounded-full text-xs font-semibold">
+                    แตะเพื่อเริ่มใหม่
+                  </span>
+                )}
+              </div>
+
+              <h4 className="text-base sm:text-lg font-bold tracking-wide text-white">
+                {voiceCallStatus === "listening" && (isVoiceSoundDetected ? "กำลังถอดเสียงคำพูด..." : "พูดคำถามกับ M1 ได้เลย")}
+                {voiceCallStatus === "thinking" && "M1 กำลังประมวลผลคำตอบ..."}
+                {voiceCallStatus === "speaking" && "M1 กำลังพูดตอบ..."}
+                {voiceCallStatus === "idle" && "แตะที่ลูกกลมเพื่อเริ่มพูด"}
+              </h4>
+              <p className="text-xs text-slate-400 font-light max-w-sm mx-auto">
+                {voiceCallStatus === "listening" && "พูดคำถามได้เลย เมื่อหยุดพูดระบบจะส่งให้อัตโนมัติ หรือแตะที่ลูกกลมเพื่อส่งทันที"}
+                {voiceCallStatus === "thinking" && "กำลังค้นหาข้อมูลและสรุปคำตอบให้คุณ"}
+                {voiceCallStatus === "speaking" && "แตะลูกกลม หรือกดปุ่มด้านล่างเพื่อขัดจังหวะ/พูดต่อ"}
+                {voiceCallStatus === "idle" && "กดปุ่มด้านล่างเพื่อเปิดไมค์"}
+              </p>
+            </div>
+
+            {/* Live Subtitle / Transcript Box */}
+            <div className="w-full bg-[#181824]/90 border border-white/10 rounded-2xl p-4 sm:p-5 text-center min-h-[90px] flex items-center justify-center shadow-lg">
+              {liveTranscript ? (
+                <p className="text-sm sm:text-base text-slate-100 font-medium leading-relaxed break-words">
+                  &ldquo;{liveTranscript}&rdquo;
+                </p>
+              ) : (
+                <p className="text-xs text-slate-500 italic">
+                  {voiceCallStatus === "listening" ? "(กำลังดักฟังเสียงผ่านไมโครโฟน... พูดคำถามได้เลย)" : "พร้อมรับฟังคำถาม..."}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Bottom Action Controls */}
+          <div className="w-full max-w-md mx-auto flex items-center justify-center gap-6 pt-4 border-t border-white/5">
+            {/* Interrupt button (when M1 is speaking) */}
+            {voiceCallStatus === "speaking" ? (
+              <button
+                type="button"
+                onClick={handleInterruptVoiceCall}
+                className="px-5 py-3 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-2 transition-all cursor-pointer hover:scale-105 active:scale-95"
+              >
+                <Square className="w-4 h-4 fill-current" />
+                <span>ขัดจังหวะ / พูดแทรก</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  if (voiceCallStatus === "listening") {
+                    if (liveTranscript.trim()) {
+                      sendVoiceCallMessage(liveTranscript.trim());
+                    }
+                  } else {
+                    startVoiceCallListening();
+                  }
+                }}
+                className={`px-5 py-3 rounded-full text-xs font-bold flex items-center gap-2 transition-all cursor-pointer hover:scale-105 active:scale-95 ${
+                  voiceCallStatus === "listening"
+                    ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/30"
+                    : "bg-[#252538] hover:bg-[#303046] text-slate-200"
+                }`}
+              >
+                <Mic className="w-4 h-4" />
+                <span>{voiceCallStatus === "listening" ? "ส่งคำถามทันที ➔" : "เริ่มฟังเสียง"}</span>
+              </button>
+            )}
+
+            {/* End Call Button */}
+            <button
+              type="button"
+              onClick={handleEndVoiceCall}
+              className="px-6 py-3 rounded-full bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-rose-600/30 transition-all cursor-pointer hover:scale-105 active:scale-95"
+              title="จบการสนทนาด้วยเสียง"
+            >
+              <PhoneOff className="w-4 h-4" />
+              <span>วางสาย</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Voice Customization Settings Modal (ตั้งค่าเสียงพูด AI) */}
+      {isVoiceSettingsOpen && (
+        <div className="fixed inset-0 z-[100001] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#161622] border border-white/10 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl p-5 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-white/5 pb-3">
+              <div className="flex items-center gap-2 text-slate-100 font-bold text-sm">
+                <SlidersHorizontal className="w-4 h-4 text-amber-400" />
+                <span>ปรับแต่งเสียงพูดของ Agent M1</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsVoiceSettingsOpen(false)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Voice Selection */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-300 flex items-center justify-between">
+                <span>เลือกเสียงพูด (Voice)</span>
+                <span className="text-[10px] text-amber-400/80">ตรวจพบ {availableVoices.length} เสียง</span>
+              </label>
+              <select
+                value={selectedVoiceId}
+                onChange={(e) => handleVoiceChange(e.target.value)}
+                className="w-full bg-[#20202e] border border-white/10 rounded-xl px-3 py-2 text-xs text-slate-100 outline-none cursor-pointer focus:border-amber-500/50 transition-colors"
+              >
+                {availableVoices.map((v) => (
+                  <option key={v.id} value={v.id} className="bg-[#20202e] text-slate-200">
+                    {v.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Speed / Rate Slider */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs text-slate-300">
+                <span className="font-semibold">ความเร็วในการพูด (Speed)</span>
+                <span className="text-amber-400 font-mono font-bold">{voiceRate.toFixed(2)}x</span>
+              </div>
+              <input
+                type="range"
+                min="0.7"
+                max="1.3"
+                step="0.05"
+                value={voiceRate}
+                onChange={(e) => handleRateChange(parseFloat(e.target.value))}
+                className="w-full accent-amber-400 cursor-pointer h-1.5 bg-[#20202e] rounded-lg"
+              />
+              <div className="flex justify-between text-[10px] text-slate-500">
+                <span>0.7x (ช้าชัดเจน)</span>
+                <span>1.0x (ปกติ)</span>
+                <span>1.3x (คล่องแคล่ว)</span>
+              </div>
+            </div>
+
+            {/* Tone / Pitch Slider */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-xs text-slate-300">
+                <span className="font-semibold">โทนเสียง ทุ้ม/แหลม (Pitch)</span>
+                <span className="text-amber-400 font-mono font-bold">
+                  {voicePitch < 0.95 ? "เสียงทุ้มนุ่ม" : voicePitch > 1.05 ? "เสียงใสแหลม" : "เสียงปกติ"}
+                </span>
+              </div>
+              <input
+                type="range"
+                min="0.8"
+                max="1.2"
+                step="0.05"
+                value={voicePitch}
+                onChange={(e) => handlePitchChange(parseFloat(e.target.value))}
+                className="w-full accent-amber-400 cursor-pointer h-1.5 bg-[#20202e] rounded-lg"
+              />
+              <div className="flex justify-between text-[10px] text-slate-500">
+                <span>ทุ้มอบอุ่น</span>
+                <span>ปกติ</span>
+                <span>สดใส/สูง</span>
+              </div>
+            </div>
+
+            {/* Preview / Test Button */}
+            <div className="pt-2 flex items-center gap-2.5">
+              <button
+                type="button"
+                onClick={() => handleTestVoice()}
+                disabled={isPreviewSpeaking}
+                className="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-amber-500/20 transition-all cursor-pointer disabled:opacity-50"
+              >
+                <Volume2 className={`w-3.5 h-3.5 ${isPreviewSpeaking ? "animate-bounce" : ""}`} />
+                <span>{isPreviewSpeaking ? "กำลังทดสอบเสียง..." : "🔊 กดทดสอบฟังเสียงนี้"}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsVoiceSettingsOpen(false)}
+                className="py-2 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-slate-200 text-xs font-semibold transition-colors cursor-pointer"
+              >
+                เสร็จสิ้น
+              </button>
+            </div>
+
+            {/* Helper tip */}
+            <p className="text-[11px] text-slate-400/90 leading-relaxed bg-white/5 p-2.5 rounded-xl border border-white/5">
+              💡 <strong>คำแนะนำ:</strong> หากเปิดใช้งานผ่าน <strong>Google Chrome</strong> จะมีเสียง <strong>&quot;Google ภาษาไทย&quot;</strong> ซึ่งเป็นเสียงธรรมชาติที่มีความลื่นไหลและเพราะที่สุด หรือสามารถปรับระดับความเร็ว 0.90x - 1.05x เพื่อให้เข้ากับหูของคุณได้ครับ
+            </p>
           </div>
         </div>
       )}

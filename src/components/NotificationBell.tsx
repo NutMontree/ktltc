@@ -171,14 +171,14 @@ export default function NotificationBell() {
           <div className="divide-y divide-zinc-100 dark:divide-zinc-800/50">
             {notifications.slice(0, 10).map((n) => {
               const isRead = n.isRead ?? n.read ?? false;
-              const title = n.title || (n.type === 'friend_request' ? 'คำขอเป็นเพื่อน' : n.type === 'friend_accept' ? 'ยอมรับเป็นเพื่อน' : n.type === 'post_on_profile' ? 'โพสต์ในโปรไฟล์' : n.type === 'post_comment' ? 'คอมเมนต์ในโพสต์' : n.type === 'comment_reply' ? 'ตอบกลับคอมเมนต์' : n.type === 'post_like' ? 'กดถูกใจโพสต์' : n.type === 'post_share' ? 'แชร์โพสต์' : 'การแจ้งเตือนระบบ');
+              const title = n.title || (n.type === 'network_alert' ? 'แจ้งเตือนระบบเครือข่าย' : n.type === 'friend_request' ? 'คำขอเป็นเพื่อน' : n.type === 'friend_accept' ? 'ยอมรับเป็นเพื่อน' : n.type === 'post_on_profile' ? 'โพสต์ในโปรไฟล์' : n.type === 'post_comment' ? 'คอมเมนต์ในโพสต์' : n.type === 'comment_reply' ? 'ตอบกลับคอมเมนต์' : n.type === 'post_like' ? 'กดถูกใจโพสต์' : n.type === 'post_share' ? 'แชร์โพสต์' : 'การแจ้งเตือนระบบ');
               const message = n.message || (n.type === 'friend_request' ? `${n.fromName} ส่งคำขอเป็นเพื่อนกับคุณ` : n.type === 'friend_accept' ? `${n.fromName} ยอมรับคำขอเป็นเพื่อนของคุณแล้ว` : n.type === 'post_on_profile' ? `${n.fromName} โพสต์ในโปรไฟล์ของคุณ` : n.type === 'post_comment' ? `${n.fromName} คอมเมนต์ในโพสต์ของคุณ` : n.type === 'comment_reply' ? `${n.fromName} ตอบกลับคอมเมนต์ของคุณ` : n.type === 'post_like' ? `${n.fromName} กดถูกใจโพสต์ของคุณ` : n.type === 'post_share' ? `${n.fromName} แชร์โพสต์ของคุณ` : '');
 
               return (
                 <div
                   key={n._id}
                   onClick={() => handleNotificationClick(n)}
-                  className={`relative p-5 transition-all cursor-pointer group overflow-hidden ${!isRead ? 'bg-white dark:bg-zinc-900 border-l-4 border-l-blue-600' : 'hover:bg-white dark:hover:bg-zinc-900 bg-transparent'
+                  className={`relative p-5 transition-all cursor-pointer group overflow-hidden ${!isRead ? (n.type === 'network_alert' ? 'bg-rose-500/5 dark:bg-rose-950/20 border-l-4 border-l-rose-500' : 'bg-white dark:bg-zinc-900 border-l-4 border-l-blue-600') : 'hover:bg-white dark:hover:bg-zinc-900 bg-transparent'
                     }`}
                 >
                   <div className="flex gap-5">
@@ -192,21 +192,21 @@ export default function NotificationBell() {
                           </div>
                         )}
                       </div>
-                      <div className={`absolute -bottom-1 -right-1 w-7 h-7 rounded-full border-4 border-white dark:border-zinc-900 flex items-center justify-center shadow-md ${n.type === 'success' ? 'bg-emerald-500' : n.type === 'warning' ? 'bg-amber-500' : n.type === 'error' ? 'bg-rose-500' : 'bg-blue-600'
+                      <div className={`absolute -bottom-1 -right-1 w-7 h-7 rounded-full border-4 border-white dark:border-zinc-900 flex items-center justify-center shadow-md ${n.type === 'success' ? 'bg-emerald-500' : n.type === 'warning' ? 'bg-amber-500' : (n.type === 'error' || n.type === 'network_alert') ? 'bg-rose-500 animate-pulse' : 'bg-blue-600'
                         }`}>
                         {n.type === 'success' ? <CheckCircle2 className="text-white" size={14} strokeWidth={3} /> :
                           n.type === 'warning' ? <AlertTriangle className="text-white" size={14} strokeWidth={3} /> :
-                            n.type === 'error' ? <AlertTriangle className="text-white" size={14} strokeWidth={3} /> :
+                            (n.type === 'error' || n.type === 'network_alert') ? <AlertTriangle className="text-white" size={14} strokeWidth={3} /> :
                               <Bell className="text-white" size={12} strokeWidth={3} />}
                       </div>
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        <p className={`text-sm tracking-tight leading-tight mb-1 truncate ${!isRead ? 'font-black text-zinc-900 dark:text-white' : 'font-bold text-zinc-500 dark:text-zinc-400'}`}>
+                        <p className={`text-sm tracking-tight leading-tight mb-1 truncate ${!isRead ? (n.type === 'network_alert' ? 'font-black text-rose-600 dark:text-rose-400' : 'font-black text-zinc-900 dark:text-white') : 'font-bold text-zinc-500 dark:text-zinc-400'}`}>
                           {title}
                         </p>
-                        {!isRead && <div className="w-2.5 h-2.5 rounded-full bg-blue-600 shrink-0 shadow-[0_0_12px_rgba(37,99,235,0.6)]" />}
+                        {!isRead && <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${n.type === 'network_alert' ? 'bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.8)]' : 'bg-blue-600 shadow-[0_0_12px_rgba(37,99,235,0.6)]'}`} />}
                       </div>
                       <p className={`text-[13px] leading-relaxed line-clamp-2 ${!isRead ? 'text-zinc-600 dark:text-zinc-300 font-semibold' : 'text-zinc-400 dark:text-zinc-500 font-medium'}`}>
                         {message}

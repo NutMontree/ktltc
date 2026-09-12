@@ -49,6 +49,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { message, Popconfirm, Select, DatePicker, Modal } from "antd";
+import PremiumDatePicker from "@/components/PremiumDatePicker";
 import { uploadFile } from "@/lib/upload";
 import { DEPARTMENTS } from "@/lib/constants";
 import dayjs from "dayjs";
@@ -2868,16 +2869,16 @@ function DVETeacherWorkspace() {
                       <span className="hidden xl:inline">ดูประวัติ</span>
                     </button>
                   </div>
-                  <DatePicker
-                    format="DD/MM/BBBB"
-                    className="w-full h-12 border border-zinc-200/80 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/60 rounded-2xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold shadow-xs"
-                    value={checkinFilter.date ? dayjs(checkinFilter.date) : null}
-                    onChange={(date) => {
-                      setCheckinFilter((prev) => ({ ...prev, date: date ? date.format("YYYY-MM-DD") : "" }));
+                  <PremiumDatePicker
+                    value={checkinFilter.date || ""}
+                    onChange={(dateStr) => {
+                      setCheckinFilter((prev) => ({ ...prev, date: dateStr }));
                       setAttendanceLogs([]);
                       setAttendanceRecords({});
                     }}
                     placeholder="วว/ดด/ปปปป"
+                    showTime={false}
+                    className="w-full h-12 border border-zinc-200/80 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/60 rounded-2xl px-4 text-sm focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white font-bold shadow-xs flex items-center justify-between"
                   />
                 </div>
 
@@ -4812,16 +4813,17 @@ function DVETeacherWorkspace() {
                         <AlertCircle size={14} className="text-rose-500" />
                         วันกำหนดส่งของหน่วยเรียน
                       </label>
-                      <input
-                        type="datetime-local"
-                        className="w-full h-11 border-2 border-rose-200 dark:border-rose-800/80 bg-white dark:bg-zinc-950 rounded-xl px-4 text-xs font-black text-rose-700 dark:text-rose-300 focus:outline-hidden focus:ring-4 focus:ring-rose-500/20 transition-all"
-                        value={unitForm.dueDate}
-                        onChange={(e) =>
+                      <PremiumDatePicker
+                        value={unitForm.dueDate || ""}
+                        onChange={(val) =>
                           setUnitForm((prev) => ({
                             ...prev,
-                            dueDate: e.target.value,
+                            dueDate: val,
                           }))
                         }
+                        showTime={true}
+                        placeholder="เลือกวันและเวลากำหนดส่ง"
+                        className="w-full h-11 border-2 border-rose-200 dark:border-rose-800/80 bg-white dark:bg-zinc-950 rounded-xl px-4 text-xs font-black text-rose-700 dark:text-rose-300 focus:outline-hidden focus:ring-4 focus:ring-rose-500/20 transition-all flex items-center justify-between"
                       />
                       <p className="text-[11px] text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1 mt-0.5">
                         <span>⚠️</span> ถ้าเรียนครบเวลาแต่เกินวันนี้ ระบบจะบันทึกเป็น "สาย" อัตโนมัติ
@@ -5269,26 +5271,28 @@ function DVETeacherWorkspace() {
                         <label className="text-xs font-black text-zinc-700 dark:text-zinc-300">
                           วันเริ่มเปิดให้ทำแบบทดสอบ (Start Date)
                         </label>
-                        <input
-                          type="datetime-local"
-                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-xs font-bold focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white shadow-xs"
-                          value={quizForm.startDate}
-                          onChange={(e) =>
-                            setQuizForm((prev) => ({ ...prev, startDate: e.target.value }))
+                        <PremiumDatePicker
+                          value={quizForm.startDate || ""}
+                          onChange={(val) =>
+                            setQuizForm((prev) => ({ ...prev, startDate: val }))
                           }
+                          showTime={true}
+                          placeholder="เลือกวันและเวลาเปิด"
+                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-xs font-bold focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white shadow-xs flex items-center justify-between"
                         />
                       </div>
                       <div className="flex flex-col gap-2">
                         <label className="text-xs font-black text-zinc-700 dark:text-zinc-300">
                           วันหมดเขตส่งกระดาษคำตอบ (Deadline)
                         </label>
-                        <input
-                          type="datetime-local"
-                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-xs font-bold focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white shadow-xs"
-                          value={quizForm.deadline}
-                          onChange={(e) =>
-                            setQuizForm((prev) => ({ ...prev, deadline: e.target.value }))
+                        <PremiumDatePicker
+                          value={quizForm.deadline || ""}
+                          onChange={(val) =>
+                            setQuizForm((prev) => ({ ...prev, deadline: val }))
                           }
+                          showTime={true}
+                          placeholder="เลือกวันและเวลาหมดเขต"
+                          className="w-full h-12 border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 rounded-xl px-4 text-xs font-bold focus:outline-hidden focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 dark:focus:border-emerald-500 dark:focus:ring-emerald-500/20 transition-all dark:text-white shadow-xs flex items-center justify-between"
                         />
                       </div>
                       <div className="flex flex-col gap-2">

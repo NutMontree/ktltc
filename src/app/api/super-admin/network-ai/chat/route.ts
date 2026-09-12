@@ -212,6 +212,103 @@ function shouldSearchWeb(text: string): boolean {
   return triggers.some((t) => text.toLowerCase().includes(t.toLowerCase()));
 }
 
+// Autonomous Codebase Scanner & Context Ingester for Agent M1
+async function scanProjectCodebase(userMsg: string, projectRoot: string): Promise<string> {
+  const lower = (userMsg || "").toLowerCase();
+  const relevantFiles: string[] = [];
+
+  // 1. Topic Mapping to actual files in KTLTC codebase
+  if (
+    lower.includes("notif") ||
+    lower.includes("แจ้งเตือน") ||
+    lower.includes("กระดิ่ง") ||
+    lower.includes("alert")
+  ) {
+    relevantFiles.push("src/app/api/notifications/route.ts");
+    relevantFiles.push("src/components/NotificationBell.tsx");
+    relevantFiles.push("scripts/network_watchdog.js");
+  }
+
+  if (
+    lower.includes("เน็ต") ||
+    lower.includes("อินเทอร์เน็ต") ||
+    lower.includes("หลุด") ||
+    lower.includes("ล่ม") ||
+    lower.includes("outage") ||
+    lower.includes("wan") ||
+    lower.includes("down")
+  ) {
+    relevantFiles.push("scripts/network_watchdog.js");
+    relevantFiles.push("src/app/api/network-scan/route.ts");
+    relevantFiles.push("src/lib/networkDevices.ts");
+  }
+
+  if (
+    lower.includes("สวิตช์") ||
+    lower.includes("switch") ||
+    lower.includes("port") ||
+    lower.includes("พอร์ต") ||
+    lower.includes("vlan") ||
+    lower.includes("cisco") ||
+    lower.includes("aruba") ||
+    lower.includes("reyee") ||
+    lower.includes("hpe")
+  ) {
+    relevantFiles.push("src/lib/networkDevices.ts");
+    relevantFiles.push("src/app/api/device-ports/route.ts");
+    relevantFiles.push("src/lib/ruijie.ts");
+  }
+
+  if (
+    lower.includes("auth") ||
+    lower.includes("login") ||
+    lower.includes("เข้าสู่ระบบ") ||
+    lower.includes("ผู้ใช้") ||
+    lower.includes("user") ||
+    lower.includes("role") ||
+    lower.includes("สิทธิ์")
+  ) {
+    relevantFiles.push("src/lib/auth.ts");
+    relevantFiles.push("src/app/api/auth/[...nextauth]/route.ts");
+  }
+
+  if (
+    lower.includes("db") ||
+    lower.includes("mongo") ||
+    lower.includes("ฐานข้อมูล") ||
+    lower.includes("worker") ||
+    lower.includes("คิว") ||
+    lower.includes("redis")
+  ) {
+    relevantFiles.push("src/lib/db.ts");
+    relevantFiles.push("src/workers/dbWorker.ts");
+  }
+
+  const uniqueFiles = Array.from(new Set(relevantFiles));
+  const fileSnippets: string[] = [];
+
+  for (const relPath of uniqueFiles.slice(0, 3)) {
+    try {
+      const fullPath = path.resolve(projectRoot, relPath);
+      const stat = await fs.stat(fullPath);
+      if (stat.isFile()) {
+        const content = await fs.readFile(fullPath, "utf-8");
+        fileSnippets.push(`[ไฟล์จริงจากเครื่องเซิร์ฟเวอร์: ${relPath}]\n${content.slice(0, 8000)}`);
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  if (fileSnippets.length === 0) return "";
+
+  return (
+    "\n=== ข้อมูลโค้ดจริงที่ระบบ M1 สแกนพบจาก Codebase เซิร์ฟเวอร์ KTLTC (Live Codebase Grounding) ===\n" +
+    fileSnippets.join("\n\n---\n\n") +
+    "\n=========================================================================================\n"
+  );
+}
+
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session || (session.user as any)?.role !== "super_admin") {
@@ -365,6 +462,14 @@ ${content.slice(0, 16000)}
       }
     }
 
+    // 4.1 Automatic Autonomous Codebase Grounding: If user mentions features, scan codebase
+    const codebaseScanContext = await scanProjectCodebase(message, realProjectRoot);
+    if (!inspectedFileContext && codebaseScanContext) {
+      inspectedFileContext = codebaseScanContext;
+    } else if (codebaseScanContext) {
+      inspectedFileContext += `\n${codebaseScanContext}`;
+    }
+
     // 5. Attached Text/Logs/Config Files Context
     let attachmentContext = "";
     if (Array.isArray(attachments) && attachments.length > 0) {
@@ -428,6 +533,12 @@ ${content.slice(0, 16000)}
 7. การประมวลผลภาพถ่ายและไฟล์แนบ (Multimodal Vision & Diagnostics):
    - หาก Super Admin แนบรูปภาพหรือถ่ายภาพมา (เช่น ภาพตู้ Rack, สายแลน, สายไฟเบอร์, พอร์ต Switch, ไฟสถานะ, หรือหน้าจอ Error): ให้อ่านและวิเคราะห์ภาพอย่างละเอียด ชี้เป้าอุปกรณ์ จุดผิดปกติ หรือวิธีแก้ไขให้ชัดเจน
    - หากแนบไฟล์ Config/Logs: ให้อ่านและสรุปจุดบกพร่อง พร้อมแนะนำการแก้ไข
+8. การเข้าถึงและพัฒนา Codebase บนเครื่องเซิร์ฟเวอร์ (Autonomous Codebase Grounding):
+   - M1 มีระบบเชื่อมต่อและสแกน Codebase จริงในเซิร์ฟเวอร์ (โฟลเดอร์ src/ และ scripts/)
+   - **กฎเหล็ก: ห้ามถาม Super Admin ว่า "ไฟล์ระบบนี้อยู่ที่ไหน" หรือ "ขอโครงสร้างไฟล์/DB" โดยเด็ดขาด**
+   - เมื่อผู้ใช้ถามหรือสั่งให้ทำฟีเจอร์ เช่น "ส่งข้อความแจ้งเตือนไปที่ notification ของผมในเว็บไซต์นี้เวลาที่อินเทอร์เน็ตใช้งานไม่ได้":
+     - ให้ศึกษาโครงสร้างโค้ดจริงของระบบ Notification (เช่น src/app/api/notifications/route.ts, NotificationBell.tsx, และ scripts/network_watchdog.js) ที่ระบบสแกนมาให้ใน Live Codebase Grounding
+     - ให้ตอบรับด้วยความมั่นใจ อธิบายขั้นตอนการทำงาน และเสนอโค้ดโซลูชันหรือแนวทางการแก้ปัญหาจริงผ่านแท็ก [CODE_PROPOSAL] หรือยืนยันสถานะสคริปต์ Network Outage Watchdog บนเซิร์ฟเวอร์ได้ทันที
 
 ${retrievedMemories}
 
@@ -646,18 +757,20 @@ ${attachmentContext}
 
     const durationStr = "Worked for 12s";
 
-    // Save User Message
-    messagesCol.insertOne({
+    // Save User Message first with current timestamp
+    const userCreatedAt = new Date();
+    await messagesCol.insertOne({
       sessionId: activeSessionId,
       role: "user",
       content: message || "ส่งไฟล์/รูปภาพแนบ",
       timestamp: timeStr,
       attachments: Array.isArray(attachments) ? attachments : undefined,
-      createdAt: new Date(),
+      createdAt: userCreatedAt,
     }).catch(console.error);
 
-    // Save AI Reply
-    messagesCol.insertOne({
+    // Save AI Reply with strictly later timestamp (+50ms) to ensure deterministic ordering on refresh
+    const modelCreatedAt = new Date(userCreatedAt.getTime() + 50);
+    await messagesCol.insertOne({
       sessionId: activeSessionId,
       role: "model",
       content: cleanedText || aiResponseText,
@@ -668,7 +781,7 @@ ${attachmentContext}
       codeProposal: codeProposal || undefined,
       duration: durationStr,
       actionSteps: actionSteps.length > 0 ? actionSteps : undefined,
-      createdAt: new Date(),
+      createdAt: modelCreatedAt,
     }).catch(console.error);
 
     // Upsert Session meta

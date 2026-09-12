@@ -105,3 +105,37 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+export async function PATCH(req: NextRequest) {
+  const session = await auth();
+  if (!session || (session.user as any)?.role !== "super_admin") {
+    return NextResponse.json({ error: "Unauthorized: Super Admin Only" }, { status: 403 });
+  }
+
+  try {
+    const body = await req.json();
+    const { sessionId, title } = body;
+
+    if (!sessionId || !title?.trim()) {
+      return NextResponse.json({ error: "sessionId and title are required" }, { status: 400 });
+    }
+
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+    const sessionsCol = db.collection("m1_chat_sessions");
+
+    const trimmedTitle = title.trim();
+    await sessionsCol.updateOne(
+      { sessionId },
+      { $set: { title: trimmedTitle, updatedAt: new Date() } }
+    );
+
+    return NextResponse.json({
+      success: true,
+      title: trimmedTitle,
+    });
+  } catch (error: any) {
+    console.error("Update chat session error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}

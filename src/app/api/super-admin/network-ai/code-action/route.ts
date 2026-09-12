@@ -79,14 +79,14 @@ export async function GET() {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
     currentTask = await db.collection("m1_tasks").findOne(
-      { dismissed: { $ne: true } },
+      { status: "running", dismissed: { $ne: true } },
       { sort: { updatedAt: -1 } }
     );
   } catch (err) {
     console.error("Failed to read task from MongoDB:", err);
   }
 
-  // 2. Fallback to scratch file
+  // 2. Fallback to scratch file only if running
   if (!currentTask) {
     try {
       const statusFile = path.join(PROJECT_ROOT, "scratch", "m1_task_status.json");
@@ -94,7 +94,7 @@ export async function GET() {
       if (stat) {
         const raw = await fs.readFile(statusFile, "utf-8");
         const parsed = JSON.parse(raw);
-        if (!parsed.dismissed) currentTask = parsed;
+        if (!parsed.dismissed && parsed.status === "running") currentTask = parsed;
       }
     } catch {}
   }
@@ -110,10 +110,10 @@ export async function GET() {
     };
   }
 
-  // If completed more than 24 hours ago, reset to idle
+  // If completed more than 30 seconds ago, reset to idle
   if ((currentTask.status === "success" || currentTask.status === "error") && currentTask.completedAt) {
     const ageSeconds = (Date.now() - new Date(currentTask.completedAt).getTime()) / 1000;
-    if (ageSeconds > 86400) {
+    if (ageSeconds > 30) {
       currentTask.status = "idle";
     }
   }
